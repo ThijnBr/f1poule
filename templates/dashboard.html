@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    {% for x in poules %}
+        <a href="{{ url_for('poule', poule=x[0]) }}">
+            <button>{{ x[1] }}</button>
+        </a> 
+    {% endfor %}
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+    <form action="{{ url_for('joinPoule') }}" method="post">
+        <input type="text" name="poulename" placeholder="Enter Poule Name">
+        <button type="submit">Join Poule</button>
+    </form>    
+</body>
+</html>

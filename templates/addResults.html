@@ -1,0 +1,83 @@
+<a href="{{ url_for('admin') }}">
+    <button>Dashboard</button>
+</a>
+<form id="resultsForm" method="post" action="{{ url_for('submit_results') }}">
+    <label for="track">Select Track:</label>
+    <select id="track" name="track">
+        {% for track in tracks %}
+            <option value="{{ track[0] }}">{{ track[1] }}</option>
+        {% endfor %}
+    </select>
+    <select id="racesession" name="racesession">
+        <option value="qualiresults">Qualifying</option>
+        <option value="raceresults">Race</option>
+    </select>
+    <table>
+        <thead>
+            <tr>
+                <th>Driver</th>
+                <th>Position</th>
+                <th>DNF</th> <!-- Add a new column for DNF checkbox -->
+            </tr>
+        </thead>
+        <tbody id="driversTableBody">
+            {% for driver in drivers %}
+                <tr>
+                    <td>{{ driver[1] }}</td>
+                    <td>
+                        <select name="driver_positions[]" class="driver-position">
+                            <!-- Populate with position options dynamically using JavaScript -->
+                        </select>
+                        <!-- Add a hidden input to store the driver ID -->
+                        <input type="hidden" name="driver_ids[]" value="{{ driver[0] }}">
+                    </td>
+                    <td>
+                        <input type="hidden" name="driver_dnfs[]" value="0">
+                        <input type="checkbox" name="driver_dnfs[]" class="driver-dnf" value="1">
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Your existing form content -->
+    <button type="submit">Submit Results</button>
+</form>
+
+<script>
+    // Add JavaScript to dynamically update position options based on driver count
+    const driverCount = {{ drivers|length }};
+    const positionOptions = Array.from({ length: driverCount }, (_, index) => index + 1);
+
+    document.querySelectorAll('.driver-position').forEach(select => {
+        for (let position = 1; position <= driverCount; position++) {
+            const option = document.createElement('option');
+            option.value = position;
+            option.text = position;
+            select.add(option);
+        }
+    });
+
+    // Function to update the order of rows based on selected positions
+    function updateDriverOrder() {
+        const selectedPositions = Array.from(document.querySelectorAll('.driver-position')).map(select => parseInt(select.value));
+        const tableBody = document.getElementById('driversTableBody');
+        const rows = Array.from(tableBody.getElementsByTagName('tr'));
+
+        // Sort the rows based on the selected positions
+        rows.sort((a, b) => {
+            const positionA = selectedPositions[rows.indexOf(a)];
+            const positionB = selectedPositions[rows.indexOf(b)];
+            return positionA - positionB;
+        });
+
+        // Update the table with the sorted rows
+        tableBody.innerHTML = '';
+        rows.forEach(row => tableBody.appendChild(row));
+    }
+
+    // Attach event listener for position change
+    document.querySelectorAll('.driver-position').forEach(select => {
+        select.addEventListener('change', updateDriverOrder);
+    });
+</script>

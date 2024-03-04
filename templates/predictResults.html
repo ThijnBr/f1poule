@@ -1,0 +1,13 @@
+<a href="{{ url_for('poule', poule=poule) }}">
+    <button>Standings</button>
+</a> 
+
+<p>Qualifying Results</p>
+{%for x in top3%}
+<p>{{x[0] , x[1]}}</p>
+{%endfor%}
+
+<p>Race Results</p>
+{%for x in top5%}
+<p>{{x[0] , x[1]}}</p>
+{%endfor%}

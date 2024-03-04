@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Data</title>
+</head>
+<body>
+    <a href="{{ url_for('admin') }}">
+        <button>Dashboard</button>
+    </a> 
+<h2>Add Driver</h2>
+<form action="{{ url_for('add_driver') }}" method="post">
+    <label for="driver_name">Driver Name:</label>
+    <input type="text" id="driver_name" name="driver_name" required>
+
+    <label for="driver_team">Driver Team:</label>
+    <input type="text" id="driver_team" name="driver_team" required>
+
+    <button type="submit">Add Driver</button>
+</form>
+
+<h2>Add Track</h2>
+<form id="addTrackForm" method="post" action="{{ url_for('add_track') }}">
+    <label for="track_name">Track Name:</label>
+    <input type="text" id="track_name" name="track_name" required>
+
+    <label for="quali_date">Quali Date and Time:</label>
+    <input type="datetime-local" id="quali_date" name="quali_date" required>
+
+    <label for="race_date">Race Date and Time:</label>
+    <input type="datetime-local" id="race_date" name="race_date" required>
+
+    <button type="submit">Add Track</button>
+</form>
+<p>drivers {{ drivers|length }}</p>
+{%for x in drivers%}
+<p>{{x}}</p>
+{%endfor%}
+<p>tracks {{ tracks|length }}</p>
+{%for x in tracks%}
+<p>{{x}}</p>
+{%endfor%}
+</body>
+</html>

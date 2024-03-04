@@ -1,0 +1,16 @@
+{{poule}}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+{% for x in disTracks %}
+<div class="tracksdisabled">
+    <a href="{{ url_for('predictResults', trackid=x[0]) }}">
+        <button class="tracks">{{ x[1] }}</button>
+    </a> 
+</div>
+{% endfor %}
+{% for x in avaTracks %}
+<div class="tracksenabled">
+    <a href="{{ url_for('predict', trackid=x[0]) }}">
+        <button class="tracks">{{ x[1] }}</button>
+    </a> 
+</div>
+{% endfor %}

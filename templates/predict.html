@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<a href="{{ url_for('poule', poule=poule) }}">
+    <button>Standings</button>
+</a> 
+
+{% if not ontime %}
+<div class="alert alert-danger">
+    {{ message }}
+</div>
+{% endif %}
+
+<body>
+
+    <p>User ID: {{ userid }}</p>
+    <p>Poule: {{poule}}</p>
+    <p>Track: {{trackid}}</p>
+
+    <!-- Form for Top 3 Qualifying Prediction -->
+    <!-- Form for Top 3 Qualifying Prediction -->
+<!-- Form for Top 3 Qualifying Prediction -->
+<form action="{{ url_for('predict_top3', trackid=trackid) }}" method="post">
+    <div>
+        <h3>Top 3 Qualifying Prediction</h3>
+        {% for place, default_value in top3_zipped %}
+            <label for="top3_qualifying_{{ place }}">Position {{ place }}:</label>
+            <select id="top3_qualifying_{{ place }}" name="top3_qualifying_{{ place }}">
+                {% for driver in drivers %}
+                    <option value="{{ driver[0] }}" {% if driver[0] == default_value %}selected{% endif %}>{{ driver[1] }} - {{ driver[2] }}</option>
+                {% endfor %}
+            </select>
+        {% endfor %}
+    </div>
+    <button type="submit">Submit Top 3 Predictions</button>
+</form>
+
+<!-- Form for Top 5 Race Prediction -->
+<form action="{{ url_for('predict_top5', trackid=trackid) }}" method="post">
+    <div>
+        <h3>Top 5 Race Prediction</h3>
+        {% for place, default_value in top5_zipped %}
+            <label for="top5_race_{{ place }}">Position {{ place }}:</label>
+            <select id="top5_race_{{ place }}" name="top5_race_{{ place }}">
+                {% for driver in drivers %}
+                    <option value="{{ driver[0] }}" {% if driver[0] == default_value %}selected{% endif %}>{{ driver[1] }} - {{ driver[2] }}</option>
+                {% endfor %}
+            </select>
+        {% endfor %}
+    </div>
+    <button type="submit">Submit Top 5 Predictions</button>
+</form>
+
+
+    <form action="{{ url_for('logout') }}" method="post">
+        <button type="submit">Logout</button>
+    </form>
+</body>
+
+</html>

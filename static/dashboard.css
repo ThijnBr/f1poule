@@ -1,0 +1,79 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f8f8f8;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 10px;
+    color: #fff;
+}
+
+main {
+    margin-top: 20px;
+}
+
+.poule-button {
+    display: block;
+    width: 25%;
+    margin: 0 auto; /* Center the button horizontally */
+    padding: 10px;
+    height: 50px;
+    margin-bottom: 10px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    line-height: 50px; /* Center the text vertically */
+    font-size: 35px; /* Adjust the font size as needed */
+    font-weight: bold; /* Make the text bold */
+}
+
+.poule-button:hover {
+    background-color: #0056b3;
+}
+
+.join-poule-form {
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+    width: 50%;
+}
+
+.logout-form{
+    display: flex;
+    align-items: center;
+    margin-top: 0px;
+}
+
+.join-poule-form input[type="text"] {
+    
+    padding: 10px;
+    margin-right: 10px;
+    flex: 1;
+}
+
+.logout-form button,
+.join-poule-form button {
+    padding: 10px;
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-form button:hover,
+.join-poule-form button:hover {
+    background-color: #c82333;
+}

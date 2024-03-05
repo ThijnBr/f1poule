@@ -1,0 +1,66 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.standings-button {
+    background-color: #007BFF;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.standings-button:hover {
+    background-color: #0056b3;
+}
+
+.results-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.results-box {
+    background-color: #fff;
+    border: 2px solid #007BFF;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.qualifying-results,
+.race-results {
+    width: 100%;
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+    margin-bottom: 10px;
+    padding: 10px;
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.driver {
+    font-weight: bold;
+}
+
+.position {
+    color: #555;
+}

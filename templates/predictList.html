@@ -1,16 +1,40 @@
-{{poule}}
-<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-{% for x in disTracks %}
-<div class="tracksdisabled">
-    <a href="{{ url_for('predictResults', trackid=x[0]) }}">
-        <button class="tracks">{{ x[1] }}</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ poule }} - F1 Poule</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <a href="{{ url_for('dashboard') }}">
+        <button class="dashboard-button">Dashboard</button>
     </a> 
-</div>
-{% endfor %}
-{% for x in avaTracks %}
-<div class="tracksenabled">
-    <a href="{{ url_for('predict', trackid=x[0]) }}">
-        <button class="tracks">{{ x[1] }}</button>
-    </a> 
-</div>
-{% endfor %}
+    <header>
+        <h1>F1 Poule - {{ poule }}</h1>
+        <p>Welcome to the F1 Poule for {{ poule }}. Make your predictions here.</p>
+    </header>
+
+    <section class="disabled-tracks">
+        <h2>Previous Tracks</h2>
+        {% for x in disTracks %}
+            <div class="tracksdisabled">
+                <a href="{{ url_for('predictResults', trackid=x[0]) }}">
+                    <button class="track">{{ x[1] }}</button>
+                </a> 
+            </div>
+        {% endfor %}
+    </section>
+
+    <section class="enabled-tracks">
+        <h2>Upcoming Tracks</h2>
+        {% for x in avaTracks %}
+            <div class="tracksenabled">
+                <a href="{{ url_for('predict', trackid=x[0]) }}">
+                    <button class="track">{{ x[1] }}</button>
+                </a> 
+            </div>
+        {% endfor %}
+    </section>
+</body>
+</html>

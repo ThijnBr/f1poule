@@ -30,7 +30,7 @@ def authenticate(username, password):
 @app.before_request
 def before_request():
     # Check if the user is logged in before each request
-    if 'user_id' not in session and request.endpoint not in ['login', 'index', 'static']:
+    if 'user_id' not in session and request.endpoint not in ['login', 'index', 'static', 'register']:
         return redirect(url_for('index'))
 
 @app.route('/')
@@ -166,6 +166,7 @@ def poule(poule):
 @app.route('/predictList/<poule>')
 def predictList(poule):
     tracks = getDriverTrack.getTracks()
+    print(tracks)
     avaTracks = []
     disTracks = []
     for x in tracks:

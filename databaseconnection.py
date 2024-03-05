@@ -3,7 +3,7 @@ def connect():
     conn = psycopg2.connect(
         database='poulef1',
         user='postgres',
-        password='sTEAM.pROJECT',
+        password='Broekie2004',
         host='localhost'
     )
     return conn

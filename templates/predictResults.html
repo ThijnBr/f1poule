@@ -1,13 +1,39 @@
-<a href="{{ url_for('poule', poule=poule) }}">
-    <button>Standings</button>
-</a> 
+<!DOCTYPE html>
+<html lang="en">
 
-<p>Qualifying Results</p>
-{%for x in top3%}
-<p>{{x[0] , x[1]}}</p>
-{%endfor%}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Standings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='standings.css') }}">
+</head>
 
-<p>Race Results</p>
-{%for x in top5%}
-<p>{{x[0] , x[1]}}</p>
-{%endfor%}
+<body>
+    <a href="{{ url_for('poule', poule=poule) }}">
+        <button class="standings-button">Standings</button>
+    </a>
+
+    <section class="results-section">
+        <div class="qualifying-results results-box">
+            <p>Qualifying Results</p>
+            {% for x in top3 %}
+                <div class="result-item">
+                    <span class="driver">{{ x[0] }}</span>
+                    <span class="position">{{ x[1] }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="race-results results-box">
+            <p>Race Results</p>
+            {% for x in top5 %}
+                <div class="result-item">
+                    <span class="driver">{{ x[0] }}</span>
+                    <span class="position">{{ x[1] }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</body>
+
+</html>

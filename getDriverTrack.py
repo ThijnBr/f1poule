@@ -12,7 +12,7 @@ def getDriver():
 
 def getTracks():
     conn = databaseconnection.connect()
-    query = "SELECT * FROM track"
+    query = "SELECT * FROM track ORDER BY track_race_date"
     cursor = conn.cursor()
     cursor.execute(query)
     tracks = cursor.fetchall()
@@ -39,7 +39,7 @@ def getQualiResult(trackid):
 
 def getTrackData(trackid):
     conn = databaseconnection.connect()
-    query = "SELECT * FROM track WHERE id = %s ORDER BY track_race_date DESC"
+    query = "SELECT * FROM track WHERE id = %s"
     cursor = conn.cursor()
     cursor.execute(query, (trackid,))
     tracks = cursor.fetchall()

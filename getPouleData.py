@@ -46,9 +46,9 @@ def getPouleUsers(pouleid):
 
             namepoints.append((x[1], totalpoints))
             
-
-    
-    return namepoints
+    sorted_namepoints = sorted(namepoints, key=lambda x: x[1], reverse=True)
+    print(sorted_namepoints)
+    return sorted_namepoints
 
 def joinPoule(poulename, userid):
     query_select = "SELECT poule_id FROM poules WHERE poule_name = %s;"

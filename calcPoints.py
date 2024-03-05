@@ -26,6 +26,8 @@ def calculate_points(result, prediction):
                 points.append(2)
             elif difference == 9:
                 points.append(1)
+            elif difference > 9:
+                points.append(0)
     return points
 
 
@@ -63,6 +65,7 @@ def gettop5(track_id):
     return top5
 
 def calcQualiPoints(trackid):
+    conn = databaseconnection.connect()
     resultsData = getQualiResult(trackid)
     results = []
     for x in resultsData:
@@ -75,17 +78,19 @@ def calcQualiPoints(trackid):
         prediction.append(x[2])
         prediction.append(x[3])
         points = calculate_points(results, prediction)
+        print(points)
 
         id = x[0]
         query = "UPDATE top3_quali SET driver1points = %s, driver2points = %s, driver3points = %s WHERE id = %s"
-
-        conn = databaseconnection.connect()
         cursor = conn.cursor()
         cursor.execute(query, (points[0], points[1], points[2], id))
     conn.commit()
     conn.close()
 
+calcQualiPoints(3)
+
 def calcRacePoints(trackid):
+    conn = databaseconnection.connect()
     resultsData = getRaceResult(trackid)
     results = []
     for x in resultsData:
@@ -106,8 +111,9 @@ def calcRacePoints(trackid):
         id = x[0]
         query = "UPDATE top5_race SET driver1points = %s, driver2points = %s, driver3points = %s, driver4points = %s, driver5points = %s WHERE id = %s"
 
-        conn = databaseconnection.connect()
         cursor = conn.cursor()
         cursor.execute(query, (points[0], points[1], points[2],points[3], points[4], id))
     conn.commit()
     conn.close()
+
+

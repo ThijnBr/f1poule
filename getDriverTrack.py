@@ -39,7 +39,7 @@ def getQualiResult(trackid):
 
 def getTrackData(trackid):
     conn = databaseconnection.connect()
-    query = "SELECT * FROM track WHERE id = %s"
+    query = "SELECT * FROM track WHERE id = %s ORDER BY track_race_date DESC"
     cursor = conn.cursor()
     cursor.execute(query, (trackid,))
     tracks = cursor.fetchall()

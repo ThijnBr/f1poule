@@ -33,6 +33,31 @@
                 </div>
             {% endfor %}
         </div>
+
+        <div class="race-results results-box">
+            <p>Head to Head results</p>
+            {% for index in range(hth|length)%}
+                <div class="result-item">
+                    <span class="driver" style="color: {% if hth[index][3] is defined and hth[index][3] == True %}red{% else %}green{% endif %};">{{ hth[index][1] }}</span>
+                    <span class="driver" style="color: {% if hth[index][3] is defined and hth[index][3] != True %}red{% else %}green{% endif %};">{{ hth[index][2] }}</span>
+                    <span class="position">{% if hthPoints[index] is defined and hthPoints[index]|length > 0 %}{{ hthPoints[index][0] }}{% else %}None{% endif %}</span>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="race-results results-box">
+            <div class="result-item">
+                <span class="driver">Fastest Lap: {{ bonusData[0] }}</span>
+                <span class="position">{{bonusData[3]}}</span>
+            </div>
+            <div class="result-item">
+                <span class="driver">DNF: {{ bonusData[1] }}</span>
+                <span class="position">{{bonusData[4]}}</span>
+            </div>
+            <div class="result-item">
+                <span class="driver">Driver of the day: {{ bonusData[2] }}</span>
+                <span class="position">{{bonusData[5]}}</span>
+            </div>
+        </div>
     </section>
 </body>
 

@@ -8,15 +8,15 @@
 </head>
 <body>
     <a href="{{ url_for('dashboard') }}">
-        <button class="dashboard-button">Dashboard</button>
+        <button class="dashboard-button">Home</button>
     </a> 
     <header>
         <h1>F1 Poule - {{ poule }}</h1>
-        <p>Welcome to the F1 Poule for {{ poule }}. Make your predictions here.</p>
+        <p>Welkom by de F1 Poule for {{ poule }}. Maak hier je voorspellingen of zie oude voorspellingen.</p>
     </header>
 
     <section class="disabled-tracks">
-        <h2>Previous Tracks</h2>
+        <h2>Vorige banen</h2>
         {% for x in disTracks %}
             <div class="tracksdisabled">
                 <a href="{{ url_for('predictResults', trackid=x[0]) }}">
@@ -27,7 +27,7 @@
     </section>
 
     <section class="enabled-tracks">
-        <h2>Upcoming Tracks</h2>
+        <h2>Volgende banen</h2>
         {% for x in avaTracks %}
             <div class="tracksenabled">
                 <a href="{{ url_for('predict', trackid=x[0]) }}">

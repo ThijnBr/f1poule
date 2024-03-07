@@ -24,6 +24,8 @@ def getPouleUsers(pouleid):
     top5query = """SELECT SUM(driver1points + driver2points + driver3points + driver4points + driver5points) as totalpoints FROM top5_race
                     WHERE poule = %s AND user_id = %s
                     GROUP BY user_id, poule"""
+    hthquery = """SELECT SUM(points) FROM headtoheadprediction WHERE poule = %s AND user_id = %s GROUP BY user_id, poule"""
+    bonusquery = "SELECT SUM(flpoints + dnfpoints + dodpoints) FROM bonusprediction WHERE poule = %s AND user_id = %s GROUP BY user_id, poule"
     with databaseconnection.connect() as conn, conn.cursor() as cursor:
         cursor.execute(userquery, (pouleid,))
         users = cursor.fetchall()
@@ -41,6 +43,23 @@ def getPouleUsers(pouleid):
             points = cursor.fetchone()
             if points != None:
                 totalpoints += points[0]
+
+            cursor.execute(hthquery, (pouleid, x[0]))
+            points = cursor.fetchone()
+            try:
+                if points != None:
+                    totalpoints += points[0]
+            except:
+                print(points)
+
+            cursor.execute(bonusquery, (pouleid, x[0]))
+            points = cursor.fetchone()
+            try:
+                if points != None:
+                    totalpoints += points[0]
+            except:
+                print(points)
+
 
             print(x[1], totalpoints)
 

@@ -4,7 +4,9 @@ import getDriverTrack
 import getPouleData
 import results as resultsScript
 from datetime import datetime
+import hth as headtoHead
 import registerUser
+import bonus
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
@@ -81,11 +83,21 @@ def submit_results():
         racesession = request.form.get('racesession')
         driver_positions = request.form.getlist('driver_positions[]')
         driver_ids = request.form.getlist('driver_ids[]')
+        driver_dnfs = []
+        try:
+            driver_dnfs = eval(request.form.getlist('driver_dnfs_list')[0])
+        except:
+            x = '0'
+            for y in range(20):
+                driver_dnfs.append(x)
 
         lst = []
-        for driver_id, position in zip(driver_ids, driver_positions):
-            lst.append((driver_id, position))
+        for driver_id, position, dnf in zip(driver_ids, driver_positions, driver_dnfs):
+            lst.append((driver_id, position, dnf))
 
+        fl = request.form.get('fl')
+        dod = request.form.get('dod')
+        resultsScript.insertBonusResults(track_id, fl, dod)
         resultsScript.insert_results(track_id, lst, racesession)
     return redirect(url_for('admin'))
 
@@ -121,6 +133,8 @@ def calcPoints():
                 cp.calcQualiPoints(track_id)
             else:
                 cp.calcRacePoints(track_id)
+                cp.calcHeadtoHead(track_id)
+                cp.getBonusPredictions(track_id)
         except:
             print("error calculating points")
     tracks = getDriverTrack.getTracks()
@@ -189,10 +203,26 @@ def predict(trackid):
     poule = session.get('poule')            
     drivers = getDriverTrack.getDriver()
     tracks = getDriverTrack.getTracks()
+    hth = headtoHead.getHeadToHead()
+    hthData = headtoHead.getPredictions(user_id, trackid, poule)
+
+    hthList = []
+    for x in hth:
+        hthList.append(list(x))
+
+    for x in hthList:
+        for y in hthData:
+            if x[0] == y[0]:
+                x.append(y[1])
+    
+    print(hthList)
 
     top3 = getPouleData.getTop3Open(poule, user_id, trackid)
     top5 = getPouleData.getTop5Open(poule, user_id, trackid)
-
+    try:
+        bonusDefault = bonus.getBonus(user_id, poule, trackid)[0]
+    except:
+        bonusDefault = None
     # Access flashed messages within the context of the template
     message = str(get_flashed_messages(category_filter=['message']))[2:-2]
     ontime = str(get_flashed_messages(category_filter=['ontime']))[1:-1]
@@ -200,19 +230,28 @@ def predict(trackid):
         ontime = False
     else:
         ontime = True
-
-    print(top3)
     # Set default values for top3 and top5 if they exist
-    top3_default = top3 or (1, 1, 1)
-    top5_default = top5 or (1, 1, 1, 1, 1)
-
-    print(top3_default)
+    top3_default = top3 or (0, 0, 0)
+    top5_default = top5 or (0, 0, 0, 0, 0)
+    bonusValues = bonusDefault or (0,0,0)
+    print(bonusValues)
 
     # Zip the values in Python and pass them to the template
     top3_zipped = list(zip(range(1, 4), top3_default))
     top5_zipped = list(zip(range(1, 6), top5_default))
 
-    return render_template("predict.html", userid=user_id, trackid=trackid, drivers=drivers, tracks=tracks, poule=poule, message=message, ontime=ontime, top3_zipped=top3_zipped, top5_zipped=top5_zipped)
+    return render_template("predict.html", 
+                       userid=user_id, 
+                       trackid=trackid, 
+                       drivers=drivers, 
+                       tracks=tracks, 
+                       poule=poule, 
+                       message=message, 
+                       ontime=ontime, 
+                       top3_zipped=top3_zipped, 
+                       top5_zipped=top5_zipped,
+                       headtohead=hthList,
+                       bonusValues=bonusValues) 
 
 
 
@@ -229,12 +268,16 @@ def predict_top3(trackid):
 
         # Predictions for top 3 qualifying
         top3_qualifying = [request.form.get(f'top3_qualifying_{place}') for place in range(1, 4)]
-        top3_qualifying.append(track)
-        top3_qualifying.append(poule)
-        print('Top 3 Qualifying:', top3_qualifying)
-        storeTop3(user_id, top3_qualifying)
-        flash('Your qualifying prediction is submitted', 'message')
-        flash(False, 'ontime')
+        if "" in top3_qualifying:
+            flash('Invalid submission', 'message')
+            flash(False, 'ontime')
+        else:
+            top3_qualifying.append(track)
+            top3_qualifying.append(poule)
+            print('Top 3 Qualifying:', top3_qualifying)
+            storeTop3(user_id, top3_qualifying)
+            flash('Your qualifying prediction is submitted', 'message')
+            flash(False, 'ontime')
 
     return redirect(url_for('predict', trackid=trackid))
 
@@ -248,17 +291,45 @@ def predict_top5(trackid):
         user_id = session.get('user_id')
         poule = session.get('poule')
         track = trackid
+        
+        fastestlap = request.form.get("fastestlap")
+        dnf = request.form.get("dnf")
+        if dnf == '':
+            dnf = None
+        dod = request.form.get("dod")
+
         # Predictions for top 5 race
         top5_race = [request.form.get(f'top5_race_{place}') for place in range(1, 6)]
-        top5_race.append(track)
-        top5_race.append(poule)
-        print('Top 5 Race:', top5_race)
-        storeTop5(user_id, top5_race)
-        flash('Your race prediction is submitted', 'message')
-        flash(False, 'ontime')
+        if "" in top5_race:
+            flash('Invalid submission', 'message')
+            flash(False, 'ontime')
+        else:
+            top5_race.append(track)
+            top5_race.append(poule)
+            print('Top 5 Race:', top5_race)
+            storeTop5(user_id, top5_race)
+            bonus.insertBonus(user_id, poule, track, fastestlap, dnf, dod)
+            flash('Your race prediction is submitted', 'message')
+            flash(False, 'ontime')
 
     return redirect(url_for('predict', trackid=trackid))
 
+@app.route('/headtohead/<trackid>', methods=['POST'])
+def headtohead(trackid):
+    trackData = getDriverTrack.getTrackData(trackid)
+    if trackData[0][3] > datetime.now():
+        driver = request.form.get('driver_selection')
+    
+        user_id = session.get('user_id')
+        headtohead_id = driver.split('-')[0]
+        driverselected = driver.split('-')[1]
+        poule = session.get('poule')
+        headtoHead.makePredictions(user_id, headtohead_id, driverselected, trackid, poule)
+        return '', 204
+    else:
+        flash('Prediction is too late', 'message')
+        flash(False, 'ontime')
+        return redirect(url_for('predict', trackid=trackid))
 
 @app.route('/predictResults/<trackid>')
 def predictResults(trackid):
@@ -266,8 +337,25 @@ def predictResults(trackid):
     poule = session.get('poule')
     top3 = getPouleData.getTop3Closed(poule, user_id, trackid)
     top5 = getPouleData.getTop5Closed(poule, user_id, trackid)
+    hth = headtoHead.getHeadToHead()
+    hthData = headtoHead.getPredictions(user_id, trackid, poule)
+    bonusData = bonus.bonusResultClosed(trackid, user_id, poule)
+    if bonusData != []:
+        bonusData = bonusData[0]
+
+    hthList = []
+    for x in hth:
+        hthList.append(list(x))
+
+    for x in hthList:
+        for y in hthData:
+            if x[0] == y[0]:
+                x.append(y[1])
     
-    return render_template('predictResults.html', top3=top3, top5=top5, poule=poule)
+    print(hthList)
+    hthPoints = headtoHead.getHthPoints(user_id,trackid,poule)
+    
+    return render_template('predictResults.html', top3=top3, top5=top5, poule=poule, hth=hthList, hthPoints=hthPoints, bonusData=bonusData)
 
 def storeTop3(user_id, prediction):
     conn = databaseconnection.connect()

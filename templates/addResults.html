@@ -12,6 +12,19 @@
         <option value="qualiresults">Qualifying</option>
         <option value="raceresults">Race</option>
     </select>
+    <p>fastest lap</p>
+    <select id="fl" name="fl">
+        {% for track in drivers %}
+            <option value="{{ track[0] }}">{{ track[1] }}</option>
+        {% endfor %}
+    </select>
+    <p>dod</p>
+    <select id="dod" name="dod">
+        {% for track in drivers %}
+            <option value="{{ track[0] }}">{{ track[1] }}</option>
+        {% endfor %}
+    </select>
+    
     <table>
         <thead>
             <tr>
@@ -21,6 +34,7 @@
             </tr>
         </thead>
         <tbody id="driversTableBody">
+            <input type="hidden" name="driver_dnfs_list" id="driver_dnfs_list" value="">
             {% for driver in drivers %}
                 <tr>
                     <td>{{ driver[1] }}</td>
@@ -32,7 +46,6 @@
                         <input type="hidden" name="driver_ids[]" value="{{ driver[0] }}">
                     </td>
                     <td>
-                        <input type="hidden" name="driver_dnfs[]" value="0">
                         <input type="checkbox" name="driver_dnfs[]" class="driver-dnf" value="1">
                     </td>
                 </tr>
@@ -43,7 +56,25 @@
     <!-- Your existing form content -->
     <button type="submit">Submit Results</button>
 </form>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var checkboxes = document.querySelectorAll('.driver-dnf');
+        var dnfsListInput = document.getElementById('driver_dnfs_list');
 
+        checkboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', updateDNFList);
+        });
+
+        function updateDNFList() {
+            var dnfsList = Array.from(checkboxes).map(function(checkbox) {
+                return checkbox.checked ? '1' : '0';
+            });
+
+            // If no checkboxes are checked, set the default list to all 0 values
+            dnfsListInput.value = dnfsList.includes('1') ? JSON.stringify(dnfsList) : JSON.stringify(Array(dnfsList.length).fill('0'));
+        }
+    });
+</script>
 <script>
     // Add JavaScript to dynamically update position options based on driver count
     const driverCount = {{ drivers|length }};

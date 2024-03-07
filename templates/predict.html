@@ -6,6 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Predict</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='predict.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        .driver-button {
+            padding: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .green-button {
+            background-color: green;
+            color: white;
+        }
+
+        .red-button {
+            background-color: red;
+            color: white;
+        }
+    </style>
 </head>
 
 <body>
@@ -27,7 +45,6 @@
         <p>Track: {{ trackid }}</p>
     </section>
 
-    <!-- Form for Top 3 Qualifying Prediction -->
     <form action="{{ url_for('predict_top3', trackid=trackid) }}" method="post" class="prediction-form predict-box">
         <div>
             <h3>Top 3 Qualifying Prediction</h3>
@@ -36,6 +53,7 @@
                     <label for="top3_qualifying_{{ place }}">Position {{ place }}:</label>
                 </div>
                 <select id="top3_qualifying_{{ place }}" name="top3_qualifying_{{ place }}">
+                    <option value="" >Select Driver</option>
                     {% for driver in drivers %}
                         <option value="{{ driver[0] }}" {% if driver[0] == default_value %}selected{% endif %}>
                             {{ driver[1] }} - {{ driver[2] }}
@@ -46,8 +64,7 @@
         </div>
         <button type="submit" class="submit-button">Submit Top 3 Predictions</button>
     </form>
-
-    <!-- Form for Top 5 Race Prediction -->
+    
     <form action="{{ url_for('predict_top5', trackid=trackid) }}" method="post" class="prediction-form predict-box">
         <div>
             <h3>Top 5 Race Prediction</h3>
@@ -56,6 +73,7 @@
                     <label for="top5_race_{{ place }}">Position {{ place }}:</label>
             </div>
                 <select id="top5_race_{{ place }}" name="top5_race_{{ place }}">
+                    <option value="" >Select Driver</option>
                     {% for driver in drivers %}
                         <option value="{{ driver[0] }}" {% if driver[0] == default_value %}selected{% endif %}>
                             {{ driver[1] }} - {{ driver[2] }}
@@ -63,13 +81,93 @@
                     {% endfor %}
                 </select><br>
             {% endfor %}
+            <div class="postext">
+                    <p>Fastest Lap</p>
+            </div>
+            <select id="fastestlap" name="fastestlap">
+                <option value="" {% if bonusValues[0] == "" %}selected{% endif %}>Selecteer Coureur</option>
+                {% for driver in drivers %}
+                    <option value="{{ driver[0] }}" {% if driver[0] == bonusValues[0] %}selected{% endif %}>
+                        {{ driver[1] }} - {{ driver[2] }}
+                    </option>
+                {% endfor %}
+            </select><br>
+            
+            <div class="postext">
+                <p>DNF</p>
+            </div>
+            <select id="dnf" name="dnf">
+                <option value="" {% if bonusValues[1] == "" %}selected{% endif %}>Geen</option>
+                {% for driver in drivers %}
+                    <option value="{{ driver[0] }}" {% if driver[0] == bonusValues[1] %}selected{% endif %}>
+                        {{ driver[1] }} - {{ driver[2] }}
+                    </option>
+                {% endfor %}
+            </select><br>
+            
+            <div class="postext">
+                <p>Driver of the Day</p>
+            </div>
+            <select id="dod" name="dod">
+                <option value="" {% if bonusValues[2] == "" %}selected{% endif %}>Selecteer Coureur</option>
+                {% for driver in drivers %}
+                    <option value="{{ driver[0] }}" {% if driver[0] == bonusValues[2] %}selected{% endif %}>
+                        {{ driver[1] }} - {{ driver[2] }}
+                    </option>
+                {% endfor %}
+            </select><br>
+            
+            
         </div>
-        <button type="submit" class="submit-button">Submit Top 5 Predictions</button>
+        <button type="submit" class="submit-button">Submit Race Predictions</button>
+    </form>
+
+    <form action="{{ url_for('headtohead', trackid=trackid) }}" method="post" class="prediction-form predict-box">
+        <div>
+            <h3>Head to Head</h3>
+            {% for driver in headtohead %}
+                <div class="head-to-head-match">
+                    <button type="submit" name="driver_selection" value="{{driver[0]}}-0" class="driver-button" style="background-color: {% if driver[3] is defined and driver[3] == True %}red{% else %}green{% endif %};">{{ driver[1] }}</button>
+                    <button type="submit" name="driver_selection" value="{{driver[0]}}-1" class="driver-button" style="background-color: {% if driver[3] is defined and driver[3] != True %}red{% else %}green{% endif %};">{{ driver[2] }}</button>                    
+                </div>
+            {% endfor %}
+        </div>
     </form>
 
     <form action="{{ url_for('logout') }}" method="post">
         <button type="submit" class="logout-button">Logout</button>
     </form>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var pairs = document.querySelectorAll('.head-to-head-match');
+    
+            pairs.forEach(function (pair) {
+                var buttons = pair.querySelectorAll('.driver-button');
+    
+                buttons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        // Reset the color of all buttons in the current pair
+                        buttons.forEach(function (resetButton) {
+                            resetButton.style.backgroundColor = '';
+                        });
+    
+                        // Set the clicked button to green
+                        this.style.backgroundColor = 'green';
+    
+                        // Find the other button in the pair
+                        var otherButtonValue = this.value.endsWith('-0') ? this.value.replace('-0', '-1') : this.value.replace('-1', '-0');
+                        var otherButton = pair.querySelector('.driver-button[value="' + otherButtonValue + '"]');
+    
+                        // Set the color of the other button to red
+                        if (otherButton) {
+                            otherButton.style.backgroundColor = 'red';
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    
 </body>
 
 </html>

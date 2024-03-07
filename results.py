@@ -15,9 +15,9 @@ def insert_results(track_id, driver_positions, results):
                     DELETE FROM {results} WHERE track_id = %s;
                 """
                 cursor.execute(query_update, (track_id,))
-        for driver_id, position in driver_positions:
-            query_insert = f"INSERT INTO {results} (track_id, driver_id, position) VALUES (%s, %s, %s);"
-            cursor.execute(query_insert, (track_id, driver_id, position))
+        for driver_id, position, dnf in driver_positions:
+            query_insert = f"INSERT INTO {results} (track_id, driver_id, position, dnf) VALUES (%s, %s, %s, %s);"
+            cursor.execute(query_insert, (track_id, driver_id, position, dnf))
 
         conn.commit()
         return True  # Indicate successful insertion or update
@@ -27,6 +27,20 @@ def insert_results(track_id, driver_positions, results):
         return False  # Indicate insertion or update failure
     finally:
         conn.close()
+
+def insertBonusResults(trackid, fl, dod):
+    query = """INSERT INTO bonusresults (fl, dod, track)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (track)
+                DO UPDATE SET
+                fl = EXCLUDED.fl,
+                dod = EXCLUDED.dod;
+                """
+    conn = databaseconnection.connect()
+    cursor = conn.cursor()
+    cursor.execute(query, (fl, dod, trackid))
+    conn.commit()
+    conn.close()
 
 
 def insert_driver(driver_name, driver_team):

@@ -77,8 +77,41 @@ CREATE TABLE IF NOT EXISTS qualiresults (
     driver_id INTEGER REFERENCES driver(driver_id),
     result_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS headtohead(
+	id SERIAL PRIMARY KEY,
+	driver1_id INT REFERENCES driver(driver_id),
+	driver2_id INT REFERENCES driver(driver_id)
+);
+CREATE TABLE IF NOT EXISTS headtoheadprediction (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id),
+    headtohead_id INTEGER REFERENCES headtohead(id),
+    driverselected BOOLEAN,
+    track INTEGER REFERENCES track(id),
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	points INT,
+    poule INTEGER REFERENCES poules(poule_id)
+);
+
+CREATE TABLE IF NOT EXISTS bonusprediction(
+	id SERIAL PRIMARY KEY,
+	user_id INTEGER REFERENCES users(user_id),
+	poule INTEGER REFERENCES poules(poule_id),
+	track INTEGER REFERENCES track(id),
+	fastestlap INT REFERENCES driver(driver_id),
+	dnf INT REFERENCES driver(driver_id),
+	dod INT REFERENCES driver(driver_id),
+	flpoints INT,
+	dnfpoints INT,
+	dodpoints INT
+);
+
+
+
 
 
 -- Add a unique constraint to top3_quali
 ALTER TABLE top3_quali ADD CONSTRAINT unique_user_track_combination UNIQUE (user_id, track, poule);
 ALTER TABLE top5_race ADD CONSTRAINT unique_user_track_combination1 UNIQUE (user_id, track, poule);
+ALTER TABLE top5_race ADD CONSTRAINT unique_user_track_combination1 UNIQUE (user_id, track, poule);
+ALTER TABLE headtoheadprediction ADD CONSTRAINT unique_prediction_constraint UNIQUE (user_id, headtohead_id, track, poule);

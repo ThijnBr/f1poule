@@ -64,6 +64,15 @@ def gettop5(track_id):
     top5 = cursor.fetchall()
     return top5
 
+def getHeadtohead(track_id):
+    conn = databaseconnection.connect()
+    query = """SELECT headtoheadprediction.id, driver1_id, driver2_id, driverselected FROM headtoheadprediction
+            JOIN headtohead ON headtohead.id = headtoheadprediction.headtohead_id WHERE track = %s"""
+    cursor = conn.cursor()
+    cursor.execute(query, (track_id,))
+    hth = cursor.fetchall()
+    return hth
+
 def calcQualiPoints(trackid):
     conn = databaseconnection.connect()
     resultsData = getQualiResult(trackid)
@@ -115,5 +124,86 @@ def calcRacePoints(trackid):
         cursor.execute(query, (points[0], points[1], points[2],points[3], points[4], id))
     conn.commit()
     conn.close()
+    
+import databaseconnection  # Make sure to import your database connection module
 
+def calcHeadtoHead(trackid):
+    results_data = [x[0] for x in getRaceResult(trackid)]
+    predictions = getHeadtohead(trackid)
+
+    # Create a list to store the updated records
+    updated_records = []
+
+    for prediction in predictions:
+        updated_records.append(calcHth(results_data, *prediction))
+    updateHthPoints(updated_records)
+
+def calcHth(driver_ids, id, driver1_id, driver2_id, is_reversed):
+    print(driver1_id, driver2_id, is_reversed)
+
+    if driver1_id not in driver_ids or driver2_id not in driver_ids:
+        raise ValueError("Invalid driver IDs in the provided list")
+
+    index_driver1 = driver_ids.index(driver1_id)
+    index_driver2 = driver_ids.index(driver2_id)
+    if (index_driver1 < index_driver2) != is_reversed:
+        return (id, 15)
+    else:
+        return (id, 0)
+
+def updateHthPoints(records):
+    conn = databaseconnection.connect()
+    query = "UPDATE headtoheadprediction SET points = %s WHERE id = %s"
+    
+    with conn.cursor() as cursor:
+        cursor.executemany(query, records)
+
+    conn.commit()
+    conn.close()
+
+import bonus
+def getDnfs(track):
+    query = "SELECT driver_id FROM raceresults WHERE track_id = %s AND dnf = true"
+    conn = databaseconnection.connect()
+    cursor = conn.cursor()
+    cursor.execute(query, (track,))
+    data = cursor.fetchall()
+    return data
+
+def updateBonus(id, x, points):
+    query = f"UPDATE bonusprediction SET {x} = %s WHERE id = %s "
+    conn = databaseconnection.connect()
+    cursor = conn.cursor()
+    cursor.execute(query, (points, id))
+    conn.commit()
+    conn.close()
+
+def getBonusPredictions(track):
+    query = "SELECT id, fastestlap, dnf, dod FROM bonusprediction WHERE track = %s"
+    conn = databaseconnection.connect()
+    cursor = conn.cursor()
+    cursor.execute(query, (track,))
+    data = cursor.fetchall()
+    print(data)
+    results = bonus.getBonusResults(track)
+    dnfs = getDnfs(track)
+    dnfList = []
+    for x in dnfs:
+        dnfList.append(x[0])
+    print(dnfList)
+    for x in data:
+        if x[1] == results[0]:
+            updateBonus(x[0], 'flpoints', 15)
+        else:
+            updateBonus(x[0], 'flpoints', 0)
+        if x[3] == results[1]:
+            updateBonus(x[0], 'dodpoints', 15)
+        else:
+            updateBonus(x[0], 'dodpoints', 0)
+        if x[2] in dnfList:
+            updateBonus(x[0], 'dnfpoints', 15)
+        elif x[2] == None and dnfList == []:
+            updateBonus(x[0], 'dnfpoints', 15)
+        else:
+            updateBonus(x[0], 'dnfpoints', 0)
 

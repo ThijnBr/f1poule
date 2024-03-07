@@ -11,6 +11,9 @@ import bonus
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
 conn = databaseconnection.connect()
+hth = headtoHead.getHeadToHead(conn)
+drivers = getDriverTrack.getDriver(conn)
+tracks = getDriverTrack.getTracks(conn)
 # Replace this with your actual authentication logic
 def authenticate(username, password):
     if username == "admin" and password == "admin":
@@ -101,8 +104,6 @@ def submit_results():
 
 @app.route('/results')
 def resultsData():
-    drivers = getDriverTrack.getDriver(conn)
-    tracks = getDriverTrack.getTracks(conn)
     return render_template("addResults.html", drivers=drivers, tracks=tracks)
 
 @app.route('/get_results', methods=['POST'])
@@ -116,8 +117,6 @@ def get_results():
 
 @app.route('/addData')
 def addData():
-    drivers = getDriverTrack.getDriver(conn)
-    tracks = getDriverTrack.getTracks(conn)
     return render_template("addData.html", drivers=drivers, tracks=tracks)
 
 import calcPoints as cp
@@ -199,9 +198,8 @@ def joinPoule():
 def predict(trackid):
     user_id = session.get('user_id')
     poule = session.get('poule')            
-    drivers = getDriverTrack.getDriver(conn)
-    tracks = getDriverTrack.getTracks(conn)
-    hth = headtoHead.getHeadToHead(conn)
+    
+    
     hthData = headtoHead.getPredictions(user_id, trackid, poule, conn)
 
     hthList = []

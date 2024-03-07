@@ -95,7 +95,7 @@ def getTop5Open(pouleid, userid, trackid):
         data = cursor.fetchone()
         return data
     
-def getTop3Closed(pouleid, userid, trackid):
+def getTop3Closed(pouleid, userid, trackid, conn):
     query = """
         SELECT 
             d1.driver_name AS driver1_name, 
@@ -117,24 +117,24 @@ def getTop3Closed(pouleid, userid, trackid):
 
     query2 = "SELECT driver1points, driver2points, driver3points FROM top3_quali WHERE poule = %s AND user_id = %s AND track = %s"
 
-    with databaseconnection.connect() as conn, conn.cursor() as cursor:
-        cursor.execute(query, (pouleid, userid, trackid))
-        top3_names = cursor.fetchone()
+    cursor = conn.cursor()
+    cursor.execute(query, (pouleid, userid, trackid))
+    top3_names = cursor.fetchone()
 
-        cursor.execute(query2, (pouleid, userid, trackid))
-        points = cursor.fetchone()
+    cursor.execute(query2, (pouleid, userid, trackid))
+    points = cursor.fetchone()
 
-        lst = []
-        try:
-            for name, point in zip(top3_names, points):
-                lst.append((name, point))
-        except:
-            lst.append(("No prediction made", ""))
+    lst = []
+    try:
+        for name, point in zip(top3_names, points):
+            lst.append((name, point))
+    except:
+        lst.append(("No prediction made", ""))
 
-        return lst
+    return lst
 
     
-def getTop5Closed(pouleid, userid, trackid):
+def getTop5Closed(pouleid, userid, trackid, conn):
     query = """
         SELECT 
             d1.driver_name AS driver1_name, 
@@ -162,18 +162,18 @@ def getTop5Closed(pouleid, userid, trackid):
 
     query2 = "SELECT driver1points, driver2points, driver3points, driver4points, driver5points FROM top5_race WHERE poule = %s AND user_id = %s AND track = %s"
 
-    with databaseconnection.connect() as conn, conn.cursor() as cursor:
-        cursor.execute(query, (pouleid, userid, trackid))
-        top5_names = cursor.fetchone()
+    cursor = conn.cursor()
+    cursor.execute(query, (pouleid, userid, trackid))
+    top5_names = cursor.fetchone()
 
-        cursor.execute(query2, (pouleid, userid, trackid))
-        points = cursor.fetchone()
+    cursor.execute(query2, (pouleid, userid, trackid))
+    points = cursor.fetchone()
 
-        lst = []
-        try:
-            for name, point in zip(top5_names, points):
-                lst.append((name, point))
-        except:
-            lst.append(("No prediction made", ""))
+    lst = []
+    try:
+        for name, point in zip(top5_names, points):
+            lst.append((name, point))
+    except:
+        lst.append(("No prediction made", ""))
 
-        return lst
+    return lst

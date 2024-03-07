@@ -31,7 +31,7 @@ def getBonusResults(track):
     if data != []:
         return data[0]
     
-def bonusResultClosed(track, user_id, poule):
+def bonusResultClosed(track, user_id, poule, conn):
     query = """SELECT 
     driver1.driver_name AS fastestlap_name, 
     driver2.driver_name AS dnf_name, 
@@ -48,7 +48,6 @@ LEFT JOIN
 WHERE poule = %s AND user_id = %s AND track = %s
 
 """
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (poule, user_id, track))
     data = cursor.fetchall()

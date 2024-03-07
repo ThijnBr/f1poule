@@ -1,22 +1,18 @@
 import databaseconnection
 
 
-def getDriver():
-    conn = databaseconnection.connect()
+def getDriver(conn):
     query = "SELECT * FROM driver"
     cursor = conn.cursor()
     cursor.execute(query)
     drivers = cursor.fetchall()
-    conn.close()
     return drivers
 
-def getTracks():
-    conn = databaseconnection.connect()
+def getTracks(conn):
     query = "SELECT * FROM track ORDER BY track_race_date"
     cursor = conn.cursor()
     cursor.execute(query)
     tracks = cursor.fetchall()
-    conn.close()
     return tracks
 
 def getRaceResult(trackid):

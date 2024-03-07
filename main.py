@@ -10,18 +10,16 @@ import bonus
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
-
+conn = databaseconnection.connect()
 # Replace this with your actual authentication logic
 def authenticate(username, password):
     if username == "admin" and password == "admin":
         return ("admin", None, None)  # Indicate admin login
 
-    conn = databaseconnection.connect()
     query = "SELECT * FROM users WHERE username = %s AND password = %s;"
     cursor = conn.cursor()
     cursor.execute(query, (username, password))
     data = cursor.fetchall()
-    conn.close()
 
     if data:
         # Return the first row as a tuple (user_id, username)
@@ -103,8 +101,8 @@ def submit_results():
 
 @app.route('/results')
 def resultsData():
-    drivers = getDriverTrack.getDriver()
-    tracks = getDriverTrack.getTracks()
+    drivers = getDriverTrack.getDriver(conn)
+    tracks = getDriverTrack.getTracks(conn)
     return render_template("addResults.html", drivers=drivers, tracks=tracks)
 
 @app.route('/get_results', methods=['POST'])
@@ -118,8 +116,8 @@ def get_results():
 
 @app.route('/addData')
 def addData():
-    drivers = getDriverTrack.getDriver()
-    tracks = getDriverTrack.getTracks()
+    drivers = getDriverTrack.getDriver(conn)
+    tracks = getDriverTrack.getTracks(conn)
     return render_template("addData.html", drivers=drivers, tracks=tracks)
 
 import calcPoints as cp
@@ -133,11 +131,11 @@ def calcPoints():
                 cp.calcQualiPoints(track_id)
             else:
                 cp.calcRacePoints(track_id)
-                cp.calcHeadtoHead(track_id)
-                cp.getBonusPredictions(track_id)
+                cp.calcHeadtoHead(track_id, conn)
+                cp.getBonusPredictions(track_id, conn)
         except:
             print("error calculating points")
-    tracks = getDriverTrack.getTracks()
+    tracks = getDriverTrack.getTracks(conn)
     raceresults = []
     qualiresults = []
     for x in tracks:
@@ -179,7 +177,7 @@ def poule(poule):
 
 @app.route('/predictList/<poule>')
 def predictList(poule):
-    tracks = getDriverTrack.getTracks()
+    tracks = getDriverTrack.getTracks(conn)
     print(tracks)
     avaTracks = []
     disTracks = []
@@ -201,10 +199,10 @@ def joinPoule():
 def predict(trackid):
     user_id = session.get('user_id')
     poule = session.get('poule')            
-    drivers = getDriverTrack.getDriver()
-    tracks = getDriverTrack.getTracks()
-    hth = headtoHead.getHeadToHead()
-    hthData = headtoHead.getPredictions(user_id, trackid, poule)
+    drivers = getDriverTrack.getDriver(conn)
+    tracks = getDriverTrack.getTracks(conn)
+    hth = headtoHead.getHeadToHead(conn)
+    hthData = headtoHead.getPredictions(user_id, trackid, poule, conn)
 
     hthList = []
     for x in hth:
@@ -335,11 +333,11 @@ def headtohead(trackid):
 def predictResults(trackid):
     user_id = session.get('user_id')
     poule = session.get('poule')
-    top3 = getPouleData.getTop3Closed(poule, user_id, trackid)
-    top5 = getPouleData.getTop5Closed(poule, user_id, trackid)
-    hth = headtoHead.getHeadToHead()
-    hthData = headtoHead.getPredictions(user_id, trackid, poule)
-    bonusData = bonus.bonusResultClosed(trackid, user_id, poule)
+    top3 = getPouleData.getTop3Closed(poule, user_id, trackid, conn)
+    top5 = getPouleData.getTop5Closed(poule, user_id, trackid, conn)
+    hth = headtoHead.getHeadToHead(conn)
+    hthData = headtoHead.getPredictions(user_id, trackid, poule, conn)
+    bonusData = bonus.bonusResultClosed(trackid, user_id, poule, conn)
     if bonusData != []:
         bonusData = bonusData[0]
 
@@ -358,7 +356,6 @@ def predictResults(trackid):
     return render_template('predictResults.html', top3=top3, top5=top5, poule=poule, hth=hthList, hthPoints=hthPoints, bonusData=bonusData)
 
 def storeTop3(user_id, prediction):
-    conn = databaseconnection.connect()
     # Convert driver IDs to integers
     driver1_id = int(prediction[0])
     driver2_id = int(prediction[1])
@@ -378,10 +375,8 @@ def storeTop3(user_id, prediction):
     cursor = conn.cursor()
     cursor.execute(query, (user_id, driver1_id, driver2_id, driver3_id, prediction[3], prediction[4]))
     conn.commit()
-    conn.close()
 
 def storeTop5(user_id, prediction):
-    conn = databaseconnection.connect()
     # Convert driver IDs to integers
     driver1_id = int(prediction[0])
     driver2_id = int(prediction[1])
@@ -405,7 +400,6 @@ def storeTop5(user_id, prediction):
     cursor = conn.cursor()
     cursor.execute(query, (user_id, driver1_id, driver2_id, driver3_id, driver4_id, driver5_id, prediction[5], prediction[6]))
     conn.commit()
-    conn.close()
 
 @app.route('/logout', methods=['POST'])
 def logout():

@@ -127,7 +127,7 @@ def calcRacePoints(trackid):
     
 import databaseconnection  # Make sure to import your database connection module
 
-def calcHeadtoHead(trackid):
+def calcHeadtoHead(trackid, conn):
     results_data = [x[0] for x in getRaceResult(trackid)]
     predictions = getHeadtohead(trackid)
 
@@ -136,7 +136,7 @@ def calcHeadtoHead(trackid):
 
     for prediction in predictions:
         updated_records.append(calcHth(results_data, *prediction))
-    updateHthPoints(updated_records)
+    updateHthPoints(updated_records, conn)
 
 def calcHth(driver_ids, id, driver1_id, driver2_id, is_reversed):
     print(driver1_id, driver2_id, is_reversed)
@@ -151,41 +151,32 @@ def calcHth(driver_ids, id, driver1_id, driver2_id, is_reversed):
     else:
         return (id, 0)
 
-def updateHthPoints(records):
-    conn = databaseconnection.connect()
+def updateHthPoints(records, conn):
     query = "UPDATE headtoheadprediction SET points = %s WHERE id = %s"
     
     with conn.cursor() as cursor:
         cursor.executemany(query, records)
 
-    conn.commit()
-    conn.close()
-
 import bonus
-def getDnfs(track):
+def getDnfs(track, conn):
     query = "SELECT driver_id FROM raceresults WHERE track_id = %s AND dnf = true"
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (track,))
     data = cursor.fetchall()
     return data
 
-def updateBonus(id, x, points):
+def updateBonus(id, x, points, conn):
     query = f"UPDATE bonusprediction SET {x} = %s WHERE id = %s "
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (points, id))
-    conn.commit()
-    conn.close()
 
-def getBonusPredictions(track):
+def getBonusPredictions(track, conn):
     query = "SELECT id, fastestlap, dnf, dod FROM bonusprediction WHERE track = %s"
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (track,))
     data = cursor.fetchall()
     print(data)
-    results = bonus.getBonusResults(track)
+    results = bonus.getBonusResults(track, conn)
     dnfs = getDnfs(track)
     dnfList = []
     for x in dnfs:
@@ -206,4 +197,5 @@ def getBonusPredictions(track):
             updateBonus(x[0], 'dnfpoints', 15)
         else:
             updateBonus(x[0], 'dnfpoints', 0)
+    conn.commit()
 

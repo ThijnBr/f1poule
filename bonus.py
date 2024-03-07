@@ -1,5 +1,5 @@
 import databaseconnection
-def insertBonus(user_id, poule, track, fl, dnf, dod):
+def insertBonus(user_id, poule, track, fl, dnf, dod, conn):
     query = """INSERT INTO bonusprediction (user_id, poule, track, fastestlap, dnf, dod)
 VALUES (%s, %s, %s, %s, %s, %s)
 ON CONFLICT (user_id, poule, track)
@@ -8,15 +8,12 @@ DO UPDATE SET
   dnf = EXCLUDED.dnf,
   dod = EXCLUDED.dod;
 """
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (user_id, poule, track, fl, dnf, dod))
     conn.commit()
-    conn.close()
 
-def getBonus(user_id, poule, track):
+def getBonus(user_id, poule, track, conn):
     query = "SELECT fastestlap, dnf, dod FROM  bonusprediction WHERE user_id = %s AND poule = %s AND track = %s"
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (user_id, poule, track))
     data = cursor.fetchall()

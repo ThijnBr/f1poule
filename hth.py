@@ -28,14 +28,13 @@ def getPredictions(user_id, track, poule, conn):
     data = cursor.fetchall()
     return data
 
-def makePredictions(user_id, headtohead_id, driverselected, track, poule):
+def makePredictions(user_id, headtohead_id, driverselected, track, poule, conn):
     query = """INSERT INTO headtoheadprediction (user_id, headtohead_id, driverselected, track, poule)
                VALUES (%s, %s, %s, %s, %s)
                ON CONFLICT (user_id, headtohead_id, track, poule) DO UPDATE
                SET
                    driverselected = EXCLUDED.driverselected
             """
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query,(user_id, headtohead_id, driverselected, track, poule))
     conn.commit()

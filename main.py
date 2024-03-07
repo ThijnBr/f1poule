@@ -215,10 +215,10 @@ def predict(trackid):
     
     print(hthList)
 
-    top3 = getPouleData.getTop3Open(poule, user_id, trackid)
-    top5 = getPouleData.getTop5Open(poule, user_id, trackid)
+    top3 = getPouleData.getTop3Open(poule, user_id, trackid, conn)
+    top5 = getPouleData.getTop5Open(poule, user_id, trackid, conn)
     try:
-        bonusDefault = bonus.getBonus(user_id, poule, trackid)[0]
+        bonusDefault = bonus.getBonus(user_id, poule, trackid, conn)[0]
     except:
         bonusDefault = None
     # Access flashed messages within the context of the template
@@ -255,7 +255,7 @@ def predict(trackid):
 
 @app.route('/predict_top3/<trackid>', methods=['POST'])
 def predict_top3(trackid):
-    trackData = getDriverTrack.getTrackData(trackid)
+    trackData = getDriverTrack.getTrackData(trackid, conn)
     if trackData[0][2] < datetime.now():
         flash('Your qualifying prediction is too late', 'message')
         flash(False, 'ontime')
@@ -281,7 +281,7 @@ def predict_top3(trackid):
 
 @app.route('/predict_top5/<trackid>', methods=['POST'])
 def predict_top5(trackid):
-    trackData = getDriverTrack.getTrackData(trackid)
+    trackData = getDriverTrack.getTrackData(trackid, conn)
     if trackData[0][3] < datetime.now():
         flash('Your race prediction is too late', 'message')
         flash(False, 'ontime')
@@ -306,7 +306,7 @@ def predict_top5(trackid):
             top5_race.append(poule)
             print('Top 5 Race:', top5_race)
             storeTop5(user_id, top5_race)
-            bonus.insertBonus(user_id, poule, track, fastestlap, dnf, dod)
+            bonus.insertBonus(user_id, poule, track, fastestlap, dnf, dod, conn)
             flash('Your race prediction is submitted', 'message')
             flash(False, 'ontime')
 
@@ -314,7 +314,7 @@ def predict_top5(trackid):
 
 @app.route('/headtohead/<trackid>', methods=['POST'])
 def headtohead(trackid):
-    trackData = getDriverTrack.getTrackData(trackid)
+    trackData = getDriverTrack.getTrackData(trackid, conn)
     if trackData[0][3] > datetime.now():
         driver = request.form.get('driver_selection')
     
@@ -322,7 +322,7 @@ def headtohead(trackid):
         headtohead_id = driver.split('-')[0]
         driverselected = driver.split('-')[1]
         poule = session.get('poule')
-        headtoHead.makePredictions(user_id, headtohead_id, driverselected, trackid, poule)
+        headtoHead.makePredictions(user_id, headtohead_id, driverselected, trackid, poule, conn)
         return '', 204
     else:
         flash('Prediction is too late', 'message')

@@ -81,19 +81,19 @@ def joinPoule(poulename, userid):
             cursor.execute(query_insert, (userid, poule_id[0]))
             conn.commit()
 
-def getTop3Open(pouleid, userid, trackid):
+def getTop3Open(pouleid, userid, trackid, conn):
     query = "SELECT driver1_id, driver2_id, driver3_id FROM top3_quali WHERE poule = %s AND user_id = %s AND track = %s"
-    with databaseconnection.connect() as conn, conn.cursor() as cursor:
-        cursor.execute(query, (pouleid, userid, trackid))
-        data = cursor.fetchone()
-        return data
+    cursor = conn.cursor()
+    cursor.execute(query, (pouleid, userid, trackid))
+    data = cursor.fetchone()
+    return data
 
-def getTop5Open(pouleid, userid, trackid):
+def getTop5Open(pouleid, userid, trackid, conn):
     query = "SELECT driver1_id, driver2_id, driver3_id, driver4_id, driver5_id FROM top5_race WHERE poule = %s AND user_id = %s AND track = %s"
-    with databaseconnection.connect() as conn, conn.cursor() as cursor:
-        cursor.execute(query, (pouleid, userid, trackid))
-        data = cursor.fetchone()
-        return data
+    cursor = conn.cursor()
+    cursor.execute(query, (pouleid, userid, trackid))
+    data = cursor.fetchone()
+    return data
     
 def getTop3Closed(pouleid, userid, trackid, conn):
     query = """

@@ -33,11 +33,9 @@ def getQualiResult(trackid):
     conn.close()
     return result
 
-def getTrackData(trackid):
-    conn = databaseconnection.connect()
+def getTrackData(trackid, conn):
     query = "SELECT * FROM track WHERE id = %s"
     cursor = conn.cursor()
     cursor.execute(query, (trackid,))
     tracks = cursor.fetchall()
-    conn.close()
     return tracks

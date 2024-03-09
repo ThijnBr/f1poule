@@ -92,8 +92,11 @@ def calcQualiPoints(trackid):
         id = x[0]
         query = "UPDATE top3_quali SET driver1points = %s, driver2points = %s, driver3points = %s WHERE id = %s"
         cursor = conn.cursor()
-        cursor.execute(query, (points[0], points[1], points[2], id))
-    conn.commit()
+        try:
+            cursor.execute(query, (points[0], points[1], points[2], id))
+            conn.commit()
+        except:
+            conn.rollback()
     conn.close()
 
 calcQualiPoints(3)
@@ -121,8 +124,11 @@ def calcRacePoints(trackid):
         query = "UPDATE top5_race SET driver1points = %s, driver2points = %s, driver3points = %s, driver4points = %s, driver5points = %s WHERE id = %s"
 
         cursor = conn.cursor()
-        cursor.execute(query, (points[0], points[1], points[2],points[3], points[4], id))
-    conn.commit()
+        try:
+            cursor.execute(query, (points[0], points[1], points[2],points[3], points[4], id))
+        except:
+            conn.rollback()
+            conn.commit()
     conn.close()
     
 import databaseconnection  # Make sure to import your database connection module
@@ -155,7 +161,10 @@ def updateHthPoints(records, conn):
     query = "UPDATE headtoheadprediction SET points = %s WHERE id = %s"
     
     with conn.cursor() as cursor:
-        cursor.executemany(query, records)
+        try:
+            cursor.executemany(query, records)
+        except:
+            conn.rollback()
 
 import bonus
 def getDnfs(track, conn):
@@ -168,7 +177,11 @@ def getDnfs(track, conn):
 def updateBonus(id, x, points, conn):
     query = f"UPDATE bonusprediction SET {x} = %s WHERE id = %s "
     cursor = conn.cursor()
-    cursor.execute(query, (points, id))
+    try:
+        cursor.execute(query, (points, id))
+        conn.commit()
+    except:
+        conn.rollback()
 
 def getBonusPredictions(track, conn):
     query = "SELECT id, fastestlap, dnf, dod FROM bonusprediction WHERE track = %s"

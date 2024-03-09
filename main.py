@@ -38,6 +38,9 @@ def before_request():
 
 @app.route('/')
 def index():
+    global conn
+    conn.close()
+    conn = databaseconnection.connect()
     return render_template('login.html')
 
 @app.route('/login', methods=['POST'])
@@ -98,7 +101,8 @@ def submit_results():
 
         fl = request.form.get('fl')
         dod = request.form.get('dod')
-        resultsScript.insertBonusResults(track_id, fl, dod)
+        if racesession == "raceresults":
+            resultsScript.insertBonusResults(track_id, fl, dod)
         resultsScript.insert_results(track_id, lst, racesession)
     return redirect(url_for('admin'))
 
@@ -181,7 +185,7 @@ def predictList(poule):
     avaTracks = []
     disTracks = []
     for x in tracks:
-        if x[2] > datetime.now():
+        if x[3] > datetime.now():
             avaTracks.append(x)
         else:
             disTracks.append(x)
@@ -371,7 +375,10 @@ def storeTop3(user_id, prediction):
             date = CURRENT_TIMESTAMP;
     """
     cursor = conn.cursor()
-    cursor.execute(query, (user_id, driver1_id, driver2_id, driver3_id, prediction[3], prediction[4]))
+    try:
+        cursor.execute(query, (user_id, driver1_id, driver2_id, driver3_id, prediction[3], prediction[4]))
+    except:
+        conn.rollback()
     conn.commit()
 
 def storeTop5(user_id, prediction):
@@ -396,7 +403,10 @@ def storeTop5(user_id, prediction):
             date = CURRENT_TIMESTAMP;
     """
     cursor = conn.cursor()
-    cursor.execute(query, (user_id, driver1_id, driver2_id, driver3_id, driver4_id, driver5_id, prediction[5], prediction[6]))
+    try:
+        cursor.execute(query, (user_id, driver1_id, driver2_id, driver3_id, driver4_id, driver5_id, prediction[5], prediction[6]))
+    except:
+        conn.rollback()
     conn.commit()
 
 @app.route('/logout', methods=['POST'])

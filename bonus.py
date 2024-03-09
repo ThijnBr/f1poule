@@ -9,7 +9,10 @@ DO UPDATE SET
   dod = EXCLUDED.dod;
 """
     cursor = conn.cursor()
-    cursor.execute(query, (user_id, poule, track, fl, dnf, dod))
+    try:
+        cursor.execute(query, (user_id, poule, track, fl, dnf, dod))
+    except:
+        conn.rollback()
     conn.commit()
 
 def getBonus(user_id, poule, track, conn):

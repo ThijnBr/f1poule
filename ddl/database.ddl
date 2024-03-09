@@ -75,7 +75,8 @@ CREATE TABLE IF NOT EXISTS qualiresults (
     track_id INTEGER REFERENCES track(id),
     position INTEGER,
     driver_id INTEGER REFERENCES driver(driver_id),
-    result_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    result_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    dnf BOOLEAN,
 );
 CREATE TABLE IF NOT EXISTS headtohead(
 	id SERIAL PRIMARY KEY,
@@ -115,3 +116,4 @@ ALTER TABLE top3_quali ADD CONSTRAINT unique_user_track_combination UNIQUE (user
 ALTER TABLE top5_race ADD CONSTRAINT unique_user_track_combination1 UNIQUE (user_id, track, poule);
 ALTER TABLE top5_race ADD CONSTRAINT unique_user_track_combination1 UNIQUE (user_id, track, poule);
 ALTER TABLE headtoheadprediction ADD CONSTRAINT unique_prediction_constraint UNIQUE (user_id, headtohead_id, track, poule);
+ALTER TABLE bonusprediction ADD CONSTRAINT unique_bonus_constraint UNIQUE (user_id, track, poule);

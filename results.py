@@ -38,8 +38,11 @@ def insertBonusResults(trackid, fl, dod):
                 """
     conn = databaseconnection.connect()
     cursor = conn.cursor()
-    cursor.execute(query, (fl, dod, trackid))
-    conn.commit()
+    try:
+        cursor.execute(query, (fl, dod, trackid))
+        conn.commit()
+    except:
+        conn.rollback() 
     conn.close()
 
 

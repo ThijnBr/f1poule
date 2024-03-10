@@ -22,9 +22,8 @@ def getBonus(user_id, poule, track, conn):
     data = cursor.fetchall()
     return data
 
-def getBonusResults(track):
+def getBonusResults(track, conn):
     query = "SELECT fl, dod FROM bonusresults WHERE track = %s"
-    conn = databaseconnection.connect()
     cursor = conn.cursor()
     cursor.execute(query, (track,))
     data = cursor.fetchall()

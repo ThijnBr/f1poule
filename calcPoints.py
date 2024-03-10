@@ -190,25 +190,25 @@ def getBonusPredictions(track, conn):
     data = cursor.fetchall()
     print(data)
     results = bonus.getBonusResults(track, conn)
-    dnfs = getDnfs(track)
+    dnfs = getDnfs(track, conn)
     dnfList = []
     for x in dnfs:
         dnfList.append(x[0])
     print(dnfList)
     for x in data:
         if x[1] == results[0]:
-            updateBonus(x[0], 'flpoints', 15)
+            updateBonus(x[0], 'flpoints', 15, conn)
         else:
-            updateBonus(x[0], 'flpoints', 0)
+            updateBonus(x[0], 'flpoints', 0, conn)
         if x[3] == results[1]:
-            updateBonus(x[0], 'dodpoints', 15)
+            updateBonus(x[0], 'dodpoints', 15, conn)
         else:
-            updateBonus(x[0], 'dodpoints', 0)
+            updateBonus(x[0], 'dodpoints', 0, conn)
         if x[2] in dnfList:
-            updateBonus(x[0], 'dnfpoints', 15)
+            updateBonus(x[0], 'dnfpoints', 15, conn)
         elif x[2] == None and dnfList == []:
-            updateBonus(x[0], 'dnfpoints', 15)
+            updateBonus(x[0], 'dnfpoints', 15, conn)
         else:
-            updateBonus(x[0], 'dnfpoints', 0)
+            updateBonus(x[0], 'dnfpoints', 0, conn)
     conn.commit()
 

@@ -107,9 +107,12 @@ CREATE TABLE IF NOT EXISTS bonusprediction(
 	dodpoints INT
 );
 
-
-
-
+CREATE TABLE IF NOT EXISTS bonusresults(
+	id SERIAL PRIMARY KEY,
+	fl INT REFERENCES driver(driver_id),
+	dod INT REFERENCES driver(driver_id),
+    track INTEGER REFERENCES track(id) UNIQUE,
+);
 
 -- Add a unique constraint to top3_quali
 ALTER TABLE top3_quali ADD CONSTRAINT unique_user_track_combination UNIQUE (user_id, track, poule);

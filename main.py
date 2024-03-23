@@ -136,8 +136,9 @@ def calcPoints():
                 cp.calcRacePoints(track_id)
                 cp.calcHeadtoHead(track_id, conn)
                 cp.getBonusPredictions(track_id, conn)
-        except:
+        except Exception as E:
             print("error calculating points")
+            print(E)
     tracks = getDriverTrack.getTracks(conn)
     raceresults = []
     qualiresults = []

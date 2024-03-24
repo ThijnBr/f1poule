@@ -4,8 +4,13 @@ import getDriverTrack
 def calculate_points(result, prediction):
     points = []
     for i in range(len(prediction)):
+        print(result)
+        print(prediction)
         if i < len(result):
-            difference = abs(result[i] - prediction[i])
+            difference = abs(result[i] - prediction[i])-1
+            if difference < 0:
+                difference = 0
+            print(difference)
             if difference == 0:
                 points.append(25)
             elif difference == 1:

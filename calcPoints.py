@@ -99,8 +99,6 @@ def calcQualiPoints(trackid):
             conn.rollback()
     conn.close()
 
-calcQualiPoints(3)
-
 def calcRacePoints(trackid):
     conn = databaseconnection.connect()
     resultsData = getRaceResult(trackid)
@@ -126,9 +124,10 @@ def calcRacePoints(trackid):
         cursor = conn.cursor()
         try:
             cursor.execute(query, (points[0], points[1], points[2],points[3], points[4], id))
+            conn.commit()
         except:
             conn.rollback()
-            conn.commit()
+        
     conn.close()
     
 import databaseconnection  # Make sure to import your database connection module
@@ -153,9 +152,9 @@ def calcHth(driver_ids, id, driver1_id, driver2_id, is_reversed):
     index_driver1 = driver_ids.index(driver1_id)
     index_driver2 = driver_ids.index(driver2_id)
     if (index_driver1 < index_driver2) != is_reversed:
-        return (id, 15)
+        return (15, id)
     else:
-        return (id, 0)
+        return (0, id)
 
 def updateHthPoints(records, conn):
     query = "UPDATE headtoheadprediction SET points = %s WHERE id = %s"
@@ -165,6 +164,7 @@ def updateHthPoints(records, conn):
             cursor.executemany(query, records)
         except:
             conn.rollback()
+    conn.commit()
 
 import bonus
 def getDnfs(track, conn):

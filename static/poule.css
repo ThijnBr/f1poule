@@ -28,6 +28,23 @@ body {
     font-weight: bold;
 }
 
+.username {
+    display: block;
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 15px;
+    text-align: center;
+    text-decoration: none;
+    background-color: #063fb9;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 18px;
+    font-weight: bold;
+}
+
 .dashboard-button:hover,
 .predictions-button:hover {
     background-color: #0056b3;

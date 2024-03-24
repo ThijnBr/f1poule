@@ -11,13 +11,15 @@
         <a href="{{ url_for('dashboard') }}">
             <button class="dashboard-button">Home</button>
         </a> 
-        <a href="{{ url_for('predictList', poule=poule) }}">
+        <a href="{{ url_for('predictList', poule=poule, userid=user_id) }}">
             <button class="predictions-button">Voorspellingen</button>
         </a>
         <div class="user-list">
             {% for x in users %}
                 <div class="user-info">
-                    <p class="username">{{ x[0] }}</p>
+                    <a href="{{ url_for('predictList', poule=poule, userid=x[2]) }}">
+                        <button class="username">{{x[0]}}</button>
+                    </a>
                     <p class="points">{{ x[1] }} Points</p>
                 </div>
             {% endfor %}

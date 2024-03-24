@@ -3,14 +3,10 @@ import getDriverTrack
 
 def calculate_points(result, prediction):
     points = []
-    for i in range(len(prediction)):
-        print(result)
-        print(prediction)
-        if i < len(result):
-            difference = abs(result[i] - prediction[i])-1
-            if difference < 0:
-                difference = 0
-            print(difference)
+    for pred in prediction:
+        if pred in result:
+            index_pred = result.index(pred)
+            difference = abs(index_pred - prediction.index(pred))
             if difference == 0:
                 points.append(25)
             elif difference == 1:
@@ -33,8 +29,9 @@ def calculate_points(result, prediction):
                 points.append(1)
             elif difference > 9:
                 points.append(0)
+        else:
+            points.append(0)
     return points
-
 
 def getRaceResult(trackid):
     conn = databaseconnection.connect()

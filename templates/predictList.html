@@ -19,7 +19,7 @@
         <h2>Vorige banen</h2>
         {% for x in disTracks %}
             <div class="tracksdisabled">
-                <a href="{{ url_for('predictResults', trackid=x[0]) }}">
+                <a href="{{ url_for('predictResults', trackid=x[0], user_id=userid)}}">
                     <button class="track">{{ x[1] }}</button>
                 </a> 
             </div>

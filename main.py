@@ -43,6 +43,17 @@ def index():
     conn = databaseconnection.connect()
     return render_template('login.html')
 
+@app.errorhandler(500)
+def internal_server_error(error):
+    global conn
+    # Close the global database connection
+    if conn is not None:
+        conn.close()
+    # Reconnect to the database
+    conn = databaseconnection.connect()  # Adjust this line according to your database connection setup
+    # Redirect back to the previous page
+    return redirect(request.referrer or url_for('index'))
+
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']

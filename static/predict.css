@@ -164,7 +164,7 @@ body, html {
 }
 
 .head-to-head-grid {
-    display: grid;
+    display: table;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 15px;
 }

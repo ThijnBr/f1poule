@@ -76,7 +76,6 @@ body, html {
 
 .poule-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 20px;
     width: 100%;
     max-width: 800px;

@@ -127,13 +127,13 @@
                 </div>
             </form>
             
-            <form action="{{ url_for('headtohead', trackid=trackid) }}" method="post" class="prediction-form">
-                <h2>Head to Head</h2>
-                <div class="head-to-head-grid">
+            <form action="{{ url_for('headtohead', trackid=trackid) }}" method="post" class="prediction-form predict-box">
+                <div>
+                    <h3>Head to Head</h3>
                     {% for driver in headtohead %}
                         <div class="head-to-head-match">
-                            <button type="submit" name="driver_selection" value="{{driver[0]}}-0" class="driver-button" data-selected="{% if driver[3] is defined and driver[3] == True %}true{% else %}false{% endif %}">{{ driver[1] }}</button>
-                            <button type="submit" name="driver_selection" value="{{driver[0]}}-1" class="driver-button" data-selected="{% if driver[3] is defined and driver[3] != True %}true{% else %}false{% endif %}">{{ driver[2] }}</button>                    
+                            <button type="submit" name="driver_selection" value="{{driver[0]}}-0" class="driver-button" style="background-color: {% if driver[3] is defined and driver[3] == True %}red{% else %}green{% endif %};">{{ driver[1] }}</button>
+                            <button type="submit" name="driver_selection" value="{{driver[0]}}-1" class="driver-button" style="background-color: {% if driver[3] is defined and driver[3] != True %}red{% else %}green{% endif %};">{{ driver[2] }}</button>                    
                         </div>
                     {% endfor %}
                 </div>
@@ -183,18 +183,38 @@
                 }
             });
             
-            // Head to head functionality
-            const headToHeadMatches = document.querySelectorAll('.head-to-head-match');
-            headToHeadMatches.forEach(match => {
-                const buttons = match.querySelectorAll('.driver-button');
-                buttons.forEach(button => {
-                    button.addEventListener('click', () => {
-                        buttons.forEach(btn => btn.classList.remove('selected'));
-                        button.classList.add('selected');
+        });
+    </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var pairs = document.querySelectorAll('.head-to-head-match');
+
+        pairs.forEach(function (pair) {
+            var buttons = pair.querySelectorAll('.driver-button');
+
+            buttons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    // Reset the color of all buttons in the current pair
+                    buttons.forEach(function (resetButton) {
+                        resetButton.style.backgroundColor = '';
                     });
+
+                    // Set the clicked button to green
+                    this.style.backgroundColor = 'green';
+
+                    // Find the other button in the pair
+                    var otherButtonValue = this.value.endsWith('-0') ? this.value.replace('-0', '-1') : this.value.replace('-1', '-0');
+                    var otherButton = pair.querySelector('.driver-button[value="' + otherButtonValue + '"]');
+
+                    // Set the color of the other button to red
+                    if (otherButton) {
+                        otherButton.style.backgroundColor = 'red';
+                    }
                 });
             });
         });
-    </script>
+    });
+</script>
 </body>
 </html>

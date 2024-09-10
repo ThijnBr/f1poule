@@ -292,13 +292,19 @@ def predict_top5(trackid):
         
         fastestlap = request.form.get("fastestlap")
         dnf = request.form.get("dnf")
-        if dnf == '':
+        if dnf == 'No DNF':
             dnf = None
         dod = request.form.get("dod")
 
+        if dod == '0':
+            dod = None
+        if dnf == '0':
+            dnf = None
+        if fastestlap == '0':
+            fastestlap = None
+
         # Predictions for top 5 race
         top5_race = [request.form.get(f'top5_race_{place}') for place in range(1, 6)]
-        print(top5_race)
         top5_race.append(track)
         top5_race.append(poule)
         storeTop5(user_id, top5_race)
@@ -350,10 +356,11 @@ def predictResults(trackid, user_id):
     return render_template('predictResults.html', top3=top3, top5=top5, poule=poule, hth=hthList, hthPoints=hthPoints, bonusData=bonusData)
 
 def storeTop3(user_id, prediction):
+    print(prediction)
     # Convert driver IDs to integers
-    driver1_id = int(prediction[0]) if prediction[0] != '' else None
-    driver2_id = int(prediction[1]) if prediction[1] != '' else None
-    driver3_id = int(prediction[2]) if prediction[2] != '' else None
+    driver1_id = int(prediction[0]) if prediction[0] != 'None' else None
+    driver2_id = int(prediction[1]) if prediction[1] != 'None' else None
+    driver3_id = int(prediction[2]) if prediction[2] != 'None' else None
 
     # Insert or update into the database (upsert)
     query = """
@@ -375,11 +382,11 @@ def storeTop3(user_id, prediction):
 
 def storeTop5(user_id, prediction):
     # Convert driver IDs to integers
-    driver1_id = int(prediction[0]) if prediction[0] != '' else None
-    driver2_id = int(prediction[1]) if prediction[1] != '' else None
-    driver3_id = int(prediction[2]) if prediction[2] != '' else None
-    driver4_id = int(prediction[3]) if prediction[3] != '' else None
-    driver5_id = int(prediction[4]) if prediction[4] != '' else None
+    driver1_id = int(prediction[0]) if prediction[0] != 'None' else None
+    driver2_id = int(prediction[1]) if prediction[1] != 'None' else None
+    driver3_id = int(prediction[2]) if prediction[2] != 'None' else None
+    driver4_id = int(prediction[3]) if prediction[3] != 'None' else None
+    driver5_id = int(prediction[4]) if prediction[4] != 'None' else None
 
     # Insert or update into the database (upsert)
     query = """

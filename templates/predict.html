@@ -96,10 +96,13 @@
                 <div class="prediction-input">
                     <label for="dnf">DNF:</label>
                     <div class="custom-dropdown" data-value="{{ bonusValues[1] }}">
-                        <div class="dropdown-toggle">Select Driver</div>
+                        <div class="dropdown-toggle">No DNF</div>
                         <div class="dropdown-menu">
-                            <div class="dropdown-item" data-value="">None</div>
-                            {% for driver in drivers %}
+                            <div class="dropdown-item" data-value="No DNF">
+                                <span class="driver-name">No DNF</span>
+                                <span class="driver-team"></span>
+                            </div>
+                            {% for driver in drivers %}                   
                                 <div class="dropdown-item" data-value="{{ driver[0] }}">
                                     <span class="driver-name">{{ driver[1] }}</span>
                                     <span class="driver-team">{{ driver[2] }}</span>
@@ -186,35 +189,35 @@
         });
     </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        var pairs = document.querySelectorAll('.head-to-head-match');
-
-        pairs.forEach(function (pair) {
-            var buttons = pair.querySelectorAll('.driver-button');
-
-            buttons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    // Reset the color of all buttons in the current pair
-                    buttons.forEach(function (resetButton) {
-                        resetButton.style.backgroundColor = '';
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var pairs = document.querySelectorAll('.head-to-head-match');
+    
+            pairs.forEach(function (pair) {
+                var buttons = pair.querySelectorAll('.driver-button');
+    
+                buttons.forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        // Reset the color of all buttons in the current pair
+                        buttons.forEach(function (resetButton) {
+                            resetButton.style.backgroundColor = '';
+                        });
+    
+                        // Set the clicked button to green
+                        this.style.backgroundColor = 'green';
+    
+                        // Find the other button in the pair
+                        var otherButtonValue = this.value.endsWith('-0') ? this.value.replace('-0', '-1') : this.value.replace('-1', '-0');
+                        var otherButton = pair.querySelector('.driver-button[value="' + otherButtonValue + '"]');
+    
+                        // Set the color of the other button to red
+                        if (otherButton) {
+                            otherButton.style.backgroundColor = 'red';
+                        }
                     });
-
-                    // Set the clicked button to green
-                    this.style.backgroundColor = 'green';
-
-                    // Find the other button in the pair
-                    var otherButtonValue = this.value.endsWith('-0') ? this.value.replace('-0', '-1') : this.value.replace('-1', '-0');
-                    var otherButton = pair.querySelector('.driver-button[value="' + otherButtonValue + '"]');
-
-                    // Set the color of the other button to red
-                    if (otherButton) {
-                        otherButton.style.backgroundColor = 'red';
-                    }
                 });
             });
         });
-    });
-</script>
+    </script>
 </body>
 </html>

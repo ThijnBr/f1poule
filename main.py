@@ -296,11 +296,11 @@ def predict_top5(trackid):
             dnf = None
         dod = request.form.get("dod")
 
-        if dod == '0':
+        if dod in ['None', '0']:
             dod = None
-        if dnf == '0':
+        if dnf in ['None', '0']:
             dnf = None
-        if fastestlap == '0':
+        if fastestlap in ['None', '0']:
             fastestlap = None
 
         # Predictions for top 5 race
@@ -358,9 +358,9 @@ def predictResults(trackid, user_id):
 def storeTop3(user_id, prediction):
     print(prediction)
     # Convert driver IDs to integers
-    driver1_id = int(prediction[0]) if prediction[0] != 'None' else None
-    driver2_id = int(prediction[1]) if prediction[1] != 'None' else None
-    driver3_id = int(prediction[2]) if prediction[2] != 'None' else None
+    driver1_id = int(prediction[0]) if prediction[0] not in ['None', '0'] else None
+    driver2_id = int(prediction[1]) if prediction[1] not in ['None', '0'] else None
+    driver3_id = int(prediction[2]) if prediction[2] not in ['None', '0'] else None
 
     # Insert or update into the database (upsert)
     query = """
@@ -381,12 +381,14 @@ def storeTop3(user_id, prediction):
     conn.commit()
 
 def storeTop5(user_id, prediction):
+    print(prediction)
     # Convert driver IDs to integers
-    driver1_id = int(prediction[0]) if prediction[0] != 'None' else None
-    driver2_id = int(prediction[1]) if prediction[1] != 'None' else None
-    driver3_id = int(prediction[2]) if prediction[2] != 'None' else None
-    driver4_id = int(prediction[3]) if prediction[3] != 'None' else None
-    driver5_id = int(prediction[4]) if prediction[4] != 'None' else None
+    driver1_id = int(prediction[0]) if prediction[0] not in ['None', '0'] else None
+    driver2_id = int(prediction[1]) if prediction[1] not in ['None', '0'] else None
+    driver3_id = int(prediction[2]) if prediction[2] not in ['None', '0'] else None
+    driver4_id = int(prediction[3]) if prediction[3] not in ['None', '0'] else None
+    driver5_id = int(prediction[4]) if prediction[4] not in ['None', '0'] else None
+
 
     # Insert or update into the database (upsert)
     query = """

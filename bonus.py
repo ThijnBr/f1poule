@@ -1,5 +1,8 @@
 import databaseconnection
 def insertBonus(user_id, poule, track, fl, dnf, dod, conn):
+    fl = None if fl == '' else fl
+    dnf = None if dnf == '' else dnf
+    dod = None if dod == '' else dod
     query = """INSERT INTO bonusprediction (user_id, poule, track, fastestlap, dnf, dod)
 VALUES (%s, %s, %s, %s, %s, %s)
 ON CONFLICT (user_id, poule, track)

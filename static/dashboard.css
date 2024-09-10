@@ -1,79 +1,212 @@
-body {
-    font-family: Arial, sans-serif;
+body, html {
     margin: 0;
-    padding: 20px;
-    background-color: #f8f8f8;
+    padding: 0;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
 }
 
-header {
+.container {
+    min-height: 100vh;
+    width: 100%;
+    background-image: url('https://wallpapers.com/images/hd/fade-4k-background-l0r2nm1yf2ozrup2.jpg');
+    background-size: cover;
+    background-position: center;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #333;
-    padding: 10px;
-    color: #fff;
+    flex-direction: column;
+    color: white;
 }
 
-main {
-    margin-top: 20px;
+.logout-form {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+}
+
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s;
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
+
+.logout-button .icon {
+    margin-right: 5px;
+}
+
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.text-center {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.title {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.poule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    width: 100%;
+    max-width: 800px;
+    margin-bottom: 30px;
 }
 
 .poule-button {
-    display: block;
-    width: 25%;
-    margin: 0 auto; /* Center the button horizontally */
-    padding: 10px;
-    height: 50px;
-    margin-bottom: 10px;
-    text-align: center;
+    background-color: rgba(255, 0, 0, 0.1);
+    border: 2px solid #ff0000;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
     text-decoration: none;
-    background-color: #007BFF;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    line-height: 50px; /* Center the text vertically */
-    font-size: 35px; /* Adjust the font size as needed */
-    font-weight: bold; /* Make the text bold */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
 }
 
 .poule-button:hover {
-    background-color: #0056b3;
+    background-color: rgba(255, 0, 0, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+}
+
+.poule-button .icon {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.poule-button:hover .icon {
+    opacity: 1;
+}
+
+.join-poule-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 2px solid #ff0000;
+    border-radius: 10px;
+    padding: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.join-poule-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .join-poule-form {
-    margin: 0 auto;
     display: flex;
-    align-items: center;
-    margin-top: 20px;
-    width: 50%;
+    flex-direction: column;
+    gap: 15px;
 }
 
-.logout-form{
-    display: flex;
-    align-items: center;
-    margin-top: 0px;
-}
-
-.join-poule-form input[type="text"] {
-    
+.join-poule-form input {
     padding: 10px;
-    margin-right: 10px;
-    flex: 1;
+    border: 1px solid #ff0000;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 5px;
 }
 
-.logout-form button,
-.join-poule-form button {
-    padding: 10px;
-    background-color: #dc3545;
-    color: #fff;
+.join-poule-form input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.join-button {
+    background-color: #ff0000;
+    color: white;
     border: none;
+    padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    transition: all 0.3s ease;
 }
 
-.logout-form button:hover,
-.join-poule-form button:hover {
-    background-color: #c82333;
+.join-button:hover {
+    background-color: #cc0000;
+    transform: scale(1.05);
+}
+
+/* Animations */
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slide-down {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-up {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.animate-fade-in {
+    animation: fade-in 1s ease-out;
+}
+
+.animate-slide-down {
+    animation: slide-down 0.5s ease-out;
+}
+
+.animate-slide-up {
+    animation: slide-up 0.5s ease-out;
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .title {
+        font-size: 2rem;
+    }
+
+    .poule-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .join-poule-container {
+        max-width: 90%;
+    }
 }

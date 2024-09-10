@@ -249,6 +249,8 @@ def predict(trackid):
     top3_zipped = list(zip(range(1, 4), top3_default))
     top5_zipped = list(zip(range(1, 6), top5_default))
 
+    user_name, track_name, poule_name = getDriverTrack.getUserInfo(user_id, trackid, poule, conn)
+
     return render_template("predict.html", 
                        userid=user_id, 
                        trackid=trackid, 
@@ -260,7 +262,10 @@ def predict(trackid):
                        top3_zipped=top3_zipped, 
                        top5_zipped=top5_zipped,
                        headtohead=hthList,
-                       bonusValues=bonusValues) 
+                       bonusValues=bonusValues,
+                       track_name=track_name,
+                       user_name=user_name,
+                       poule_name=poule_name) 
 
 
 
@@ -277,15 +282,11 @@ def predict_top3(trackid):
 
         # Predictions for top 3 qualifying
         top3_qualifying = [request.form.get(f'top3_qualifying_{place}') for place in range(1, 4)]
-        if "" in top3_qualifying:
-            flash('Invalid submission', 'message')
-            flash(False, 'ontime')
-        else:
-            top3_qualifying.append(track)
-            top3_qualifying.append(poule)
-            storeTop3(user_id, top3_qualifying)
-            flash('Your qualifying prediction is submitted', 'message')
-            flash(False, 'ontime')
+        top3_qualifying.append(track)
+        top3_qualifying.append(poule)
+        storeTop3(user_id, top3_qualifying)
+        flash(False, 'ontime')
+        return '', 204
 
     return redirect(url_for('predict', trackid=trackid))
 
@@ -308,16 +309,13 @@ def predict_top5(trackid):
 
         # Predictions for top 5 race
         top5_race = [request.form.get(f'top5_race_{place}') for place in range(1, 6)]
-        if "" in top5_race:
-            flash('Invalid submission', 'message')
-            flash(False, 'ontime')
-        else:
-            top5_race.append(track)
-            top5_race.append(poule)
-            storeTop5(user_id, top5_race)
-            bonus.insertBonus(user_id, poule, track, fastestlap, dnf, dod, conn)
-            flash('Your race prediction is submitted', 'message')
-            flash(False, 'ontime')
+        print(top5_race)
+        top5_race.append(track)
+        top5_race.append(poule)
+        storeTop5(user_id, top5_race)
+        bonus.insertBonus(user_id, poule, track, fastestlap, dnf, dod, conn)
+        flash(False, 'ontime')
+        return '', 204
 
     return redirect(url_for('predict', trackid=trackid))
 
@@ -364,9 +362,9 @@ def predictResults(trackid, user_id):
 
 def storeTop3(user_id, prediction):
     # Convert driver IDs to integers
-    driver1_id = int(prediction[0])
-    driver2_id = int(prediction[1])
-    driver3_id = int(prediction[2])
+    driver1_id = int(prediction[0]) if prediction[0] != '' else None
+    driver2_id = int(prediction[1]) if prediction[1] != '' else None
+    driver3_id = int(prediction[2]) if prediction[2] != '' else None
 
     # Insert or update into the database (upsert)
     query = """
@@ -388,11 +386,11 @@ def storeTop3(user_id, prediction):
 
 def storeTop5(user_id, prediction):
     # Convert driver IDs to integers
-    driver1_id = int(prediction[0])
-    driver2_id = int(prediction[1])
-    driver3_id = int(prediction[2])
-    driver4_id = int(prediction[3])
-    driver5_id = int(prediction[4])
+    driver1_id = int(prediction[0]) if prediction[0] != '' else None
+    driver2_id = int(prediction[1]) if prediction[1] != '' else None
+    driver3_id = int(prediction[2]) if prediction[2] != '' else None
+    driver4_id = int(prediction[3]) if prediction[3] != '' else None
+    driver5_id = int(prediction[4]) if prediction[4] != '' else None
 
     # Insert or update into the database (upsert)
     query = """

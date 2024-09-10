@@ -107,8 +107,6 @@ def calcRacePoints(trackid):
     results = []
     for x in resultsData:
         results.append(x[0])
-    print(results)
-
     predictionsData = gettop5(trackid)
     for x in predictionsData:
         prediction = []
@@ -118,7 +116,6 @@ def calcRacePoints(trackid):
         prediction.append(x[4])
         prediction.append(x[5])
         points = calculate_points(results, prediction)
-        print(points)
 
         id = x[0]
         query = "UPDATE top5_race SET driver1points = %s, driver2points = %s, driver3points = %s, driver4points = %s, driver5points = %s WHERE id = %s"
@@ -146,8 +143,6 @@ def calcHeadtoHead(trackid, conn):
     updateHthPoints(updated_records, conn)
 
 def calcHth(driver_ids, id, driver1_id, driver2_id, is_reversed):
-    print(driver1_id, driver2_id, is_reversed)
-
     if driver1_id not in driver_ids or driver2_id not in driver_ids:
         raise ValueError("Invalid driver IDs in the provided list")
 
@@ -190,13 +185,11 @@ def getBonusPredictions(track, conn):
     cursor = conn.cursor()
     cursor.execute(query, (track,))
     data = cursor.fetchall()
-    print(data)
     results = bonus.getBonusResults(track, conn)
     dnfs = getDnfs(track, conn)
     dnfList = []
     for x in dnfs:
         dnfList.append(x[0])
-    print(dnfList)
     for x in data:
         if x[1] == results[0]:
             updateBonus(x[0], 'flpoints', 15, conn)

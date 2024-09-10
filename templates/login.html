@@ -3,22 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>F1 Poule - Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<a href="{{ url_for('register') }}">
-    <button>Register</button>
-</a> 
 <body>
-    <form action="{{ url_for('login') }}" method="post" class="login-form">
-        <h2>Login</h2>
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
+    <div class="container">
+        <img src="https://media.formula1.com/image/upload/f_auto,c_limit,w_195,q_auto/etc/designs/fom-website/images/f1_logo" alt="F1 Logo" class="logo animate-fade-in">
+        <h1 class="animate-slide-down">F1 Poule</h1>
+        <p class="subtitle animate-slide-up">Log in</p>
+        <form action="{{ url_for('login') }}" method="post" class="login-form animate-fade-in">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required placeholder="Enter your driver name">
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter your pit lane password">
 
-        <button type="submit">Login</button>
-    </form>
+            <button type="submit" class="animate-pulse">Login</button>
+        </form>
+        <div class="register-link animate-fade-in">
+            <a href="{{ url_for('register') }}">New to the grid? Register here.</a>
+        </div>
+    </div>
+    <img src="{{ url_for('static', filename='ferrari.png') }}" alt="F1 Car" class="f1-car">
 </body>
 </html>

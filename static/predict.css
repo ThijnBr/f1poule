@@ -1,88 +1,284 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+body, html {
     margin: 0;
     padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: #0f0f0f;
+    color: #ffffff;
 }
 
-header {
-    background-color: #333;
-    padding: 10px;
-    text-align: center;
-    margin: 0 auto;
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: url('https://wallpapers.com/images/hd/fade-4k-background-l0r2nm1yf2ozrup2.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
 }
 
-.standings-button {
-    background-color: #007BFF;
-    color: #fff;
-    padding: 10px;
+.main-header {
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.main-header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #e10600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
+                 0 0 10px rgba(225, 6, 0, 0.7);
+    letter-spacing: 2px;
+    transform: perspective(500px) rotateX(10deg);
+    transition: transform 0.3s ease;
+}
+
+.main-header h1:hover {
+    transform: perspective(500px) rotateX(0deg) scale(1.05);
+}
+
+.standings-button, .logout-button {
+    background-color: #333333;
+    color: white;
     border: none;
+    padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.standings-button:hover, .logout-button:hover {
+    background-color: #4a4a4a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.standings-button .icon, .logout-button .icon {
+    margin-right: 8px;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
 
 .alert {
-    background-color: #dc3545;
-    color: #fff;
+    background-color: #ff4d4d;
+    color: white;
     padding: 10px;
-    margin-top: 10px;
-    text-align: center;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .user-info {
+    background-color: rgba(0, 0, 0, 0.7);
+    padding: 15px;
     margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-info p {
+    margin: 5px 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.prediction-sections {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
 }
 
 .prediction-form {
-    margin: 20px;
-    text-align: center; /* Center-align the form content */
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    transform: translateZ(0);
+    transition: transform 0.3s ease;
 }
 
-label {
-    margin-right: 10px;
-    display: block; /* Display each label on a new line */
-    font-size: 16px; /* Adjust the font size as needed */
+.prediction-form:hover {
+    transform: translateZ(10px);
 }
 
-select {
-    padding: 8px; /* Increase padding for better visibility */
-    margin-bottom: 10px; /* Add some space between the selects */
-    font-size: 14px; /* Adjust the font size as needed */
+.prediction-form h2 {
+    color: #e10600;
+    margin-top: 0;
+    font-size: 24px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5),
+                 0 0 8px rgba(225, 6, 0, 0.6);
+    letter-spacing: 1px;
+}
+
+.prediction-input {
+    margin-bottom: 15px;
+}
+
+.prediction-input label {
+    display: block;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.prediction-input select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #333333;
+    color: white;
+    border: 1px solid #4a4a4a;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .submit-button {
-    background-color: #28a745;
-    color: #fff;
-    padding: 12px; /* Increase padding for better visibility */
+    background-color: #e10600;
+    color: white;
     border: none;
+    padding: 12px 20px;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
-    /* Center the submit button */
+    width: 100%;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.submit-button:hover {
+    background-color: #ff1a00;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+}
+
+.head-to-head-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.head-to-head-match {
+    display: flex;
+    justify-content: space-between;
+}
+
+.driver-button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    color: white;
+}
+
+.driver-button[data-selected="true"] {
+    background-color: #4CAF50;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.driver-button[data-selected="false"] {
+    background-color: #f44336;
+    color: white;
+}
+
+.driver-button:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.custom-dropdown {
+    position: relative;
+    width: 100%;
+}
+
+.dropdown-toggle {
+    background-color: rgba(255, 255, 255, 0.185);
+    border: 2px solid #494848;
+    color: white;
+    padding: 15px;
+    border-radius: 10px;
+    text-decoration: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+    background-color: #4a4a4a;
+}
+
+.dropdown-toggle::after {
+    content: '\25BC';
+    font-size: 0.7em;
+    margin-left: 10px;
+}
+
+.dropdown-menu {
+    position: flex;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: rgba(87, 87, 87, 0.726);
+    border: none;
+    border-top: 1px;
+    border-radius: 1 1 5px 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+
+.dropdown-menu.show {
     display: block;
-    margin: 0 auto;
-    font-size: 16px; /* Adjust the font size as needed */
 }
 
-.logout-button {
-    position: absolute;
-    top: 10px; /* Adjust the top spacing as needed */
-    right: 10px; /* Adjust the right spacing as needed */
-    background-color: #dc3545;
-    color: #fff;
-    padding: 12px; /* Increase padding for better visibility */
-    border: none;
-    border-radius: 5px;
+.dropdown-item {
+    padding: 10px 15px;
+    border: 1px solid black;
     cursor: pointer;
-    transition: background-color 0.3s;
-    font-size: 16px; /* Adjust the font size as needed */
+    transition: background-color 0.3s ease;
 }
 
-.postext{
-    font-weight: bold; /* Make the text bold */
-    color: #333; /* Set a specific color for the text */
-    font-size: 18px; /* Adjust the font size as needed */
+.dropdown-item:hover {
+    background-color: #4a4a4a;
 }
 
-/* Add more styles as needed */
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .main-header h1 {
+        order: -1;
+        text-align: center;
+    }
+
+    .prediction-form {
+        max-width: 100%;
+    }
+
+    .head-to-head-grid {
+        grid-template-columns: 1fr;
+    }
+}

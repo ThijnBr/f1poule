@@ -15,9 +15,9 @@ hth = headtoHead.getHeadToHead(conn)
 drivers = getDriverTrack.getDriver(conn)
 tracks = getDriverTrack.getTracks(conn)
 # Replace this with your actual authentication logic
-def authenticate(username, password):
+def authenticate(username, password, conn):
     if username == "admin" and password == "admin":
-        return ("admin", None, None)  # Indicate admin login
+        return ("admin", None, None)
 
     query = "SELECT * FROM users WHERE username = %s AND password = %s;"
     cursor = conn.cursor()
@@ -25,10 +25,10 @@ def authenticate(username, password):
     data = cursor.fetchall()
 
     if data:
-        # Return the first row as a tuple (user_id, username)
         return (True, data[0][0], data[0][1])
     else:
         return (False, None, None)
+
 
 @app.before_request
 def before_request():
@@ -47,19 +47,20 @@ def index():
 def login():
     username = request.form['username']
     password = request.form['password']
-
-    auth_result = authenticate(username, password)
+    
+    conn = databaseconnection.connect()  # Get connection from pool
+    auth_result = authenticate(username, password, conn)  # Pass connection
+    conn.close()  # Close after use
 
     if auth_result[0] == "admin":
         session['user_id'] = -1
         return redirect(url_for('admin'))  # Redirect to admin route
     elif auth_result[0]:
-        # Successful login, store user_id in session and redirect to the dashboard
         session['user_id'] = auth_result[1]
         return redirect(url_for('dashboard', userid=auth_result[1]))
     else:
-        # Failed login, redirect back to the login page
         return redirect(url_for('index'))
+
 
 @app.route('/register', methods=['GET', 'POST']) 
 def register():

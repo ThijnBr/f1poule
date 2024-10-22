@@ -34,7 +34,7 @@ def download_pdf(url):
     """Download a PDF from a given URL and return the file path."""
     response = requests.get(url)
     if response.status_code == 200:
-        pdf_path = "race_classification.pdf"
+        pdf_path = "/var/www/f1poule/race_classification.pdf"
         with open(pdf_path, "wb") as f:
             f.write(response.content)
         return pdf_path

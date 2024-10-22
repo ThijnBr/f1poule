@@ -7,6 +7,7 @@ from datetime import datetime
 import hth as headtoHead
 import registerUser
 import bonus
+import test as getResults
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'  # Set a secret key for session management
@@ -88,16 +89,20 @@ def submit_results():
         racesession = request.form.get('racesession')
         driver_positions = request.form.getlist('driver_positions[]')
         driver_ids = request.form.getlist('driver_ids[]')
-        driver_dnfs = []
-        try:
-            driver_dnfs = eval(request.form.getlist('driver_dnfs_list')[0])
-        except:
-            x = '0'
-            for y in range(20):
-                driver_dnfs.append(x)
+
+        dnfs = []
+        # Get DNF status from the hidden input as a list of integers (1 or 0)
+        driver_dnfs = request.form.getlist('driver_dnf[]')
+        for test in zip(driver_ids, driver_positions):
+            if test[0] in driver_dnfs:
+                dnfs.append("1")
+            else:
+                dnfs.append("0")
+
+        print("Driver DNFs:", driver_dnfs)  # Debugging output
 
         lst = []
-        for driver_id, position, dnf in zip(driver_ids, driver_positions, driver_dnfs):
+        for driver_id, position, dnf in zip(driver_ids, driver_positions, dnfs):
             lst.append((driver_id, position, dnf))
 
         fl = request.form.get('fl')
@@ -105,11 +110,43 @@ def submit_results():
         if racesession == "raceresults":
             resultsScript.insertBonusResults(track_id, fl, dod)
         resultsScript.insert_results(track_id, lst, racesession)
+
     return redirect(url_for('admin'))
 
-@app.route('/results')
+
+
+@app.route('/results', methods=['GET', 'POST'])
 def resultsData():
-    return render_template("addResults.html", drivers=drivers, tracks=tracks)
+    classified_tracks = getResults.get_available_races()
+    track_link = None
+    if request.method == 'POST':
+        load_track = request.form.get('classified_tracks')
+        
+        data_type = request.form.get('type')  # Get the type of data (race or qualifying)
+        # Load data based on the type
+        if data_type == 'qualifying':
+            # Fetch qualifying data
+            results = getResults.get_final_quali_results(load_track)
+            track_link = getResults.PDF_BASE_QUALI_URL.format(load_track.replace(' ', '%20'))
+        else:
+            # Fetch race data
+            results = getResults.get_final_race_results(load_track)
+            track_link = getResults.PDF_BASE_URL.format(load_track.replace(' ', '%20'))
+
+        # Extract individual components from the results
+        final_results = results[0]  # List of final results (driver positions)
+        dnfs = results[1]           # List of drivers who did not finish
+        fastest_lap = results[2]    # Fastest lap driver name
+
+    else:
+        final_results = []
+        dnfs = []
+        fastest_lap = ''
+
+    # Assuming you have `drivers` and `tracks` available from somewhere
+    return render_template("addResults.html", drivers=drivers, tracks=tracks, 
+                           final_results=final_results, dnfs=dnfs, 
+                           fastest_lap=fastest_lap, classified_tracks=classified_tracks, track_link= track_link)
 
 @app.route('/get_results', methods=['POST'])
 def get_results():

@@ -3,6 +3,7 @@ import pdfplumber
 from bs4 import BeautifulSoup
 import databaseconnection
 import re
+import os
 
 # Constants
 BASE_URL = "https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/season/season/season-2024-2043"
@@ -35,6 +36,7 @@ def download_pdf(url):
     response = requests.get(url)
     if response.status_code == 200:
         pdf_path = "/var/www/f1poule/race_classification.pdf"
+        os.path.join(pdf_path)
         with open(pdf_path, "wb") as f:
             f.write(response.content)
         return pdf_path

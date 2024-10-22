@@ -2,9 +2,10 @@
     <button>Dashboard</button>
 </a>
 
-<a href="{{ track_link }}">
+<a href="{{ track_link }}" target="_blank">
     <button>Link to classification</button>
 </a>
+
 <form id="loadRaceTrack" method="post" action="{{ url_for('resultsData') }}">
     <label for="classified_tracks">Load race classification:</label>
     <select id="classified_tracks" name="classified_tracks">

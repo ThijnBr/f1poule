@@ -9,6 +9,7 @@ import registerUser
 import bonus
 import test as getResults
 import os
+import psycopg2
 
 os.path.join("/var/www/f1poule")
 
@@ -36,6 +37,10 @@ def authenticate(username, password, conn):
 
 @app.before_request
 def before_request():
+    global conn
+    # Check if `conn` is a valid psycopg2 connection, else reconnect
+    if not isinstance(conn, psycopg2.extensions.connection) or conn.closed:
+        conn = databaseconnection.connect()
     # Check if the user is logged in before each request
     if 'user_id' not in session and request.endpoint not in ['login', 'index', 'static', 'register']:
         return redirect(url_for('index'))
@@ -52,9 +57,7 @@ def login():
     username = request.form['username']
     password = request.form['password']
     
-    conn = databaseconnection.connect()  # Get connection from pool
     auth_result = authenticate(username, password, conn)  # Pass connection
-    conn.close()  # Close after use
 
     if auth_result[0] == "admin":
         session['user_id'] = -1

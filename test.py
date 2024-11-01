@@ -7,6 +7,7 @@ import re
 # Constants
 BASE_URL = "https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/season/season/season-2024-2043"
 PDF_BASE_URL = "https://fia.com/sites/default/files/decision-document/2024%20{}%20-%20Final%20Race%20Classification.pdf"
+PDF_PROVISIONAL = "https://fia.com/sites/default/files/decision-document/2024%20{}%20-%20Provisional%20Race%20Classification.pdf"
 PDF_BASE_QUALI_URL = "https://fia.com/sites/default/files/decision-document/2024%20{}%20-%20Final%20Starting%20Grid.pdf"
 
 def get_available_races():
@@ -30,17 +31,19 @@ def get_available_races():
         print(f"An error occurred while fetching data: {e}")
         return []
 
-def download_pdf(url):
+def download_pdf(url, grand_prix_name=None):
     """Download a PDF from a given URL and return the file path."""
     response = requests.get(url)
     if response.status_code == 200:
-        pdf_path = "/var/www/f1poule/race_classification.pdf"
+        pdf_path = "race_classification.pdf"
         with open(pdf_path, "wb") as f:
             f.write(response.content)
         return pdf_path
-    else:
+    elif grand_prix_name != None:
         print(f"Failed to download the PDF from {url}")
-        return None
+        pdf_url = PDF_PROVISIONAL.format(grand_prix_name.replace(' ', '%20'))
+        return download_pdf(pdf_url)
+    return None
 
 
 def extract_text_from_pdf(pdf_path):
@@ -55,7 +58,7 @@ def get_results(grand_prix_name, isRace):
         pdf_url = PDF_BASE_URL.format(grand_prix_name.replace(' ', '%20'))
     else:
         pdf_url = PDF_BASE_QUALI_URL.format(grand_prix_name.replace(' ', '%20'))
-    pdf_path = download_pdf(pdf_url)
+    pdf_path = download_pdf(pdf_url, grand_prix_name)
     
     if pdf_path:
         results = extract_text_from_pdf(pdf_path)

@@ -89,7 +89,6 @@ def calcQualiPoints(trackid):
         prediction.append(x[2])
         prediction.append(x[3])
         points = calculate_points(results, prediction)
-        print(points)
 
         id = x[0]
         query = "UPDATE top3_quali SET driver1points = %s, driver2points = %s, driver3points = %s WHERE id = %s"
@@ -206,4 +205,3 @@ def getBonusPredictions(track, conn):
         else:
             updateBonus(x[0], 'dnfpoints', 0, conn)
     conn.commit()
-

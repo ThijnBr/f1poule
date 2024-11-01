@@ -60,13 +60,9 @@ def getPouleUsers(pouleid):
             except:
                 print(points)
 
-
-            print(x[1], totalpoints)
-
             namepoints.append((x[1], totalpoints, x[0]))
             
     sorted_namepoints = sorted(namepoints, key=lambda x: x[1], reverse=True)
-    print(sorted_namepoints)
     return sorted_namepoints
 
 def joinPoule(poulename, userid):

@@ -87,6 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const menu = dropdown.querySelector('.dropdown-menu');
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const search = dropdown.querySelector('.driver-search');
+
+        menu.style.display = "flex";
         
         menu.classList.add('show');
         toggle.classList.add('active');
@@ -105,6 +107,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const menu = dropdown.querySelector('.dropdown-menu');
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const items = dropdown.querySelectorAll('.dropdown-item');
+
+        menu.style.display = "none";
         
         menu.classList.remove('show');
         toggle.classList.remove('active');

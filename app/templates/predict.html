@@ -247,8 +247,8 @@
                     <div>
                         {% for driver in headtohead %}
                             <div class="head-to-head-match">
-                                <button type="button" name="driver_selection" value="{{driver[0]}}-0" class="driver-button" data-selected="{% if driver[3] is defined %}{{ 'true' if driver[3] else 'false' }}{% else %}false{% endif %}">{{ driver[1] }}</button>
-                                <button type="button" name="driver_selection" value="{{driver[0]}}-1" class="driver-button" data-selected="{% if driver[3] is defined %}{{ 'false' if driver[3] else 'true' }}{% else %}false{% endif %}">{{ driver[2] }}</button>                    
+                                <button type="button" name="driver_selection" value="{{driver[0]}}-1" class="driver-button" data-selected="{% if driver[3] is defined %}{{ 'true' if driver[3] else 'false' }}{% else %}false{% endif %}">{{ driver[1] }}</button>
+                                <button type="button" name="driver_selection" value="{{driver[0]}}-0" class="driver-button" data-selected="{% if driver[3] is defined %}{{ 'false' if driver[3] else 'true' }}{% else %}false{% endif %}">{{ driver[2] }}</button>                    
                             </div>
                         {% endfor %}
                     </div>

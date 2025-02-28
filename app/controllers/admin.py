@@ -80,12 +80,13 @@ def add_data():
                 hc.id,
                 d1.driver_name as driver1_name,
                 d2.driver_name as driver2_name,
-                t.track_name as track_name
+                t.track_name as track_name,
+                EXTRACT(YEAR FROM t.track_race_date) as year
             FROM headtohead_combinations hc
             JOIN driver d1 ON hc.driver1_id = d1.driver_id
             JOIN driver d2 ON hc.driver2_id = d2.driver_id
             JOIN track t ON hc.track = t.id
-            ORDER BY t.track_name, d1.driver_name
+            ORDER BY year DESC, t.track_name, d1.driver_name
         """)
         headtohead_combinations = []
         for row in cursor.fetchall():
@@ -93,7 +94,8 @@ def add_data():
                 'id': row[0],
                 'driver1_name': row[1],
                 'driver2_name': row[2],
-                'track_name': row[3]
+                'track_name': row[3],
+                'year': row[4]
             })
     
     return render_template(
@@ -145,10 +147,18 @@ def add_track():
             # Insert head-to-head combinations
             for d1_id, d2_id in zip(driver1_ids, driver2_ids):
                 if d1_id and d2_id and d1_id != d2_id:  # Only insert if both drivers are selected and different
+                    # Check if this combination already exists
                     cursor.execute("""
-                        INSERT INTO headtohead_combinations (driver1_id, driver2_id, track)
-                        VALUES (%s, %s, %s)
-                    """, (d1_id, d2_id, track_id))
+                        SELECT id FROM headtohead_combinations 
+                        WHERE (driver1_id = %s AND driver2_id = %s AND track = %s)
+                        OR (driver1_id = %s AND driver2_id = %s AND track = %s)
+                    """, (d1_id, d2_id, track_id, d2_id, d1_id, track_id))
+                    
+                    if not cursor.fetchone():  # Only insert if combination doesn't exist
+                        cursor.execute("""
+                            INSERT INTO headtohead_combinations (driver1_id, driver2_id, track)
+                            VALUES (%s, %s, %s)
+                        """, (d1_id, d2_id, track_id))
             
         flash('Track and head-to-head combinations added successfully.', 'success')
     except Exception as e:
@@ -693,46 +703,6 @@ def delete_poule(poule_id):
     
     poule.delete()
     flash('Poule deleted successfully.', 'success')
-    return redirect(url_for('admin.add_data'))
-
-@admin_bp.route('/add_headtohead_combination', methods=['POST'])
-def add_headtohead_combination():
-    """Add a new head-to-head combination."""
-    driver1_id = request.form.get('driver1')
-    driver2_id = request.form.get('driver2')
-    track_id = request.form.get('track')
-    
-    if not all([driver1_id, driver2_id, track_id]):
-        flash('Please select both drivers and a track.', 'error')
-        return redirect(url_for('admin.add_data'))
-    
-    if driver1_id == driver2_id:
-        flash('Please select two different drivers.', 'error')
-        return redirect(url_for('admin.add_data'))
-    
-    try:
-        # Check if this combination already exists for this track
-        with get_db_cursor() as cursor:
-            cursor.execute("""
-                SELECT id FROM headtohead_combinations 
-                WHERE (driver1_id = %s AND driver2_id = %s AND track = %s)
-                OR (driver1_id = %s AND driver2_id = %s AND track = %s)
-            """, (driver1_id, driver2_id, track_id, driver2_id, driver1_id, track_id))
-        
-        if cursor.fetchone():
-            flash('This head-to-head combination already exists for this track.', 'error')
-            return redirect(url_for('admin.add_data'))
-        
-        # Insert the new combination
-        cursor.execute("""
-            INSERT INTO headtohead_combinations (driver1_id, driver2_id, track)
-            VALUES (%s, %s, %s)
-        """, (driver1_id, driver2_id, track_id))
-        
-        flash('Head-to-head combination added successfully.', 'success')
-    except Exception as e:
-        flash(f'Error adding head-to-head combination: {str(e)}', 'error')
-    
     return redirect(url_for('admin.add_data'))
 
 @admin_bp.route('/delete_headtohead_combination/<int:combo_id>', methods=['POST'])

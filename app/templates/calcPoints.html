@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Poule - Calculate Points</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1 class="admin-title">Calculate Points</h1>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}">
+                    <button class="secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        Dashboard
+                    </button>
+                </a>
+            </nav>
+        </header>
+
+        <main class="admin-content">
+            <div class="admin-card">
+                <h2 class="admin-card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    Calculate Points for Predictions
+                </h2>
+                <form id="resultsForm" method="post" action="{{ url_for('admin.calc_points') }}" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Select Year:</label>
+                            <select id="year" name="year" onchange="changeYear(this.value)">
+                                {% for year in available_years %}
+                                    <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="track">Select Track:</label>
+                            <select id="track" name="track">
+                                {% for track in tracks %}
+                                    <option value="{{ track[0] }}">{{ track[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="racesession">Session Type:</label>
+                            <select id="racesession" name="racesession">
+                                <option value="qualiresults">Qualifying</option>
+                                <option value="raceresults">Race</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5l7 7-7 7"></path></svg>
+                        Calculate Points
+                    </button>
+                </form>
+            </div>
+
+            <div class="admin-card">
+                <h2 class="admin-card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                    Copy Missing Predictions
+                </h2>
+                <form id="copyPredictionsForm" method="post" action="{{ url_for('admin.copy_predictions') }}" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="target_track">Select Target Track:</label>
+                            <select id="target_track" name="target_track">
+                                {% for track in tracks %}
+                                    <option value="{{ track[0] }}">{{ track[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                        Copy Missing Predictions
+                    </button>
+                </form>
+            </div>
+
+            {% if qualiresults or raceresults %}
+            <div class="admin-card">
+                <h2 class="admin-card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Results
+                </h2>
+                
+                {% if qualiresults %}
+                <div class="form-group">
+                    <h3>Qualifying Results</h3>
+                    <div class="results-list">
+                        {% for x in qualiresults %}
+                            <div class="result-item">{{ x }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if raceresults %}
+                <div class="form-group">
+                    <h3>Race Results</h3>
+                    <div class="results-list">
+                        {% for x in raceresults %}
+                            <div class="result-item">{{ x }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+        </main>
+    </div>
+    <script>
+        function changeYear(year) {
+            window.location.href = "{{ url_for('admin.calc_points') }}?year=" + year;
+        }
+    </script>
+</body>
+</html>

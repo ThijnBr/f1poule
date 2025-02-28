@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Poule - Add Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Titillium+Web:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1 class="admin-title">Add Race Results</h1>
+            <nav class="admin-nav">
+                <a href="{{ url_for('admin.dashboard') }}">
+                    <button class="secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        Dashboard
+                    </button>
+                </a>
+                
+                {% if track_link %}
+                <a href="{{ track_link }}" target="_blank">
+                    <button class="secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                        View Official Classification
+                    </button>
+                </a>
+                {% endif %}
+            </nav>
+        </header>
+
+        <main class="admin-content">
+            <div class="admin-card">
+                <h2 class="admin-card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                    Load Classification Data
+                </h2>
+                <div class="form-row">
+                    <form id="loadRaceTrack" method="post" action="{{ url_for('admin.results') }}" class="admin-form">
+                        <div class="form-group">
+                            <label for="classified_tracks">Race Classification:</label>
+                            <select id="classified_tracks" name="classified_tracks">
+                                {% for class_track in classified_tracks %}
+                                    <option value="{{ class_track }}">{{ class_track }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="hidden" name="type" value="race">
+                        <button type="submit">Load Race Classification</button>
+                    </form>
+
+                    <form id="loadQualiTrack" method="post" action="{{ url_for('admin.results') }}" class="admin-form">
+                        <div class="form-group">
+                            <label for="classified_tracks">Qualifying Classification:</label>
+                            <select id="classified_tracks" name="classified_tracks">
+                                {% for class_track in classified_tracks %}
+                                    <option value="{{ class_track }}">{{ class_track }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <input type="hidden" name="type" value="qualifying">
+                        <button type="submit">Load Qualifying Classification</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h2 class="admin-card-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    Submit Results
+                </h2>
+                <form id="resultsForm" method="post" action="{{ url_for('admin.submit_results') }}" class="admin-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="year">Select Year:</label>
+                            <select id="year" name="year" onchange="updateTracks()">
+                                {% for year in available_years %}
+                                    <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="track">Select Track:</label>
+                            <select id="track" name="track">
+                                {% for track in tracks %}
+                                    <option value="{{ track[0] }}" data-year="{{ track[3].year }}">{{ track[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="racesession">Session Type:</label>
+                            <select id="racesession" name="racesession">
+                                <option value="qualiresults">Qualifying</option>
+                                <option value="raceresults">Race</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="fl">Fastest Lap:</label>
+                            <select id="fl" name="fl">
+                                {% for driver in drivers %}
+                                    <option value="{{ driver[0] }}"
+                                        {% if driver[1] == fastest_lap %} selected {% endif %}>
+                                        {{ driver[1] }}{% if not driver[3] %} (Inactive){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dod">Driver of the Day:</label>
+                            <select id="dod" name="dod">
+                                {% for driver in drivers %}
+                                    <option value="{{ driver[0] }}">
+                                        {{ driver[1] }}{% if not driver[3] %} (Inactive){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Driver Positions and DNF Status:</label>
+                        <p class="drag-instructions">Drag and drop drivers to reorder them. The order represents their finishing position (top = 1st place). Only the top 20 positions will be submitted.</p>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Position</th>
+                                    <th>Driver</th>
+                                    <th>DNF</th>
+                                </tr>
+                            </thead>
+                            <tbody id="driversTableBody">
+                                <input type="hidden" name="driver_dnfs_list" id="driver_dnfs_list" value="">
+                                {% for driver in drivers %}
+                                    <tr class="draggable-row {% if not driver[3] %}inactive-driver{% endif %} {% if loop.index > 20 %}beyond-twenty{% endif %}" 
+                                        draggable="true" 
+                                        data-driver-id="{{ driver[0] }}"
+                                        data-position="{{ loop.index }}">
+                                        <td class="position-cell">
+                                            {{ loop.index }}
+                                            {% if loop.index > 20 %}
+                                                <span class="beyond-label">(Not submitted)</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ driver[1] }} {% if not driver[3] %}<span class="inactive-label">(Inactive)</span>{% endif %}</td>
+                                        <td>
+                                            <div class="checkbox-wrapper">
+                                                <input type="checkbox" name="driver_dnf[]" value="{{ driver[0] }}" class="driver-dnf"
+                                                    {% if driver[1] in dnfs %}checked{% endif %}
+                                                    {% if loop.index > 20 %}disabled{% endif %}>
+                                                {% if loop.index <= 20 %}
+                                                <input type="hidden" name="driver_ids[]" value="{{ driver[0] }}">
+                                                <input type="hidden" name="driver_positions[]" class="driver-position" value="{{ loop.index }}">
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <button type="submit">Submit Results</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const driverDNFCheckboxes = document.querySelectorAll('.driver-dnf');
+            const driver_ids = [...document.querySelectorAll('input[name="driver_ids[]"]')].map(input => input.value);
+
+            function updateDNFList() {
+                const dnfList = [];
+                driverDNFCheckboxes.forEach(checkbox => {
+                    if (checkbox.checked && !checkbox.disabled) {
+                        const rowIndex = checkbox.closest('tr').rowIndex - 1; // Adjust for header row
+                        dnfList.push(driver_ids[rowIndex]); // Push the corresponding driver ID
+                    }
+                });
+                document.getElementById('driver_dnfs_list').value = JSON.stringify(dnfList);
+            }
+
+            driverDNFCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateDNFList);
+            });
+
+            updateDNFList(); // Initialize the hidden input on load
+
+            // Track filtering functionality
+            function updateTracks() {
+                const selectedYear = document.getElementById('year').value;
+                const trackSelect = document.getElementById('track');
+                const options = trackSelect.querySelectorAll('option');
+                
+                options.forEach(option => {
+                    const trackYear = option.getAttribute('data-year');
+                    if (trackYear === selectedYear) {
+                        option.style.display = '';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+
+                // Select the first visible option
+                const firstVisibleOption = [...options].find(option => option.style.display !== 'none');
+                if (firstVisibleOption) {
+                    firstVisibleOption.selected = true;
+                }
+            }
+
+            // Initialize track filtering
+            updateTracks();
+
+            // Existing drag and drop code
+            const tableBody = document.getElementById('driversTableBody');
+            let draggedItem = null;
+
+            // Add event listeners to all draggable rows
+            const draggableRows = document.querySelectorAll('.draggable-row');
+            
+            draggableRows.forEach(row => {
+                // Dragstart event - when user starts dragging
+                row.addEventListener('dragstart', function(e) {
+                    draggedItem = this;
+                    setTimeout(() => {
+                        this.classList.add('dragging');
+                    }, 0);
+                });
+                
+                // Dragend event - when user stops dragging
+                row.addEventListener('dragend', function() {
+                    this.classList.remove('dragging');
+                    draggedItem = null;
+                    updatePositions(); // Update positions after drag ends
+                });
+                
+                // Dragover event - when dragged item is over a drop target
+                row.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    if (draggedItem !== this) {
+                        const rect = this.getBoundingClientRect();
+                        const midY = (rect.top + rect.bottom) / 2;
+                        
+                        if (e.clientY < midY) {
+                            // Insert before this row
+                            tableBody.insertBefore(draggedItem, this);
+                        } else {
+                            // Insert after this row
+                            tableBody.insertBefore(draggedItem, this.nextSibling);
+                        }
+                    }
+                });
+            });
+            
+            // Function to update position numbers and hidden inputs after reordering
+            function updatePositions() {
+                const rows = Array.from(tableBody.querySelectorAll('.draggable-row'));
+                
+                rows.forEach((row, index) => {
+                    const position = index + 1;
+                    // Update visible position number
+                    const positionCell = row.querySelector('.position-cell');
+                    positionCell.innerHTML = position + (position > 20 ? '<span class="beyond-label">(Not submitted)</span>' : '');
+                    
+                    // Update row classes for styling
+                    row.classList.toggle('beyond-twenty', position > 20);
+                    
+                    // Update checkbox state
+                    const checkbox = row.querySelector('.driver-dnf');
+                    if (checkbox) {
+                        checkbox.disabled = position > 20;
+                    }
+                    
+                    // Update or remove hidden inputs based on position
+                    const hiddenInputs = row.querySelectorAll('input[type="hidden"]');
+                    hiddenInputs.forEach(input => {
+                        if (input.classList.contains('driver-position')) {
+                            if (position <= 20) {
+                                input.value = position;
+                            } else {
+                                input.remove();
+                            }
+                        }
+                    });
+                });
+                
+                updateDNFList(); // Update DNF list after position changes
+            }
+
+            // Initialize positions
+            updatePositions();
+        });
+    </script>
+    
+    <style>
+        .draggable-row {
+            cursor: move;
+            transition: background-color 0.2s;
+        }
+        
+        .draggable-row:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        
+        .draggable-row.dragging {
+            opacity: 0.5;
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+        
+        .position-cell {
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .drag-instructions {
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #666;
+        }
+
+        .inactive-driver {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .inactive-label {
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+            margin-left: 4px;
+        }
+
+        .beyond-twenty {
+            opacity: 0.7;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .beyond-label {
+            font-size: 0.75em;
+            color: #999;
+            font-style: italic;
+            margin-left: 4px;
+            display: block;
+        }
+
+        .beyond-twenty .checkbox-wrapper {
+            opacity: 0.5;
+        }
+    </style>
+</body>
+</html>

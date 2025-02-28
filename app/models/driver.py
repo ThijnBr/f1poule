@@ -89,30 +89,51 @@ class Driver:
 
     @classmethod
     def delete(cls, driver_id):
-        """Delete a driver by ID."""
+        """Delete a driver and all associated data."""
         with get_db_cursor(commit=True) as cursor:
-            # Check if driver exists in any results
+            # Delete all associated data in the correct order to respect foreign key constraints
+            
+            # Delete race and qualifying results
+            cursor.execute("DELETE FROM raceresults WHERE driver_id = %s", (driver_id,))
+            cursor.execute("DELETE FROM qualiresults WHERE driver_id = %s", (driver_id,))
+            
+            # Delete predictions
             cursor.execute("""
-                SELECT EXISTS(
-                    SELECT 1 FROM raceresults WHERE driver_id = %s
-                    UNION
-                    SELECT 1 FROM qualiresults WHERE driver_id = %s
-                    UNION
-                    SELECT 1 FROM top3_quali WHERE driver1_id = %s OR driver2_id = %s OR driver3_id = %s
-                    UNION
-                    SELECT 1 FROM top5_race WHERE driver1_id = %s OR driver2_id = %s OR driver3_id = %s OR driver4_id = %s OR driver5_id = %s
-                    UNION
-                    SELECT 1 FROM headtohead WHERE driver1_id = %s OR driver2_id = %s
-                    UNION
-                    SELECT 1 FROM bonusprediction WHERE fastestlap = %s OR dnf = %s OR dod = %s
-                    UNION
-                    SELECT 1 FROM bonusresults WHERE fl = %s OR dod = %s
+                DELETE FROM top3_quali 
+                WHERE driver1_id = %s OR driver2_id = %s OR driver3_id = %s
+            """, (driver_id, driver_id, driver_id))
+            
+            cursor.execute("""
+                DELETE FROM top5_race 
+                WHERE driver1_id = %s OR driver2_id = %s OR driver3_id = %s 
+                OR driver4_id = %s OR driver5_id = %s
+            """, (driver_id, driver_id, driver_id, driver_id, driver_id))
+            
+            # Delete bonus predictions and results
+            cursor.execute("""
+                DELETE FROM bonusprediction 
+                WHERE fastestlap = %s OR dnf = %s OR dod = %s
+            """, (driver_id, driver_id, driver_id))
+            
+            cursor.execute("""
+                DELETE FROM bonusresults 
+                WHERE fl = %s OR dod = %s
+            """, (driver_id, driver_id))
+            
+            # Delete head-to-head predictions that reference this driver
+            cursor.execute("""
+                DELETE FROM headtoheadprediction
+                WHERE headtohead_id IN (
+                    SELECT id FROM headtohead_combinations 
+                    WHERE driver1_id = %s OR driver2_id = %s
                 )
-            """, (driver_id,) * 17)
+            """, (driver_id, driver_id))
             
-            has_references = cursor.fetchone()[0]
+            # Delete head-to-head combinations
+            cursor.execute("""
+                DELETE FROM headtohead_combinations 
+                WHERE driver1_id = %s OR driver2_id = %s
+            """, (driver_id, driver_id))
             
-            if has_references:
-                raise ValueError("Cannot delete driver with existing results or predictions")
-            
+            # Finally delete the driver
             cursor.execute("DELETE FROM driver WHERE driver_id = %s", (driver_id,)) 

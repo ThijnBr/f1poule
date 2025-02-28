@@ -121,13 +121,20 @@ class Track:
             # Delete predictions
             cursor.execute("DELETE FROM top3_quali WHERE track = %s", (track_id,))
             cursor.execute("DELETE FROM top5_race WHERE track = %s", (track_id,))
-            cursor.execute("DELETE FROM headtoheadprediction WHERE track = %s", (track_id,))
             cursor.execute("DELETE FROM bonusprediction WHERE track = %s", (track_id,))
             
             # Delete bonus results
             cursor.execute("DELETE FROM bonusresults WHERE track = %s", (track_id,))
             
-            # Delete head-to-head combinations
+            # Delete head-to-head predictions that reference combinations from this track
+            cursor.execute("""
+                DELETE FROM headtoheadprediction
+                WHERE headtohead_id IN (
+                    SELECT id FROM headtohead_combinations WHERE track = %s
+                )
+            """, (track_id,))
+            
+            # Then delete the head-to-head combinations
             cursor.execute("DELETE FROM headtohead_combinations WHERE track = %s", (track_id,))
             
             # Finally delete the track itself

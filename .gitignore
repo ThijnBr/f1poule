@@ -1,7 +1,8 @@
-# Environment variables
-.env
-.env.*
-!.env.example
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
 
 # Python
 __pycache__/
@@ -9,7 +10,6 @@ __pycache__/
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -26,24 +26,14 @@ wheels/
 .installed.cfg
 *.egg
 
-# Flask
-instance/
-.webassets-cache
-
-# Virtual Environment
-venv/
-ENV/
-
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# OS
-.DS_Store
-Thumbs.db
+# Instance folder
+instance/
 
 # Logs
-logs/
 *.log

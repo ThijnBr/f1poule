@@ -50,13 +50,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateDropdownSelection(toggle, item, hiddenInput);
                 closeDropdown(dropdown);
                 
-                // Submit the form after a brief delay to allow the UI to update
-                setTimeout(() => {
-                    const form = dropdown.closest('form');
-                    if (form) {
-                        form.submit();
-                    }
-                }, 100);
+                // Submit the form using fetch with CSRF token
+                const form = dropdown.closest('form');
+                if (form) {
+                    const formData = new FormData(form);
+                    fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        // Optionally handle success
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Optionally handle error
+                    });
+                }
             });
         });
 

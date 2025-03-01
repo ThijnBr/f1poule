@@ -6,7 +6,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background-image: url('https://wallpapers.com/images/hd/fade-4k-background-l0r2nm1yf2ozrup2.jpg');
+    background-image: url('../static/background.jpg');
     background-size: cover;
     background-position: center;
     overflow-x: hidden;

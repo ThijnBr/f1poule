@@ -4,20 +4,21 @@ import bcrypt
 class User:
     """User model for authentication and user management."""
     
-    def __init__(self, user_id=None, username=None, password=None):
+    def __init__(self, user_id=None, username=None, password=None, is_admin=False):
         self.user_id = user_id
         self.username = username
         self.password = password
+        self.is_admin = is_admin
     
     @classmethod
     def get_by_id(cls, user_id):
         """Get a user by ID."""
         with get_db_cursor() as cursor:
-            cursor.execute("SELECT user_id, username FROM users WHERE user_id = %s", (user_id,))
+            cursor.execute("SELECT user_id, username, is_admin FROM users WHERE user_id = %s", (user_id,))
             user_data = cursor.fetchone()
             
             if user_data:
-                return cls(user_id=user_data[0], username=user_data[1])
+                return cls(user_id=user_data[0], username=user_data[1], is_admin=user_data[2])
             return None
     
     @classmethod
@@ -26,7 +27,7 @@ class User:
         with get_db_cursor() as cursor:
             # First, get the user by username
             cursor.execute(
-                "SELECT user_id, username, password FROM users WHERE username = %s",
+                "SELECT user_id, username, password, is_admin FROM users WHERE username = %s",
                 (username,)
             )
             user_data = cursor.fetchone()
@@ -37,13 +38,13 @@ class User:
                 if stored_password.startswith('$2b$'):
                     # Verify the hashed password
                     if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
-                        return cls(user_id=user_data[0], username=user_data[1])
+                        return cls(user_id=user_data[0], username=user_data[1], is_admin=user_data[3])
                 else:
                     # For backward compatibility with non-hashed passwords
                     if password == stored_password:
                         # Update to hashed password for future logins
                         cls._update_password_to_hashed(user_data[0], password)
-                        return cls(user_id=user_data[0], username=user_data[1])
+                        return cls(user_id=user_data[0], username=user_data[1], is_admin=user_data[3])
             return None
     
     @classmethod

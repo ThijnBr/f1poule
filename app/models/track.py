@@ -4,8 +4,8 @@ from datetime import datetime
 class Track:
     """Track model for F1 race tracks."""
     
-    def __init__(self, track_id=None, track_name=None, quali_date=None, race_date=None):
-        self.track_id = track_id
+    def __init__(self, id=None, track_name=None, quali_date=None, race_date=None):
+        self.id = id
         self.track_name = track_name
         self.quali_date = quali_date
         self.race_date = race_date
@@ -47,21 +47,15 @@ class Track:
     
     @classmethod
     def get_by_id(cls, track_id):
-        """Get a track by ID."""
+        """Get a track by its ID."""
         with get_db_cursor() as cursor:
             cursor.execute(
                 "SELECT id, track_name, track_quali_date, track_race_date FROM track WHERE id = %s",
                 (track_id,)
             )
-            track_data = cursor.fetchone()
-            
-            if track_data:
-                return cls(
-                    track_id=track_data[0],
-                    track_name=track_data[1],
-                    quali_date=track_data[2],
-                    race_date=track_data[3]
-                )
+            track = cursor.fetchone()
+            if track:
+                return cls(*track)
             return None
     
     @classmethod
@@ -138,4 +132,52 @@ class Track:
             cursor.execute("DELETE FROM headtohead_combinations WHERE track = %s", (track_id,))
             
             # Finally delete the track itself
-            cursor.execute("DELETE FROM track WHERE id = %s", (track_id,)) 
+            cursor.execute("DELETE FROM track WHERE id = %s", (track_id,))
+
+    @classmethod
+    def get_next_race(cls, year=None):
+        """Get the next upcoming race.
+        
+        Args:
+            year (int, optional): Filter by year. If None, returns next race from any year.
+        """
+        with get_db_cursor() as cursor:
+            if year is not None:
+                cursor.execute(
+                    """
+                    SELECT id, track_name, track_quali_date, track_race_date 
+                    FROM track 
+                    WHERE track_race_date > CURRENT_TIMESTAMP 
+                    AND EXTRACT(YEAR FROM track_race_date) = %s
+                    ORDER BY track_race_date 
+                    LIMIT 1
+                    """,
+                    (year,)
+                )
+            else:
+                cursor.execute(
+                    """
+                    SELECT id, track_name, track_quali_date, track_race_date 
+                    FROM track 
+                    WHERE track_race_date > CURRENT_TIMESTAMP 
+                    ORDER BY track_race_date 
+                    LIMIT 1
+                    """
+                )
+            track = cursor.fetchone()
+            if track:
+                return cls(*track)
+            return None
+
+    def is_quali_open(self):
+        """Check if qualifying predictions are still open."""
+        return self.quali_date > datetime.now() if self.quali_date else False
+
+    def is_race_open(self):
+        """Check if race predictions are still open."""
+        return self.race_date > datetime.now() if self.race_date else False
+
+    @property
+    def predictions_open(self):
+        """Check if any predictions are still open."""
+        return self.is_quali_open() or self.is_race_open() 

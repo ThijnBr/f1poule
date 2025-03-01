@@ -1,4 +1,19 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@font-face {
+    font-family: 'Roboto';
+    src: url('../static/fonts/Roboto-Regular.woff2') format('woff2'),
+         url('../static/fonts/Roboto-Regular.woff') format('woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../static/fonts/Roboto-Bold.woff2') format('woff2'),
+         url('../static/fonts/Roboto-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
 body, html {
     margin: 0;
     padding: 0;
@@ -11,7 +26,7 @@ body, html {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image: url('https://wallpapers.com/images/hd/fade-4k-background-l0r2nm1yf2ozrup2.jpg');
+    background-image: url('../static/background.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -384,32 +399,138 @@ body, html {
     .main-header {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
+        gap: 15px;
+        padding: 15px;
     }
 
     .main-header h1 {
         order: -1;
         text-align: center;
+        font-size: 28px;
     }
 
     .prediction-form {
         max-width: 100%;
-    }
-
-    .head-to-head-grid {
-        grid-template-columns: 1fr;
+        padding: 15px;
+        margin-bottom: 15px;
     }
 
     .prediction-sections {
         padding: 10px;
+        gap: 1rem;
+    }
+
+    .user-info {
+        margin: 10px;
+        padding: 12px;
     }
 
     .deadline-box {
         padding: 1rem;
+        margin-bottom: 0.5rem;
     }
 
     .countdown-timer {
         font-size: 1.5rem;
+    }
+
+    .prediction-input {
+        flex-direction: row;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .position-number {
+        font-size: 20px;
+        min-width: 25px;
+    }
+
+    .dropdown-toggle {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+
+    .dropdown-menu {
+        max-height: 250px;
+    }
+
+    .driver-info {
+        gap: 8px;
+    }
+
+    .team-image {
+        width: 20px;
+        height: 20px;
+    }
+
+    .driver-name {
+        font-size: 14px;
+    }
+
+    .driver-team {
+        font-size: 12px;
+    }
+
+    .overlay-message {
+        font-size: 16px;
+        padding: 15px;
+    }
+
+    .overlay-message svg {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header h1 {
+        font-size: 24px;
+    }
+
+    .standings-button, .logout-button {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .prediction-form h2 {
+        font-size: 20px;
+    }
+
+    .countdown-timer {
+        font-size: 1.2rem;
+    }
+
+    .deadline-box h3 {
+        font-size: 1.2rem;
+    }
+
+    .prediction-input label {
+        font-size: 14px;
+    }
+
+    .dropdown-search input {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    .dropdown-item {
+        padding: 8px 10px;
+    }
+}
+
+@media (hover: none) {
+    .prediction-form:hover {
+        transform: none;
+    }
+
+    .standings-button:hover, .logout-button:hover {
+        transform: none;
+    }
+
+    .driver-button:hover {
+        transform: none;
     }
 }
 
@@ -475,16 +596,23 @@ body, html {
 }
 
 .overlay-message {
-    background: var(--danger-color);
-    color: white;
-    padding: 1rem 2rem;
-    border-radius: var(--border-radius);
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
+    gap: 10px;
+    color: #ffffff;
+    font-size: 18px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    padding: 20px;
+    text-align: center;
 }
 
 .overlay-message svg {
-    width: 20px;
-    height: 20px;
+    position: relative;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    flex: none;
+    stroke: currentColor;
 }

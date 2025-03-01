@@ -14,13 +14,75 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @admin_bp.before_request
 def check_admin():
     """Check if the user is an admin."""
-    if session.get('user_id') != -1:
-        return redirect(url_for('auth.index'))
+    if not session.get('is_admin', False):
+        return redirect(url_for('poule.dashboard'))
 
 @admin_bp.route('/')
 def dashboard():
     """Render the admin dashboard."""
     return render_template('admin.html')
+
+@admin_bp.route('/users')
+def manage_users():
+    """Render the user management page."""
+    with get_db_cursor() as cursor:
+        cursor.execute("SELECT user_id, username, is_admin FROM users ORDER BY username")
+        users = cursor.fetchall()
+    return render_template('manageUsers.html', users=users)
+
+@admin_bp.route('/users/toggle_admin/<int:user_id>', methods=['POST'])
+def toggle_admin(user_id):
+    """Toggle admin status for a user."""
+    try:
+        with get_db_cursor(commit=True) as cursor:
+            # First check if this is the last admin
+            cursor.execute("SELECT COUNT(*) FROM users WHERE is_admin = true")
+            admin_count = cursor.fetchone()[0]
+            
+            cursor.execute("SELECT is_admin FROM users WHERE user_id = %s", (user_id,))
+            current_status = cursor.fetchone()[0]
+            
+            # Prevent removing admin status if this is the last admin
+            if admin_count == 1 and current_status:
+                flash('Cannot remove admin status from the last admin user.', 'error')
+                return redirect(url_for('admin.manage_users'))
+            
+            # Toggle the admin status
+            cursor.execute(
+                "UPDATE users SET is_admin = NOT is_admin WHERE user_id = %s",
+                (user_id,)
+            )
+            flash('User admin status updated successfully.', 'success')
+    except Exception as e:
+        flash(f'Error updating user admin status: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.manage_users'))
+
+@admin_bp.route('/users/delete/<int:user_id>', methods=['POST'])
+def delete_user(user_id):
+    """Delete a user."""
+    try:
+        with get_db_cursor(commit=True) as cursor:
+            # Check if this is an admin user
+            cursor.execute("SELECT is_admin FROM users WHERE user_id = %s", (user_id,))
+            is_admin = cursor.fetchone()[0]
+            
+            if is_admin:
+                # Count number of admins
+                cursor.execute("SELECT COUNT(*) FROM users WHERE is_admin = true")
+                admin_count = cursor.fetchone()[0]
+                
+                if admin_count == 1:
+                    flash('Cannot delete the last admin user.', 'error')
+                    return redirect(url_for('admin.manage_users'))
+            
+            # Delete the user
+            cursor.execute("DELETE FROM users WHERE user_id = %s", (user_id,))
+            flash('User deleted successfully.', 'success')
+    except Exception as e:
+        flash(f'Error deleting user: {str(e)}', 'error')
+    
+    return redirect(url_for('admin.manage_users'))
 
 @admin_bp.route('/add_data')
 def add_data():
@@ -189,7 +251,7 @@ def add_poule():
         flash('A poule with this name already exists.', 'error')
         return redirect(url_for('admin.add_data'))
     
-    poule = Poule(poule_name=poule_name, year=poule_year)
+    poule = Poule(name=poule_name, year=poule_year)
     poule.create()
     flash('Poule added successfully.', 'success')
     return redirect(url_for('admin.add_data'))

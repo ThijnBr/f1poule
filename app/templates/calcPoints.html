@@ -28,6 +28,7 @@
                     Calculate Points for Predictions
                 </h2>
                 <form id="resultsForm" method="post" action="{{ url_for('admin.calc_points') }}" class="admin-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="year">Select Year:</label>
@@ -66,6 +67,7 @@
                     Copy Missing Predictions
                 </h2>
                 <form id="copyPredictionsForm" method="post" action="{{ url_for('admin.copy_predictions') }}" class="admin-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="target_track">Select Target Track:</label>

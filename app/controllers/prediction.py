@@ -100,7 +100,7 @@ def predict(track_id):
     user = User.get_by_id(user_id)
     user_name = user.username if user else None
     track_name = track.track_name
-    poule_name = poule.poule_name
+    poule_name = poule.name
     
     # Format deadline times for JavaScript
     quali_deadline = track.quali_date.strftime('%Y-%m-%dT%H:%M:%S')

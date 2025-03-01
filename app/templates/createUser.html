@@ -11,6 +11,7 @@
         <img src="https://media.formula1.com/image/upload/f_auto,c_limit,w_195,q_auto/etc/designs/fom-website/images/f1_logo" alt="F1 Logo" class="logo animate-fade-in">
         <h1 class="animate-slide-down">Join the F1 Prediction Grid</h1>
         <form action="{{ url_for('register') }}" method="post" class="login-form animate-fade-in" onsubmit="return validateForm()">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <label for="username">Name</label>
             <input type="text" id="username" name="username" required placeholder="Enter your name">
 

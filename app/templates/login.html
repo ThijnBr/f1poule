@@ -12,6 +12,7 @@
         <h1 class="animate-slide-down">F1 Poule</h1>
         <p class="subtitle animate-slide-up">Log in</p>
         <form action="{{ url_for('auth.login') }}" method="post" class="login-form animate-fade-in">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required placeholder="Enter your driver name">
 

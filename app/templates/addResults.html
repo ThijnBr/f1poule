@@ -38,6 +38,7 @@
                 </h2>
                 <div class="form-row">
                     <form id="loadRaceTrack" method="post" action="{{ url_for('admin.results') }}" class="admin-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="form-group">
                             <label for="classified_tracks">Race Classification:</label>
                             <select id="classified_tracks" name="classified_tracks">
@@ -51,6 +52,7 @@
                     </form>
 
                     <form id="loadQualiTrack" method="post" action="{{ url_for('admin.results') }}" class="admin-form">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                         <div class="form-group">
                             <label for="classified_tracks">Qualifying Classification:</label>
                             <select id="classified_tracks" name="classified_tracks">
@@ -71,6 +73,7 @@
                     Submit Results
                 </h2>
                 <form id="resultsForm" method="post" action="{{ url_for('admin.submit_results') }}" class="admin-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="form-row">
                         <div class="form-group">
                             <label for="year">Select Year:</label>

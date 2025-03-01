@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>F1 Poule - Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+    <style>
+        :root {
+            --background-image-url: url('{{ url_for('static', filename='background.jpg') }}');
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <form action="{{ url_for('auth.logout') }}" method="post" class="logout-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <button type="submit" class="logout-button">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                 Logout
@@ -16,41 +22,158 @@
         </form>
         
         <div class="content">
-            <img src="https://media.formula1.com/image/upload/f_auto,c_limit,w_195,q_auto/etc/designs/fom-website/images/f1_logo" alt="F1 Logo" class="logo animate-fade-in">
+            <img src="{{ url_for('static', filename='f1_logo.png') }}" alt="F1 Logo" class="logo animate-fade-in">
             
             <div class="text-center">
                 <h1 class="title animate-slide-down">F1 Poule</h1>
+                {% if session.get('is_admin') %}
+                <a href="{{ url_for('admin.dashboard') }}" class="admin-button animate-fade-in">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    Admin Dashboard
+                </a>
+                {% endif %}
             </div>
 
-            <div class="poules-section">
-                <h2 class="section-title">Active Poules</h2>
-                <div class="poule-grid">
-                    {% for poule in active_poules %}
-                        <a class="poule-button animate-fade-in" href="{{ url_for('poule.view_poule', poule_id=poule[0]) }}">
-                            {{ poule[1] }}
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="9 18 15 12 9 6"></polyline></svg>
-                        </a>
-                    {% else %}
-                        <p class="no-poules-message">No active poules found.</p>
-                    {% endfor %}
+            {% if active_poules %}
+            <div class="next-race-section animate-fade-in">
+                <h2 class="section-title">Next Race</h2>
+                {% for poule in active_poules %}
+                {% if poule[5] %}
+                <div class="next-race-card">
+                    <div class="poule-badge">{{ poule[1] }}</div>
+                    <div class="race-info">
+                        <h3>{{ poule[5].track_name }}</h3>
+                        <div class="race-dates">
+                            <div class="date-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                <span>Qualifying: {{ poule[5].quali_date.strftime('%d %b %Y %H:%M') }}</span>
+                                {% if poule[5].is_quali_open() %}
+                                <a href="{{ url_for('prediction.predict', track_id=poule[5].id) }}" class="predict-button quali">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                    Predict Qualifying
+                                </a>
+                                {% else %}
+                                <div class="predictions-closed">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Qualifying Closed
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="date-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                <span>Race: {{ poule[5].race_date.strftime('%d %b %Y %H:%M') }}</span>
+                                {% if poule[5].is_race_open() %}
+                                <a href="{{ url_for('prediction.predict', track_id=poule[5].id) }}" class="predict-button race">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
+                                    Predict Race
+                                </a>
+                                {% else %}
+                                <div class="predictions-closed">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Race Closed
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            {% endif %}
 
-                {% if previous_poules %}
-                    <h2 class="section-title">Previous Poules</h2>
-                    <div class="poule-grid previous-poules">
-                        {% for poule in previous_poules %}
+            <div class="dashboard-grid">
+                <div class="poules-section">
+                    <h2 class="section-title">Active Poules</h2>
+                    <div class="poule-grid">
+                        {% for poule in active_poules %}
                             <a class="poule-button animate-fade-in" href="{{ url_for('poule.view_poule', poule_id=poule[0]) }}">
-                                {{ poule[1] }} ({{ poule[2] }})
+                                <div class="poule-info">
+                                    <span class="poule-name">{{ poule[1] }}</span>
+                                    {% if poule[3] %}
+                                    <div class="poule-stats">
+                                        <span class="stat">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                            {{ poule[3] }} pts
+                                        </span>
+                                        <span class="stat">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                                            Rank {{ poule[4] }}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="9 18 15 12 9 6"></polyline></svg>
                             </a>
+                        {% else %}
+                            <p class="no-poules-message">No active poules found.</p>
                         {% endfor %}
                     </div>
+
+                    {% if previous_poules %}
+                        <h2 class="section-title">Previous Poules</h2>
+                        <div class="poule-grid previous-poules">
+                            {% for poule in previous_poules %}
+                                <a class="poule-button animate-fade-in" href="{{ url_for('poule.view_poule', poule_id=poule[0]) }}">
+                                    <div class="poule-info">
+                                        <span class="poule-name">{{ poule[1] }} ({{ poule[2] }})</span>
+                                        {% if poule[3] %}
+                                        <div class="poule-stats">
+                                            <span class="stat">Final Points: {{ poule[3] }}</span>
+                                            <span class="stat">Final Rank: {{ poule[4] }}</span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if recent_predictions %}
+                <div class="recent-section">
+                    <h2 class="section-title">Recent Predictions</h2>
+                    <div class="recent-grid">
+                        {% for prediction in recent_predictions %}
+                        <div class="prediction-card animate-fade-in">
+                            <div class="prediction-header">
+                                <h3>{{ prediction.track_name }}</h3>
+                                <div class="prediction-meta">
+                                    <span class="poule-badge">{{ prediction.poule_name }}</span>
+                                    <span class="prediction-date">{{ prediction.date.strftime('%d %b %Y') }}</span>
+                                </div>
+                            </div>
+                            <div class="prediction-details">
+                                <div class="prediction-type">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    {{ prediction.type }}
+                                </div>
+                                <div class="prediction-status {{ prediction.status }}">
+                                    {% if prediction.status == 'pending' %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                    Waiting for Results
+                                    {% else %}
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                    Points Given
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <a href="{{ url_for('results.view_results', track_id=prediction.track_id, user_id=prediction.user_id) }}" class="view-results-button">
+                                View Results
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
                 {% endif %}
             </div>
 
             <div class="join-poule-container">
                 <h2>Join a New Poule</h2>
                 <form class="join-poule-form animate-slide-up" action="{{ url_for('poule.join_poule') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <input type="text" name="poulename" placeholder="Enter Poule Name" required>
                     <button type="submit" class="join-button animate-pulse">Join Poule</button>
                 </form>

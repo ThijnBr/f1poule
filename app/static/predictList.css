@@ -10,7 +10,7 @@ body, html {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image: url('https://wallpapers.com/images/hd/fade-4k-background-l0r2nm1yf2ozrup2.jpg');
+    background-image: url('../static/background.jpg');
     background-size: cover;
     background-position: center;
     background-attachment: fixed;

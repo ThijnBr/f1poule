@@ -4,9 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Standings</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='standings.css') }}">
+    <title>F1 Prediction Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='predictResults.css') }}">
     <style>
+        :root {
+            --background-image-url: url('{{ url_for('static', filename='background.jpg') }}');
+        }
+
         .team-image {
             width: 24px;
             height: 24px;
@@ -58,109 +62,134 @@
 
 <body>
     <div class="container">
-        <a href="{{ url_for('poule.view_poule', poule_id=poule) }}">
-            <button class="standings-button" aria-label="View standings">Standings</button>
+        <a href="{{ url_for('poule.view_poule', poule_id=poule) }}" class="standings-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to Standings
         </a>
 
         <main class="results-section">
             <!-- Qualifying Results Section -->
-            <section class="qualifying results-box">
+            <section class="results-box qualifying">
                 <h2>Qualifying Results</h2>
-                {% for x in top3 %}
-                    <div class="result-item">
-                        <span class="driver">
-                            <img src="{{ url_for('static', filename=x[2] + '.png') }}" 
-                                 alt="{{ x[2] }} logo" 
-                                 class="team-image"
-                                 onerror="this.style.display='none'">
-                            {{ x[0] }}
-                        </span>
-                        <span class="position" style="color: {% if x[1] == 25 %}#ffd700{% elif x[1] == 18 %}#c0c0c0{% elif x[1] == 15 %}#cd7f32{% else %}#ffffff{% endif %};">{{ x[1] }}</span>
-                    </div>
-                {% endfor %}
+                {% if not top3 %}
+                    <div class="no-predictions">No qualifying predictions yet</div>
+                {% else %}
+                    {% for x in top3 %}
+                        <div class="result-item">
+                            <span class="driver">
+                                <img src="{{ url_for('static', filename=x[2] + '.png') }}" 
+                                     alt="{{ x[2] }} logo" 
+                                     class="team-image"
+                                     onerror="this.style.display='none'">
+                                {{ x[0] }}
+                            </span>
+                            <span class="points {% if x[1] == 25 %}gold{% elif x[1] == 18 %}silver{% elif x[1] == 15 %}bronze{% endif %}">
+                                {% if x[1] is none %}--{% else %}{{ x[1] }}{% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </section>
 
             <!-- Race Results Section -->
-            <section class="race results-box">
+            <section class="results-box race">
                 <h2>Race Results</h2>
-                {% for x in top5 %}
-                    <div class="result-item">
-                        <span class="driver">
-                            <img src="{{ url_for('static', filename=x[2] + '.png') }}" 
-                                 alt="{{ x[2] }} logo" 
-                                 class="team-image"
-                                 onerror="this.style.display='none'">
-                            {{ x[0] }}
-                        </span>
-                        <span class="position" style="color: {% if x[1] == 25 %}#ffd700{% elif x[1] == 18 %}#c0c0c0{% elif x[1] == 15 %}#cd7f32{% else %}#ffffff{% endif %};">{{ x[1] }}</span>
-                    </div>
-                {% endfor %}
+                {% if not top5 %}
+                    <div class="no-predictions">No race predictions yet</div>
+                {% else %}
+                    {% for x in top5 %}
+                        <div class="result-item">
+                            <span class="driver">
+                                <img src="{{ url_for('static', filename=x[2] + '.png') }}" 
+                                     alt="{{ x[2] }} logo" 
+                                     class="team-image"
+                                     onerror="this.style.display='none'">
+                                {{ x[0] }}
+                            </span>
+                            <span class="points {% if x[1] == 25 %}gold{% elif x[1] == 18 %}silver{% elif x[1] == 15 %}bronze{% endif %}">
+                                {% if x[1] is none %}--{% else %}{{ x[1] }}{% endif %}
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </section>
 
             <!-- Head to Head Results Section -->
-            <section class="head-to-head results-box">
+            <section class="results-box head-to-head">
                 <h2>Head to Head Results</h2>
-                {% for index in range(hth|length) %}
-                    <div class="result-item">
-                        <span class="driver {% if hth[index][3] is defined and hth[index][3] == True %}loser{% else %}winner{% endif %}" 
-                              style="color: {% if hth[index][3] is defined and hth[index][3] == True %}#ff4d4d{% else %}#4dff4d{% endif %};">
-                            {{ hth[index][1] }}
-                        </span>
-                        <span class="position">
-                            {% if hthPoints[index] is none %}
-                                <span style="color: #888888;">vs</span>
-                            {% elif hthPoints[index] > 0 %}
-                                <span style="color: #ffd700;">{{ hthPoints[index] }}</span>
-                            {% else %}
-                                <span style="color: #ff4d4d;">0</span>
-                            {% endif %}
-                        </span>
-                        <span class="driver {% if hth[index][3] is defined and hth[index][3] != True %}loser{% else %}winner{% endif %}"
-                              style="color: {% if hth[index][3] is defined and hth[index][3] != True %}#ff4d4d{% else %}#4dff4d{% endif %};">
-                            {{ hth[index][2] }}
-                        </span>
-                    </div>
-                {% endfor %}
+                {% if not hth %}
+                    <div class="no-predictions">No head-to-head predictions yet</div>
+                {% else %}
+                    {% for index in range(hth|length) %}
+                        <div class="result-item">
+                            <span class="driver {% if hth[index][3] is defined %}{% if hth[index][3] %}loser{% else %}winner{% endif %}{% endif %}">
+                                {{ hth[index][1] }}
+                            </span>
+                            <span class="vs-points">
+                                {% if hthPoints[index] is none %}
+                                    <span class="pending">vs</span>
+                                {% elif hthPoints[index] > 0 %}
+                                    <span class="points gold">{{ hthPoints[index] }}</span>
+                                {% else %}
+                                    <span class="points zero">0</span>
+                                {% endif %}
+                            </span>
+                            <span class="driver {% if hth[index][3] is defined %}{% if not hth[index][3] %}loser{% else %}winner{% endif %}{% endif %}">
+                                {{ hth[index][2] }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
             </section>
 
-            <!-- Bonus Data Section -->
-            <section class="bonus-results results-box">
+            <!-- Bonus Results Section -->
+            <section class="results-box bonus-results">
                 <h2>Bonus Results</h2>
-                {% if bonusData and bonusData.fastest_lap %}
-                <div class="result-item fastest-lap">
-                    <span class="driver">
-                        <img src="{{ url_for('static', filename=bonusData.fastest_lap.team + '.png') }}" 
-                             alt="{{ bonusData.fastest_lap.team }} logo" 
-                             class="team-image"
-                             onerror="this.style.display='none'">
-                        Fastest Lap: {{ bonusData.fastest_lap.name }}
-                    </span>
-                    <span class="position" style="color: {% if bonusData.fastest_lap.points == 5 %}#ffd700{% else %}#ffffff{% endif %};">{{ bonusData.fastest_lap.points }}</span>
-                </div>
-                {% endif %}
-                {% if bonusData and bonusData.dnf %}
-                <div class="result-item dnf">
-                    <span class="driver">
-                        <img src="{{ url_for('static', filename=bonusData.dnf.team + '.png') }}" 
-                             alt="{{ bonusData.dnf.team }} logo" 
-                             class="team-image"
-                             onerror="this.style.display='none'">
-                        DNF: {{ bonusData.dnf.name }}
-                    </span>
-                    <span class="position" style="color: {% if bonusData.dnf.points == 3 %}#ffd700{% else %}#ffffff{% endif %};">{{ bonusData.dnf.points }}</span>
-                </div>
-                {% endif %}
-                {% if bonusData and bonusData.driver_of_day %}
-                <div class="result-item driver-of-day">
-                    <span class="driver">
-                        <img src="{{ url_for('static', filename=bonusData.driver_of_day.team + '.png') }}" 
-                             alt="{{ bonusData.driver_of_day.team }} logo" 
-                             class="team-image"
-                             onerror="this.style.display='none'">
-                        Driver of the Day: {{ bonusData.driver_of_day.name }}
-                    </span>
-                    <span class="position" style="color: {% if bonusData.driver_of_day.points == 3 %}#ffd700{% else %}#ffffff{% endif %};">{{ bonusData.driver_of_day.points }}</span>
-                </div>
+                {% if not bonusData %}
+                    <div class="no-predictions">No bonus predictions yet</div>
+                {% else %}
+                    {% if bonusData.fastest_lap %}
+                        <div class="result-item fastest-lap">
+                            <span class="driver">
+                                <img src="{{ url_for('static', filename=bonusData.fastest_lap.team + '.png') }}" 
+                                     alt="{{ bonusData.fastest_lap.team }} logo" 
+                                     class="team-image"
+                                     onerror="this.style.display='none'">
+                                Fastest Lap: {{ bonusData.fastest_lap.name }}
+                            </span>
+                            <span class="points {% if bonusData.fastest_lap.points == 5 %}gold{% endif %}">
+                                {% if bonusData.fastest_lap.points is none %}--{% else %}{{ bonusData.fastest_lap.points }}{% endif %}
+                            </span>
+                        </div>
+                    {% endif %}
+                    {% if bonusData.dnf %}
+                        <div class="result-item dnf">
+                            <span class="driver">
+                                <img src="{{ url_for('static', filename=bonusData.dnf.team + '.png') }}" 
+                                     alt="{{ bonusData.dnf.team }} logo" 
+                                     class="team-image"
+                                     onerror="this.style.display='none'">
+                                DNF: {{ bonusData.dnf.name }}
+                            </span>
+                            <span class="points {% if bonusData.dnf.points == 3 %}gold{% endif %}">
+                                {% if bonusData.dnf.points is none %}--{% else %}{{ bonusData.dnf.points }}{% endif %}
+                            </span>
+                        </div>
+                    {% endif %}
+                    {% if bonusData.driver_of_day %}
+                        <div class="result-item driver-of-day">
+                            <span class="driver">
+                                <img src="{{ url_for('static', filename=bonusData.driver_of_day.team + '.png') }}" 
+                                     alt="{{ bonusData.driver_of_day.team }} logo" 
+                                     class="team-image"
+                                     onerror="this.style.display='none'">
+                                Driver of the Day: {{ bonusData.driver_of_day.name }}
+                            </span>
+                            <span class="points {% if bonusData.driver_of_day.points == 3 %}gold{% endif %}">
+                                {% if bonusData.driver_of_day.points is none %}--{% else %}{{ bonusData.driver_of_day.points }}{% endif %}
+                            </span>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </section>
         </main>

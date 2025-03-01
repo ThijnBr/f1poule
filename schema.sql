@@ -2,7 +2,8 @@
 CREATE TABLE IF NOT EXISTS users (
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL
+    password VARCHAR(100) NOT NULL,
+    is_admin BOOLEAN DEFAULT false
 );
 
 CREATE TABLE IF NOT EXISTS poules (
@@ -266,5 +267,19 @@ BEGIN
 
     -- Drop the old headtohead table if it exists and is no longer needed
     DROP TABLE IF EXISTS headtohead;
+END $$;
+
+-- Add is_admin column to users table if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'users' AND column_name = 'is_admin'
+    ) THEN
+        ALTER TABLE users ADD COLUMN is_admin BOOLEAN DEFAULT false;
+        
+        -- Set the admin user's is_admin flag to true
+        UPDATE users SET is_admin = true WHERE username = 'admin';
+    END IF;
 END $$;
 

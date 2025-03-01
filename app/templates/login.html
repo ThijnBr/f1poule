@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container">
-        <img src="https://media.formula1.com/image/upload/f_auto,c_limit,w_195,q_auto/etc/designs/fom-website/images/f1_logo" alt="F1 Logo" class="logo animate-fade-in">
+        <img src="{{ url_for('static', filename='f1_logo.png') }}" alt="F1 Logo" class="logo animate-fade-in">
         <h1 class="animate-slide-down">F1 Poule</h1>
         <p class="subtitle animate-slide-up">Log in</p>
         <form action="{{ url_for('auth.login') }}" method="post" class="login-form animate-fade-in">

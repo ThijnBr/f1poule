@@ -8,9 +8,16 @@
 </head>
 <body>
     <div class="container">
-        <img src="https://media.formula1.com/image/upload/f_auto,c_limit,w_195,q_auto/etc/designs/fom-website/images/f1_logo" alt="F1 Logo" class="logo animate-fade-in">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <img src="{{ url_for('static', filename='f1_logo.png') }}" alt="F1 Logo" class="logo animate-fade-in">
         <h1 class="animate-slide-down">Join the F1 Prediction Grid</h1>
-        <form action="{{ url_for('register') }}" method="post" class="login-form animate-fade-in" onsubmit="return validateForm()">
+        <form action="{{ url_for('auth.register') }}" method="post" class="login-form animate-fade-in" onsubmit="return validateForm()">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <label for="username">Name</label>
             <input type="text" id="username" name="username" required placeholder="Enter your name">
@@ -24,7 +31,7 @@
             <button type="submit" class="animate-pulse">Join the predicitons</button>
         </form>
         <div class="register-link animate-fade-in">
-            <a href="{{ url_for('login') }}">Already on the grid? Log in here</a>
+            <a href="{{ url_for('auth.index') }}">Already on the grid? Log in here</a>
         </div>
     </div>
     <img src="{{ url_for('static', filename='ferrari_car.png') }}" alt="F1 Car" class="f1-car">
@@ -34,8 +41,33 @@
             var password = document.getElementById("password").value;
             var confirm_password = document.getElementById("confirm_password").value;
 
+            // Check if passwords match
             if (password !== confirm_password) {
                 alert("Paddock Passwords do not match. Please try again.");
+                return false;
+            }
+
+            // Check password length
+            if (password.length < 8) {
+                alert("Password must be at least 8 characters long.");
+                return false;
+            }
+
+            // Check for uppercase letter
+            if (!/[A-Z]/.test(password)) {
+                alert("Password must contain at least one uppercase letter.");
+                return false;
+            }
+
+            // Check for lowercase letter
+            if (!/[a-z]/.test(password)) {
+                alert("Password must contain at least one lowercase letter.");
+                return false;
+            }
+
+            // Check for number
+            if (!/[0-9]/.test(password)) {
+                alert("Password must contain at least one number.");
                 return false;
             }
 

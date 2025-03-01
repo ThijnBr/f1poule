@@ -11,6 +11,8 @@ def index():
     """Render the login page or redirect to dashboard if logged in."""
     if 'user_id' in session:
         return redirect(url_for('poule.dashboard'))
+    # Clear any existing flash messages when just viewing the page
+    session.pop('_flashes', None)
     return render_template('login.html')
 
 @auth_bp.route('/login', methods=['POST'])
@@ -42,7 +44,7 @@ def register():
         # Validate password
         if not is_password_valid(password):
             log_registration(False, username)
-            flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character', 'error')
+            flash('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number', 'error')
             return render_template('createUser.html')
         
         if password != confirm_password:
@@ -64,6 +66,8 @@ def register():
         flash('Registration successful. Please log in.', 'success')
         return redirect(url_for('auth.index'))
     else:
+        # Clear any existing flash messages when just viewing the page
+        session.pop('_flashes', None)
         return render_template('createUser.html')
 
 @auth_bp.route('/logout', methods=['POST'])
@@ -82,7 +86,6 @@ def is_password_valid(password):
     - Contains at least one uppercase letter
     - Contains at least one lowercase letter
     - Contains at least one number
-    - Contains at least one special character
     """
     if len(password) < 8:
         return False
@@ -97,10 +100,6 @@ def is_password_valid(password):
     
     # Check for at least one number
     if not re.search(r'[0-9]', password):
-        return False
-    
-    # Check for at least one special character
-    if not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
         return False
     
     return True 

@@ -1,18 +1,14 @@
 import logging
-import os
 from datetime import datetime
 from functools import wraps
 from flask import request, session
-
-# Create logs directory if it doesn't exist
-os.makedirs('logs', exist_ok=True)
 
 # Configure security logger
 security_logger = logging.getLogger('security')
 security_logger.setLevel(logging.INFO)
 
-# Create file handler for security logs
-security_file_handler = logging.FileHandler('logs/security.log')
+# Create file handler for security logs in the same directory
+security_file_handler = logging.FileHandler('security.log')
 security_file_handler.setLevel(logging.INFO)
 
 # Create formatter and add it to the handler
@@ -75,4 +71,4 @@ def log_session_manipulation():
         "SESSION_MANIPULATION",
         "Potential session manipulation detected",
         logging.WARNING
-    ) 
+    )

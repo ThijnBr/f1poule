@@ -49,7 +49,14 @@ def prediction_list(poule_id, user_id):
 def predict(track_id):
     """Make predictions for a track."""
     user_id = session.get('user_id')
-    poule_id = session.get('poule')
+    poule_id = request.args.get('poule_id', type=int) or session.get('poule')
+    
+    if not poule_id:
+        flash('Poule not found', 'error')
+        return redirect(url_for('poule.dashboard'))
+    
+    # Store poule_id in session for subsequent requests
+    session['poule'] = poule_id
     
     # Get poule to determine year
     poule = Poule.get_by_id(poule_id)

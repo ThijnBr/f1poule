@@ -9,7 +9,7 @@ from collections import namedtuple
 poule_bp = Blueprint('poule', __name__, url_prefix='/poule')
 
 # Define a namedtuple for predictions
-Prediction = namedtuple('Prediction', ['track_name', 'date', 'type', 'status', 'track_id', 'user_id', 'poule_name'])
+Prediction = namedtuple('Prediction', ['track_name', 'date', 'type', 'status', 'track_id', 'user_id', 'poule_name', 'poule_id'])
 
 @poule_bp.before_request
 def check_auth():
@@ -77,7 +77,8 @@ def dashboard():
                        END as status,
                        t.id as track_id,
                        %s as user_id,
-                       lt.poule_name
+                       lt.poule_name,
+                       lt.poule_id
                 FROM LastTracks lt
                 JOIN track t ON t.id = lt.id
                 JOIN top3_quali p ON p.track = t.id AND p.poule = lt.poule_id
@@ -90,7 +91,8 @@ def dashboard():
                        END as status,
                        t.id as track_id,
                        %s as user_id,
-                       lt.poule_name
+                       lt.poule_name,
+                       lt.poule_id
                 FROM LastTracks lt
                 JOIN track t ON t.id = lt.id
                 JOIN top5_race p ON p.track = t.id AND p.poule = lt.poule_id

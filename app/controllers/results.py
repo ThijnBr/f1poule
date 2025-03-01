@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, session, redirect, url_for
+from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from app.models.prediction import Prediction, QualifyingPrediction, RacePrediction, BonusPrediction
 from app.database.connection import get_db_cursor
 
@@ -13,7 +13,14 @@ def check_auth():
 @results_bp.route('/<int:track_id>/<int:user_id>')
 def view_results(track_id, user_id):
     """View prediction results for a user and track."""
-    poule_id = session.get('poule')
+    poule_id = request.args.get('poule_id', type=int) or session.get('poule')
+    
+    if not poule_id:
+        flash('Poule not found', 'error')
+        return redirect(url_for('poule.dashboard'))
+    
+    # Store poule_id in session for subsequent requests
+    session['poule'] = poule_id
     
     # Get qualifying results
     top3 = QualifyingPrediction.get_results_with_points(user_id, track_id, poule_id)

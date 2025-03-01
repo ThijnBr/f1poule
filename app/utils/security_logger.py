@@ -1,25 +1,22 @@
-import logging
 import os
+import logging
 
-# Get current directory
-current_directory = os.getcwd()
+# Get current directory (where this script is located)
+current_directory = os.path.dirname(os.path.abspath(__file__))
 
-# Set log file path in the current directory
+# Define the log file path inside the app directory
 log_file_path = os.path.join(current_directory, "security.log")
 
-# Configure security logger
+# Configure logging
 security_logger = logging.getLogger('security')
 security_logger.setLevel(logging.INFO)
 
-# Create file handler for security logs
 security_file_handler = logging.FileHandler(log_file_path)
 security_file_handler.setLevel(logging.INFO)
 
-# Create formatter and add it to the handler
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 security_file_handler.setFormatter(formatter)
 
-# Add the handler to the logger
 security_logger.addHandler(security_file_handler)
 
 print(f"Logging to: {log_file_path}")

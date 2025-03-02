@@ -260,7 +260,8 @@ def add_poule():
 def results():
     """Render the results page."""
     # Get race names from FIA website for the classification dropdown
-    classified_tracks = get_available_races()
+    selected_year = request.args.get('year', type=int) or request.form.get('year', type=int) or 2024
+    classified_tracks = get_available_races(selected_year)
     
     # Get active and inactive drivers separately
     active_drivers = Driver.get_all(active_only=True)
@@ -280,21 +281,42 @@ def results():
     if request.method == 'POST':
         load_track = request.form.get('classified_tracks')
         data_type = request.form.get('type')  # Get the type of data (race or qualifying)
+        year = request.form.get('year', type=int) or 2024
         
         # Load data based on the type
         if data_type == 'qualifying':
             # Fetch qualifying data from PDF
-            results = get_final_quali_results(load_track)
-            track_link = f"https://www.formula1.com/en/results.html/2024/races/{load_track.replace(' ', '-')}/qualifying.html"
+            results = get_final_quali_results(load_track, year)
+            track_link = f"https://www.formula1.com/en/results.html/{year}/races/{load_track.replace(' ', '-')}/qualifying.html"
         else:
             # Fetch race data from PDF
-            results = get_final_race_results(load_track)
-            track_link = f"https://www.formula1.com/en/results.html/2024/races/{load_track.replace(' ', '-')}/race-result.html"
+            results = get_final_race_results(load_track, year)
+            track_link = f"https://www.formula1.com/en/results.html/{year}/races/{load_track.replace(' ', '-')}/race-result.html"
         
         # Extract individual components from the results
         final_results = results[0]  # List of final results (driver positions)
         dnfs = results[1]           # List of drivers who did not finish
         fastest_lap = results[2]    # Fastest lap driver name
+        
+        # Reorder drivers based on results
+        if final_results:
+            # Create a mapping of driver names to their full driver data
+            driver_map = {driver[1]: driver for driver in drivers}
+            
+            # Create ordered list of drivers based on results, followed by remaining drivers
+            ordered_drivers = []
+            
+            # First add drivers from results in order
+            for driver_name in final_results:
+                if driver_name in driver_map:
+                    ordered_drivers.append(driver_map[driver_name])
+                    del driver_map[driver_name]  # Remove from map to track remaining drivers
+            
+            # Then add any remaining drivers that weren't in the results
+            ordered_drivers.extend(driver_map.values())
+            
+            # Update the drivers list with the new order
+            drivers = ordered_drivers
     
     return render_template(
         "addResults.html", 
@@ -305,8 +327,16 @@ def results():
         fastest_lap=fastest_lap, 
         classified_tracks=classified_tracks, 
         track_link=track_link,
-        available_years=available_years
+        available_years=available_years,
+        selected_year=selected_year
     )
+
+@admin_bp.route('/get_classified_tracks')
+def get_classified_tracks():
+    """Get classified tracks for a specific year."""
+    year = request.args.get('year', type=int) or 2024
+    tracks = get_available_races(year)
+    return jsonify({'tracks': tracks})
 
 @admin_bp.route('/submit_results', methods=['POST'])
 def submit_results():

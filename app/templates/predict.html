@@ -7,6 +7,22 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='predict.css') }}">
 </head>
 <body>
+    <!-- Template for driver items -->
+    <template id="driver-template">
+        {% for driver in drivers %}
+            <div class="dropdown-item" data-value="{{ driver[0] }}">
+                <div class="driver-info">
+                    <img src="{{ url_for('static', filename=driver[2] + '.png') }}" 
+                         alt="{{ driver[2] }} logo" 
+                         class="team-image"
+                         onerror="this.style.display='none'">
+                    <span class="driver-name">{{ driver[1] }}</span>
+                    <span class="driver-team">{{ driver[2] }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </template>
+
     <div class="container">
         <header class="main-header">
             <a href="{{ url_for('poule.view_poule', poule_id=poule) }}" class="standings-button">
@@ -74,18 +90,7 @@
                                     <div class="dropdown-search">
                                         <input type="text" placeholder="Search driver..." class="driver-search">
                                     </div>
-                                    {% for driver in drivers %}
-                                        <div class="dropdown-item" data-value="{{ driver[0] }}">
-                                            <div class="driver-info">
-                                                <img src="{{ url_for('static', filename=driver[2] + '.png') }}" 
-                                                     alt="{{ driver[2] }} logo" 
-                                                     class="team-image"
-                                                     onerror="this.style.display='none'">
-                                                <span class="driver-name">{{ driver[1] }}</span>
-                                                <span class="driver-team">{{ driver[2] }}</span>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
+                                    <div class="driver-items"></div>
                                 </div>
                                 <input type="hidden" name="top3_qualifying_{{ place }}" value="{{ default_value }}">
                             </div>
@@ -132,18 +137,7 @@
                                     <div class="dropdown-search">
                                         <input type="text" placeholder="Search driver..." class="driver-search">
                                     </div>
-                                    {% for driver in drivers %}
-                                        <div class="dropdown-item" data-value="{{ driver[0] }}">
-                                            <div class="driver-info">
-                                                <img src="{{ url_for('static', filename=driver[2] + '.png') }}" 
-                                                     alt="{{ driver[2] }} logo" 
-                                                     class="team-image"
-                                                     onerror="this.style.display='none'">
-                                                <span class="driver-name">{{ driver[1] }}</span>
-                                                <span class="driver-team">{{ driver[2] }}</span>
-                                            </div>
-                                        </div>
-                                    {% endfor %}
+                                    <div class="driver-items"></div>
                                 </div>
                                 <input type="hidden" name="top5_race_{{ place }}" value="{{ default_value }}">
                             </div>
@@ -159,18 +153,7 @@
                                 <div class="dropdown-search">
                                     <input type="text" placeholder="Search driver..." class="driver-search">
                                 </div>
-                                {% for driver in drivers %}
-                                    <div class="dropdown-item" data-value="{{ driver[0] }}">
-                                        <div class="driver-info">
-                                            <img src="{{ url_for('static', filename=driver[2] + '.png') }}" 
-                                                 alt="{{ driver[2] }} logo" 
-                                                 class="team-image"
-                                                 onerror="this.style.display='none'">
-                                            <span class="driver-name">{{ driver[1] }}</span>
-                                            <span class="driver-team">{{ driver[2] }}</span>
-                                        </div>
-                                    </div>
-                                {% endfor %}
+                                <div class="driver-items"></div>
                             </div>
                             <input type="hidden" name="fastestlap" value="{{ bonusValues[0] }}">
                         </div>
@@ -184,28 +167,18 @@
                                 <div class="dropdown-search">
                                     <input type="text" placeholder="Search driver..." class="driver-search">
                                 </div>
-                                <div class="dropdown-item" data-value="No DNF">
-                                    <div class="driver-info">
-                                        <img src="{{ url_for('static', filename='no_team.png') }}" 
-                                             alt="No team logo" 
-                                             class="team-image"
-                                             onerror="this.style.display='none'">
-                                        <span class="driver-name">No DNF</span>
-                                        <span class="driver-team"></span>
-                                    </div>
-                                </div>
-                                {% for driver in drivers %}                   
-                                    <div class="dropdown-item" data-value="{{ driver[0] }}">
+                                <div class="driver-items">
+                                    <div class="dropdown-item" data-value="No DNF">
                                         <div class="driver-info">
-                                            <img src="{{ url_for('static', filename=driver[2] + '.png') }}" 
-                                                 alt="{{ driver[2] }} logo" 
+                                            <img src="{{ url_for('static', filename='no_team.png') }}" 
+                                                 alt="No team logo" 
                                                  class="team-image"
                                                  onerror="this.style.display='none'">
-                                            <span class="driver-name">{{ driver[1] }}</span>
-                                            <span class="driver-team">{{ driver[2] }}</span>
+                                            <span class="driver-name">No DNF</span>
+                                            <span class="driver-team"></span>
                                         </div>
                                     </div>
-                                {% endfor %}
+                                </div>
                             </div>
                             <input type="hidden" name="dnf" value="{{ bonusValues[1] }}">
                         </div>
@@ -219,18 +192,7 @@
                                 <div class="dropdown-search">
                                     <input type="text" placeholder="Search driver..." class="driver-search">
                                 </div>
-                                {% for driver in drivers %}
-                                    <div class="dropdown-item" data-value="{{ driver[0] }}">
-                                        <div class="driver-info">
-                                            <img src="{{ url_for('static', filename=driver[2] + '.png') }}" 
-                                                 alt="{{ driver[2] }} logo" 
-                                                 class="team-image"
-                                                 onerror="this.style.display='none'">
-                                            <span class="driver-name">{{ driver[1] }}</span>
-                                            <span class="driver-team">{{ driver[2] }}</span>
-                                        </div>
-                                    </div>
-                                {% endfor %}
+                                <div class="driver-items"></div>
                             </div>
                             <input type="hidden" name="dod" value="{{ bonusValues[2] }}">
                         </div>
@@ -419,6 +381,20 @@
 
         .head-to-head-match {
             overflow: visible;
+        }
+
+        .dropdown-item.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item.disabled:hover {
+            background-color: #f5f5f5;
+        }
+
+        .dropdown-item.disabled .driver-info {
+            pointer-events: none;
         }
     </style>
 

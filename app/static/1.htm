@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<!-- saved from url=(0041)http://127.0.0.1:8000/planning/employee/1 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="E2bOF0q5y5poP30J60mk09BNatVXSrRhU2fjEBhf">
+    <link rel="icon" type="image/png" href="http://127.0.0.1:8000/img/Logo%20symbool%20AVASTO.png">
+    <script type="module" src="./1_files/client"></script><link rel="stylesheet" href="./1_files/app.css"><script type="module" src="./1_files/app.js.download"></script>    <link rel="stylesheet" href="./1_files/all.min.css">
+    <link rel="stylesheet" href="./1_files/main.css">
+    </head>
+<body class="bg-gray-100">
+    <!-- Navbar -->
+    <nav class="bg-blue-900 shadow-md w-full">
+        <div class="flex items-center justify-between py-4 px-6">
+            <!-- Left Section -->
+            <div class="flex items-center space-x-8">
+                <!-- Logo and Title -->
+                <a href="http://127.0.0.1:8000/" class="flex items-center space-x-3">
+                    <img src="./1_files/Logo symbool AVASTO.jpg" alt="Avasto Planner" class="h-10">
+                    <div>
+                        <h1 class="text-xl font-bold text-white">AVASTO</h1>
+                        <p class="text-sm text-gray-200">planner</p>
+                    </div>
+                </a>
+                <!-- Current Date -->
+                <div class="text-gray-200">
+                    <span class="font-medium border-l pl-4">Maandag</span>,
+                    <span>03-03-2025</span>
+                </div>
+
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-6">
+                    <a href="http://127.0.0.1:8000/planning" class="text-gray-200 hover:text-white ">
+                        <i class="fas fa-calendar-alt mr-2"></i>Planning
+                    </a>
+                    <a href="http://127.0.0.1:8000/project-planning" class="text-gray-200 hover:text-white ">
+                        <i class="fas fa-project-diagram mr-2"></i>Project Planning
+                    </a>
+                </div>
+            </div>
+
+            <!-- Settings Dropdown -->
+            <div class="relative inline-block text-left z-50" x-data="{ open: false }" @click.outside="open = false">
+                <button type="button" class="flex items-center text-white bg-blue-600 hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 rounded-lg px-4 py-2" @click="open = !open" aria-expanded="false">
+                    <i class="fas fa-cog pr-2"></i>Instellingen
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg transition-all duration-200" x-show="open" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" style="display: none;">
+                    <ul class="py-1">
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/profile" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user mr-2"></i> Profiel
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/logboek" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-book mr-2"></i> Logboek
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; openPersoneelModal()">
+                                    <i class="fas fa-users mr-2"></i> Personen
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; openProjectModal()">
+                                    <i class="fas fa-tasks mr-2"></i> Projecten
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; openAssetModal()">
+                                    <i class="fas fa-truck mr-2"></i> Assets
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; window.dispatchEvent(new CustomEvent(&#39;open-qualification-modal&#39;))">
+                                    <i class="fas fa-certificate mr-2"></i> Kwalificaties
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; openFeestdagenModal()">
+                                    <i class="fas fa-star mr-2"></i> Feestdagen
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; openAfdelingenModal()">
+                                    <i class="fas fa-building mr-2"></i> Afdelingen
+                                </a>
+                            </li>
+                                                    <li>
+                                <a href="http://127.0.0.1:8000/planning/employee/1#" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" @click="open = false; openKeuringenModal()">
+                                    <i class="fas fa-wrench mr-2"></i> Garage
+                                </a>
+                            </li>
+                                                <li>
+                            <form method="POST" action="http://127.0.0.1:8000/logout" class="w-full">
+                                <input type="hidden" name="_token" value="E2bOF0q5y5poP30J60mk09BNatVXSrRhU2fjEBhf" autocomplete="off">                                <a href="http://127.0.0.1:8000/logout" onclick="event.preventDefault(); this.closest(&#39;form&#39;).submit();" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-sign-out-alt mr-2"></i> Uitloggen
+                                </a>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="app">
+        <div class="flex flex-col h-full" x-data="{ showWeekend: false }" x-init="
+    if (!showWeekend) {
+        document.querySelectorAll(&#39;.weekend-column&#39;).forEach(col =&gt; {
+            if (col.dataset.weekend === &#39;true&#39;) {
+                col.style.display = &#39;none&#39;;
+            }
+        });
+    }
+">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 px-4 py-4">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-2xl font-semibold text-gray-900">Planning voor Marc Brants</h1>
+                
+                <!-- Week Navigation -->
+                <div class="flex items-center space-x-2">
+                    <a href="http://127.0.0.1:8000/planning/employee/1?week=9" class="p-2 hover:bg-gray-100 rounded-full">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                    <span class="text-sm font-medium">Week 10, 2025</span>
+                    <a href="http://127.0.0.1:8000/planning/employee/1?week=11" class="p-2 hover:bg-gray-100 rounded-full">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <!-- Weekend Toggle -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-sm text-gray-600">Weekend</span>
+                    <button type="button" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 bg-gray-200" :class="showWeekend ? &#39;bg-blue-600&#39; : &#39;bg-gray-200&#39;" role="switch" x-on:click="
+                            showWeekend = !showWeekend;
+                            document.querySelectorAll(&#39;.weekend-column&#39;).forEach(col =&gt; {
+                                if (showWeekend) {
+                                    col.style.display = &#39;&#39;;
+                                } else {
+                                    if (col.dataset.weekend === &#39;true&#39;) {
+                                        col.style.display = &#39;none&#39;;
+                                    }
+                                }
+                            });
+                        ">
+                        <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out translate-x-0" :class="showWeekend ? &#39;translate-x-5&#39; : &#39;translate-x-0&#39;"></span>
+                    </button>
+                </div>
+
+                <a href="http://127.0.0.1:8000/planning?week=10&amp;year=2025" class="text-blue-600 hover:text-blue-800">
+                    <i class="fas fa-arrow-left mr-2"></i>Terug naar planning
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-hidden flex">
+        <!-- Planning Grid -->
+        <div class="flex-1 flex flex-col min-w-0">
+            <!-- Date Headers -->
+            <div class="flex min-w-0 sticky top-0 z-10">
+                <!-- Employee Info Column -->
+                <div class="flex-none w-[250px] bg-white border-r border-b border-gray-200">
+                    <div class="h-full flex items-center px-4 py-2">
+                        <span class="font-medium text-sm text-gray-500">Datum</span>
+                    </div>
+                </div>
+
+                <!-- Date Columns -->
+                <div class="flex-1 flex min-w-0">
+                                                                    <div class="flex-1 min-w-0 bg-white bg-blue-100 border-b border-r border-gray-200 " data-weekend="false">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center bg-blue-100" data-weekend="false">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Maandag
+                                </div>
+        <div class="text-sm text-gray-500">03-03</div>
+                    </div>
+</div>                         </div>
+                                                                    <div class="flex-1 min-w-0 bg-white border-b border-r border-gray-200 " data-weekend="false">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center " data-weekend="false">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Dinsdag
+                                </div>
+        <div class="text-sm text-gray-500">04-03</div>
+                    </div>
+</div>                         </div>
+                                                                    <div class="flex-1 min-w-0 bg-white border-b border-r border-gray-200 " data-weekend="false">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center " data-weekend="false">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Woensdag
+                                </div>
+        <div class="text-sm text-gray-500">05-03</div>
+                    </div>
+</div>                         </div>
+                                                                    <div class="flex-1 min-w-0 bg-white border-b border-r border-gray-200 " data-weekend="false">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center " data-weekend="false">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Donderdag
+                                </div>
+        <div class="text-sm text-gray-500">06-03</div>
+                    </div>
+</div>                         </div>
+                                                                    <div class="flex-1 min-w-0 bg-white border-b border-r border-gray-200 " data-weekend="false">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center " data-weekend="false">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Vrijdag
+                                </div>
+        <div class="text-sm text-gray-500">07-03</div>
+                    </div>
+</div>                         </div>
+                                                                    <div class="flex-1 min-w-0 bg-gray-100 border-b border-r border-gray-200 weekend-column" data-weekend="true" style="display: none;">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center bg-gray-100" data-weekend="true">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Zaterdag
+                                </div>
+        <div class="text-sm text-gray-500">08-03</div>
+                    </div>
+</div>                         </div>
+                                                                    <div class="flex-1 min-w-0 bg-gray-100 border-b border-r border-gray-200 weekend-column" data-weekend="true" style="display: none;">
+                            <div class="h-[72px] p-4 border-b border-gray-200 flex items-center justify-center bg-gray-100" data-weekend="true">
+    <div class="flex flex-col items-center">
+        <div class="flex items-center">
+            Zondag
+                                </div>
+        <div class="text-sm text-gray-500">09-03</div>
+                    </div>
+</div>                         </div>
+                                    </div>
+            </div>
+
+            <!-- Planning Row -->
+            <div class="flex min-w-0 border-b border-gray-200">
+                <!-- Employee Info -->
+                <div class="flex-none w-[250px] px-4 flex items-center justify-between border-r border-gray-200 bg-white">
+                    <span class="truncate">Marc Brants</span>
+                                            <span class="text-xs bg-yellow-100 px-2 py-1 rounded-md text-gray-500">
+                            <i class="fas fa-sticky-note text-yellow-500"></i>
+                            test23
+                        </span>
+                                    </div>
+                
+                <!-- Planning Cells -->
+                <div class="flex-1 flex min-w-0">
+                                                                    <div class="flex-1 min-w-0 " data-weekend="false">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-100" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-03" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                    <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200 mb-1 last:mb-0 planning-item relative group hover:bg-gray-50 null" data-planning-id="104" data-project-id="24-236" data-date="2025-03-03" data-has-enough-persons="true" data-werklocatie="40" data-vehicle-warning-enabled="true" data-has-vehicle="true" draggable="true" title="">
+        <div class="flex flex-col min-w-0">
+            <span class="font-semibold text-blue-800 project-nummer">236</span>
+            <span class="text-gray-600 text-sm project-naam">T' Kuipke Familiebaan</span>
+            
+            
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500">
+                        <i class="fas fa-map-marker-alt mr-1"></i>40
+                    </span>
+                </div>
+            
+            
+            <div class="planning-item-assets flex flex-col gap-1 mt-1">
+                
+        <div class="asset-icon flex items-center gap-1 bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-xs w-full border border-gray-200" data-asset-id="1" data-car-seats="2" data-asset-categorie="Voertuig">
+        <span class="asset-icon-emoji">🚗 <span title="Gebruik / Zitplaatsen"><i class="fas fa-users"></i> 1/2</span></span>
+        <div class="flex flex-col">
+            <span class="asset-name">Ford Transit Connect</span>
+            <div class="flex flex-col gap-0.5 mt-1">
+                <div class="flex items-center">
+        <div class="bg-blue-700 h-5 w-6 text-white font-bold px-1 py-1 rounded-l-md text-xs flex items-center border-y-2 border-l-2 border-black">
+            NL
+        </div>
+        <div class="bg-yellow-500 h-5 w-20 text-black font-bold px-1 rounded-r-md text-xs border-2 border-black uppercase tracking-wide">
+            VBT-97-R
+        </div>
+    </div>
+                <div class="flex flex-row items-center gap-0.5 text-gray-400 text-[10px]">
+                <i class="fas fa-user text-[8px]"></i>
+                <span>Marc Brants</span>
+            </div>
+            </div>
+        </div>
+        <button class="text-gray-400 hover:text-red-500 ml-auto" onclick="removeAsset(this, &#39;104&#39;, &#39;1&#39;)">×</button>
+    </div>
+    
+            </div>
+        </div>
+        
+        <button class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 rounded" onclick="event.stopPropagation(); removePlanning(this, &#39;24-236&#39;, &#39;1&#39;, &#39;2025-03-03&#39;)">
+            <i class="fas fa-times text-xs"></i>
+        </button>
+    
+    </div>
+                                                </div>
+        </div>
+    </div>                         </div>
+                                                                    <div class="flex-1 min-w-0 " data-weekend="false">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-04" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                         </div>
+                                                                    <div class="flex-1 min-w-0 " data-weekend="false">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-05" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                         </div>
+                                                                    <div class="flex-1 min-w-0 " data-weekend="false">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-06" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                         </div>
+                                                                    <div class="flex-1 min-w-0 " data-weekend="false">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-red-50 unavailable-pattern" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-07" data-available="false" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                         </div>
+                                                                    <div class="flex-1 min-w-0 weekend-column" data-weekend="true" style="display: none;">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-red-50 unavailable-pattern" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-08" data-available="false" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="true">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                         </div>
+                                                                    <div class="flex-1 min-w-0 weekend-column" data-weekend="true" style="display: none;">
+                            <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-red-50 unavailable-pattern" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="1" data-date="2025-03-09" data-available="false" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="true">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                         </div>
+                                    </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Coworkers Section -->
+            <div class="flex min-w-0 border-b border-gray-200">
+            <!-- Employee Info -->
+            <div class="flex-none w-[250px] px-4 flex items-center justify-between border-r border-gray-200 bg-gray-50">
+                <span class="truncate text-sm text-gray-600">
+                    <i class="fas fa-user-friends mr-2"></i>
+                    Edwin Veldhuizen
+                </span>
+                            </div>
+            
+            <!-- Planning Cells -->
+            <div class="flex-1 flex min-w-0">
+                                                        <div class="flex-1 min-w-0 " data-weekend="false">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-100" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-03" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                            <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200 mb-1 last:mb-0 planning-item relative group hover:bg-gray-50 null" data-planning-id="94" data-project-id="24-236" data-date="2025-03-03" data-has-enough-persons="true" data-werklocatie="40" data-vehicle-warning-enabled="true" data-has-vehicle="true" draggable="true" title="">
+        <div class="flex flex-col min-w-0">
+            <span class="font-semibold text-blue-800 project-nummer">236</span>
+            <span class="text-gray-600 text-sm project-naam">T' Kuipke Familiebaan</span>
+            
+            
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-gray-500">
+                        <i class="fas fa-map-marker-alt mr-1"></i>40
+                    </span>
+                </div>
+            
+            
+            <div class="planning-item-assets flex flex-col gap-1 mt-1">
+                
+        <div class="asset-icon flex items-center gap-1 bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded text-xs w-full border border-gray-200" data-asset-id="1" data-car-seats="2" data-asset-categorie="Voertuig">
+        <span class="asset-icon-emoji">🚗 <span title="Gebruik / Zitplaatsen"><i class="fas fa-users"></i> 1/2</span></span>
+        <div class="flex flex-col">
+            <span class="asset-name">Ford Transit Connect</span>
+            <div class="flex flex-col gap-0.5 mt-1">
+                <div class="flex items-center">
+        <div class="bg-blue-700 h-5 w-6 text-white font-bold px-1 py-1 rounded-l-md text-xs flex items-center border-y-2 border-l-2 border-black">
+            NL
+        </div>
+        <div class="bg-yellow-500 h-5 w-20 text-black font-bold px-1 rounded-r-md text-xs border-2 border-black uppercase tracking-wide">
+            VBT-97-R
+        </div>
+    </div>
+                <div class="flex flex-row items-center gap-0.5 text-gray-400 text-[10px]">
+                <i class="fas fa-user text-[8px]"></i>
+                <span>Marc Brants</span>
+            </div>
+            </div>
+        </div>
+        <button class="text-gray-400 hover:text-red-500 ml-auto" onclick="removeAsset(this, &#39;94&#39;, &#39;1&#39;)">×</button>
+    </div>
+    
+            </div>
+        </div>
+        
+        <button class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 rounded" onclick="event.stopPropagation(); removePlanning(this, &#39;24-236&#39;, &#39;2&#39;, &#39;2025-03-03&#39;)">
+            <i class="fas fa-times text-xs"></i>
+        </button>
+    
+    </div>
+                                                                                                                        </div>
+        </div>
+    </div>                     </div>
+                                                        <div class="flex-1 min-w-0 " data-weekend="false">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-04" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                     </div>
+                                                        <div class="flex-1 min-w-0 " data-weekend="false">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-05" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                <div class="flex items-center justify-between bg-white p-2 rounded border border-gray-200 mb-1 last:mb-0 planning-item relative group hover:bg-gray-50 null" data-planning-id="98" data-project-id="24-213" data-date="2025-03-05" data-has-enough-persons="true" data-werklocatie="0" data-vehicle-warning-enabled="true" data-has-vehicle="false" draggable="true" title="">
+        <div class="flex flex-col min-w-0">
+            <span class="font-semibold text-blue-800 project-nummer">213</span>
+            <span class="text-gray-600 text-sm project-naam">Mertens Tongelreep + Aquanaut</span>
+            
+            
+            
+            <div class="planning-item-assets flex flex-col gap-1 mt-1">
+                
+            </div>
+        </div>
+        
+        <button class="absolute top-1 right-1 w-5 h-5 flex items-center justify-center bg-gray-100 hover:bg-red-100 text-gray-500 hover:text-red-600 rounded" onclick="event.stopPropagation(); removePlanning(this, &#39;24-213&#39;, &#39;2&#39;, &#39;2025-03-05&#39;)">
+            <i class="fas fa-times text-xs"></i>
+        </button>
+    
+    </div>
+                                                                                    </div>
+        </div>
+    </div>                     </div>
+                                                        <div class="flex-1 min-w-0 " data-weekend="false">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-06" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                     </div>
+                                                        <div class="flex-1 min-w-0 " data-weekend="false">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-green-50" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-07" data-available="true" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="false">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                     </div>
+                                                        <div class="flex-1 min-w-0 weekend-column" data-weekend="true" style="display: none;">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-red-50 unavailable-pattern" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-08" data-available="false" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="true">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                     </div>
+                                                        <div class="flex-1 min-w-0 weekend-column" data-weekend="true" style="display: none;">
+                        <div class="w-full h-full min-h-[50px] flex flex-col border-r border-gray-200 planning-cell bg-red-50 unavailable-pattern" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" data-employee-id="2" data-date="2025-03-09" data-available="false" data-verlof="false" data-verlof-time="" data-verlof-type="" data-verlof-note="" data-feestdag="false" data-keuring-assets="[]" data-weekend="true">
+    
+            <div class="flex-1 p-2">
+                        
+            <div class="planning-items-container flex flex-col gap-1">
+                                                                                                                                        </div>
+        </div>
+    </div>                     </div>
+                            </div>
+        </div>
+    </div>
+
+<!-- Modals -->
+<!-- Planning Note Modal -->
+<div id="planningNoteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div class="relative top-10 mx-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Project Details</h3>
+            <button onclick="closePlanningNoteModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Project Info -->
+            <div class="bg-gray-50 p-4 rounded-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="font-semibold text-blue-800 text-lg" id="projectNummer"></span>
+                    <span class="text-gray-600" id="projectNaam"></span>
+                </div>
+                <div class="text-sm text-gray-600" id="projectDetails"></div>
+            </div>
+
+            <!-- Vehicle Warning Toggle -->
+            <div class="flex items-center mb-4" id="vehicleWarningContainer">
+                <input type="checkbox" id="vehicleWarningToggle" class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded" checked="">
+                <label for="vehicleWarningToggle" id="vehicleWarningLabel" class="ml-2 block text-sm text-gray-700">
+                    Voertuig waarschuwingen aan
+                </label>
+            </div>
+
+            <!-- Note Form -->
+            <div>
+                <label for="planningNote" class="block text-sm font-medium text-gray-700 mb-2">Notitie</label>
+                <textarea id="planningNote" rows="4" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Voeg een notitie toe..."></textarea>
+                <input type="hidden" id="planningItemId">
+            </div>
+
+            <!-- Save Button -->
+            <div class="flex justify-end">
+                <button onclick="savePlanningNote()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    Opslaan
+                </button>
+            </div>
+        </div>
+    </div>
+</div> 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('vehicleWarningToggle');
+        checkbox.addEventListener('change', function() {
+            const label = document.getElementById('vehicleWarningLabel');
+            label.textContent = this.checked 
+                ? 'Voertuig waarschuwingen aan' 
+                : 'Voertuig waarschuwingen onderbroken';
+        });
+    });
+</script><!-- Qualifications Management Modal -->
+<div id="qualificationModal" x-data="{ 
+        showModal: false,
+        showForm: false,
+        formMode: &#39;add&#39;,
+        currentQualification: { id: &#39;&#39;, name: &#39;&#39; },
+        
+        init() {
+            Alpine.store(&#39;qualifications&#39;).fetch();
+        },
+        
+        openForm(mode, qualification = null) {
+            this.formMode = mode;
+            this.currentQualification = mode === &#39;edit&#39; ? { ...qualification } : { id: &#39;&#39;, name: &#39;&#39; };
+            this.showForm = true;
+        },
+        
+        async saveQualification(e) {
+            e.preventDefault();
+            try {
+                await Alpine.store(&#39;qualifications&#39;).save(this.currentQualification);
+                this.showForm = false;
+            } catch (error) {
+                // Error is handled by the store
+            }
+        },
+        
+        async deleteQualification(id) {
+            if (!confirm(&#39;Weet je zeker dat je deze kwalificatie wilt verwijderen?&#39;)) return;
+            
+            try {
+                await Alpine.store(&#39;qualifications&#39;).delete(id);
+            } catch (error) {
+                // Error is handled by the store
+            }
+        }
+    }" x-show="showModal" x-on:open-qualification-modal.window="showModal = true" x-on:close-qualification-modal.window="showModal = false" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
+    
+    <div class="relative top-10 mx-auto p-5 w-[800px] shadow-lg rounded-md bg-white">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Kwalificatiebeheer</h3>
+            <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Add Qualification Button -->
+        <div class="mb-6">
+            <button @click="openForm(&#39;add&#39;)" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                <i class="fas fa-plus mr-2"></i>
+                Kwalificatie toevoegen
+            </button>
+        </div>
+
+        <!-- Error Message -->
+        <div x-show="$store.qualifications.error" x-text="$store.qualifications.error" class="mb-4 text-red-600" style="display: none;"></div>
+
+        <!-- Loading State -->
+        <div x-show="$store.qualifications.loading" class="flex justify-center items-center py-4" style="display: none;">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+
+        <!-- Qualifications List -->
+        <div x-show="!$store.qualifications.loading" class="bg-white shadow overflow-hidden rounded-md" style="">
+            <ul class="divide-y divide-gray-200">
+                <template x-for="qualification in $store.qualifications.items" :key="qualification.id"></template><li class="p-4 hover:bg-gray-50 flex items-center justify-between">
+                        <span class="font-medium" x-text="qualification.name">Rijbewijs B</span>
+                        <div class="flex items-center space-x-2">
+                            <button @click="openForm(&#39;edit&#39;, qualification)" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button @click="deleteQualification(qualification.id)" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </li><li class="p-4 hover:bg-gray-50 flex items-center justify-between">
+                        <span class="font-medium" x-text="qualification.name">Rijbewijs BE</span>
+                        <div class="flex items-center space-x-2">
+                            <button @click="openForm(&#39;edit&#39;, qualification)" class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button @click="deleteQualification(qualification.id)" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Add/Edit Qualification Form Modal -->
+    <div x-show="showForm" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-60" style="display: none;">
+        <div class="relative top-10 mx-auto p-5 w-[500px] shadow-lg rounded-md bg-white">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900" x-text="formMode === &#39;add&#39; ? &#39;Kwalificatie toevoegen&#39; : &#39;Kwalificatie bewerken&#39;">Kwalificatie toevoegen</h3>
+                <button @click="showForm = false" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form @submit="saveQualification">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Naam</label>
+                        <input type="text" x-model="currentQualification.name" required="" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" @click="showForm = false" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Annuleren
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                        Opslaan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Asset Qualifications Modal -->
+<div id="assetQualificationsModal" x-data="{ 
+        showModal: false,
+        assetName: &#39;&#39;,
+        assetId: null,
+        selectedQualifications: new Set(),
+        
+        init() {
+            this.$watch(&#39;showModal&#39;, value =&gt; {
+                if (!value) {
+                    // Reset state when modal is closed
+                    this.assetName = &#39;&#39;;
+                    this.assetId = null;
+                    this.selectedQualifications = new Set();
+                    Alpine.store(&#39;assetQualificationAssignments&#39;).currentAssetId = null;
+                }
+            });
+        },
+
+        initializeQualifications(assetId) {
+            // Get current qualifications from the store and initialize local state
+            const currentQuals = Alpine.store(&#39;assetQualificationAssignments&#39;).assetQualifications[assetId];
+            this.selectedQualifications = new Set(currentQuals || []);
+        },
+
+        isSelected(qualificationId) {
+            return this.selectedQualifications.has(parseInt(qualificationId));
+        },
+
+        toggleQualification(qualificationId) {
+            qualificationId = parseInt(qualificationId);
+            if (this.selectedQualifications.has(qualificationId)) {
+                this.selectedQualifications.delete(qualificationId);
+            } else {
+                this.selectedQualifications.add(qualificationId);
+            }
+        },
+
+        async saveQualifications() {
+            // Update the store with the new selections
+            const store = Alpine.store(&#39;assetQualificationAssignments&#39;);
+            store.assetQualifications[this.assetId] = this.selectedQualifications;
+            
+            const success = await store.save();
+            if (success) {
+                this.showModal = false;
+            }
+        }
+    }" x-show="showModal" @open-asset-qualifications.window="
+        showModal = true;
+        assetName = $event.detail.assetName;
+        assetId = $event.detail.assetId;
+        Alpine.store(&#39;assetQualificationAssignments&#39;).setCurrentAsset($event.detail.assetId);
+        initializeQualifications($event.detail.assetId);
+    " class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-[100]" style="display: none;">
+    
+    <div class="relative top-10 mx-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Kwalificaties beheren</h3>
+            <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="mb-4">
+            <h4 class="text-md font-medium text-gray-700" x-text="assetName"></h4>
+            <!-- Qualification Badges -->
+            <div class="flex flex-wrap gap-2 mt-2">
+                <template x-for="qualification in $store.qualifications.items" :key="qualification.id"></template><span x-show="isSelected(qualification.id)" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name" style="display: none;">Rijbewijs B</span><span x-show="isSelected(qualification.id)" class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name" style="display: none;">Rijbewijs BE</span>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div x-show="$store.assetQualificationAssignments.error" x-text="$store.assetQualificationAssignments.error" class="mb-4 text-red-600" style="">Unexpected token '&lt;', "&lt;!DOCTYPE "... is not valid JSON</div>
+
+        <!-- Loading State -->
+        <div x-show="$store.assetQualificationAssignments.loading" class="flex justify-center items-center py-4" style="display: none;">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+
+        <div class="space-y-4" x-show="!$store.assetQualificationAssignments.loading" style="">
+            <div class="bg-white shadow overflow-hidden rounded-md">
+                <ul class="divide-y divide-gray-200">
+                    <template x-for="qualification in $store.qualifications.items" :key="qualification.id"></template><li class="p-4 hover:bg-gray-50">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" :checked="isSelected(qualification.id)" @change="toggleQualification(qualification.id)">
+                                <span class="font-medium text-gray-900" x-text="qualification.name">Rijbewijs B</span>
+                            </label>
+                        </li><li class="p-4 hover:bg-gray-50">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" :checked="isSelected(qualification.id)" @change="toggleQualification(qualification.id)">
+                                <span class="font-medium text-gray-900" x-text="qualification.name">Rijbewijs BE</span>
+                            </label>
+                        </li>
+                </ul>
+            </div>
+            
+            <div class="flex justify-end mt-4">
+                <button @click="saveQualifications()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                    Opslaan
+                </button>
+            </div>
+        </div>
+    </div>
+</div> <!-- Wrap both modals in a single assetManagement component -->
+<div x-data="assetManagement">
+    <!-- Asset Management Modal -->
+    <div x-data="{ open: false }" @open-asset-modal.window="open = true" @close-asset-modal.window="open = false" x-show="open" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
+        <div class="relative top-10 mx-auto p-5 w-[800px] shadow-lg rounded-md bg-white">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900">Assetbeheer</h3>
+                <button @click="$dispatch(&#39;close-asset-modal&#39;)" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Add Asset Button -->
+            <div class="mb-6">
+                <button @click="resetForm(); $dispatch(&#39;open-asset-form&#39;)" class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+                    <i class="fas fa-plus mr-2"></i>
+                    Asset toevoegen
+                </button>
+            </div>
+
+            <!-- Assets List -->
+            <div class="space-y-6">
+                <!-- Loading indicator -->
+                <template x-if="$store.assets.loading"></template>
+
+                <!-- Vehicles Section -->
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700 uppercase tracking-wider mb-3">Voertuigen</h4>
+                    <div class="bg-white shadow overflow-hidden rounded-md">
+                        <ul class="divide-y divide-gray-200 asset-list">
+                            <template x-for="asset in $store.assets.getVoertuigen()" :key="asset.id"></template><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">Ford Transit Connect</span>
+                                                <template x-if="asset.kenteken"></template><div class="flex items-center">
+                                                        <span class="mx-2 text-gray-400">|</span>
+                                                        <span class="text-gray-600" x-text="asset.kenteken">VBT-97-R</span>
+                                                    </div>
+                                            </div>
+                                            <template x-if="asset.vaste_bestuurder"></template><small class="text-gray-500 flex items-center mt-1">
+                                                    <i class="fas fa-user mr-1"></i>
+                                                    <span x-text="asset.vaste_bestuurder.voornaam + &#39; &#39; + asset.vaste_bestuurder.achternaam">Marc Brants</span>
+                                                </small>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs B</span>
+                                    </div>
+                                </li><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">Ford Transit Custom</span>
+                                                <template x-if="asset.kenteken"></template><div class="flex items-center">
+                                                        <span class="mx-2 text-gray-400">|</span>
+                                                        <span class="text-gray-600" x-text="asset.kenteken">VRZ-53-R</span>
+                                                    </div>
+                                            </div>
+                                            <template x-if="asset.vaste_bestuurder"></template><small class="text-gray-500 flex items-center mt-1">
+                                                    <i class="fas fa-user mr-1"></i>
+                                                    <span x-text="asset.vaste_bestuurder.voornaam + &#39; &#39; + asset.vaste_bestuurder.achternaam">Edwin Veldhuizen</span>
+                                                </small>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs B</span>
+                                    </div>
+                                </li><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">Ford Transit Custom</span>
+                                                <template x-if="asset.kenteken"></template><div class="flex items-center">
+                                                        <span class="mx-2 text-gray-400">|</span>
+                                                        <span class="text-gray-600" x-text="asset.kenteken">VSJ-09-H</span>
+                                                    </div>
+                                            </div>
+                                            <template x-if="asset.vaste_bestuurder"></template><small class="text-gray-500 flex items-center mt-1">
+                                                    <i class="fas fa-user mr-1"></i>
+                                                    <span x-text="asset.vaste_bestuurder.voornaam + &#39; &#39; + asset.vaste_bestuurder.achternaam">Jordi Graafland</span>
+                                                </small>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs B</span>
+                                    </div>
+                                </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Trailers Section -->
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700 uppercase tracking-wider mb-3">Aanhangers</h4>
+                    <div class="bg-white shadow overflow-hidden rounded-md">
+                        <ul class="divide-y divide-gray-200 asset-list">
+                            <template x-for="asset in $store.assets.getAanhangers()" :key="asset.id"></template><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">HAPERT AL2700</span>
+                                                <template x-if="asset.kenteken"></template><div class="flex items-center">
+                                                        <span class="mx-2 text-gray-400">|</span>
+                                                        <span class="text-gray-600" x-text="asset.kenteken">WD-PP-87</span>
+                                                    </div>
+                                            </div>
+                                            <template x-if="asset.vaste_bestuurder"></template>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs B</span><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs BE</span>
+                                    </div>
+                                </li><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">HULCO ROTA 3</span>
+                                                <template x-if="asset.kenteken"></template><div class="flex items-center">
+                                                        <span class="mx-2 text-gray-400">|</span>
+                                                        <span class="text-gray-600" x-text="asset.kenteken">53-WK-NR</span>
+                                                    </div>
+                                            </div>
+                                            <template x-if="asset.vaste_bestuurder"></template>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs B</span><span class="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" x-text="qualification.name">Rijbewijs BE</span>
+                                    </div>
+                                </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Other Assets Section -->
+                <div>
+                    <h4 class="text-sm font-medium text-gray-700 uppercase tracking-wider mb-3">Overige Assets</h4>
+                    <div class="bg-white shadow overflow-hidden rounded-md">
+                        <ul class="divide-y divide-gray-200 asset-list">
+                            <template x-for="asset in $store.assets.getOverig()" :key="asset.id"></template><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">Ladder 12m</span>
+                                            </div>
+                                            <template x-if="asset.omschrijving"></template><small class="text-gray-500 flex items-center mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    <span x-text="asset.omschrijving">Ladder 12 meter</span>
+                                                </small>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template>
+                                    </div>
+                                </li><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">Steiger 6m</span>
+                                            </div>
+                                            <template x-if="asset.omschrijving"></template><small class="text-gray-500 flex items-center mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    <span x-text="asset.omschrijving">Rolsteiger 6 meter werkhoogte</span>
+                                                </small>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template>
+                                    </div>
+                                </li><li class="p-4 hover:bg-gray-50">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <div class="flex items-center">
+                                                <span class="font-medium text-gray-900" x-text="asset.naam">Gereedschapset A</span>
+                                            </div>
+                                            <template x-if="asset.omschrijving"></template><small class="text-gray-500 flex items-center mt-1">
+                                                    <i class="fas fa-info-circle mr-1"></i>
+                                                    <span x-text="asset.omschrijving">Complete set handgereedschap</span>
+                                                </small>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <button @click="$dispatch(&#39;open-asset-qualifications&#39;, {
+                                                    assetId: asset.id,
+                                                    assetName: asset.naam,
+                                                    qualifications: asset.qualifications
+                                                })" class="text-green-600 hover:text-green-800" title="Kwalificaties beheren">
+                                                <i class="fas fa-certificate"></i>
+                                            </button>
+                                            <button @click="editAsset(asset)" class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button @click="deleteAsset(asset.id)" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Qualifications List -->
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <template x-for="qualification in asset.qualifications" :key="qualification.id"></template>
+                                    </div>
+                                </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Asset Form Modal -->
+    <div x-data="{ open: false }" @open-asset-form.window="open = true" @close-asset-form.window="open = false" x-show="open" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
+        <div class="relative top-10 mx-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-900" x-text="formData.id ? &#39;Asset bewerken&#39; : &#39;Asset toevoegen&#39;">Asset toevoegen</h3>
+                <button @click="$dispatch(&#39;close-asset-form&#39;)" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form @submit.prevent="saveAsset">
+                <div class="space-y-4">
+                    <!-- Basic Info -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Naam</label>
+                            <input type="text" x-model="formData.naam" required="" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Categorie</label>
+                            <select x-model="formData.categorie" required="" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option value="Voertuig">Voertuig</option>
+                                <option value="Aanhanger">Aanhanger</option>
+                                <option value="Overig">Overig</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle/Trailer fields -->
+                    <template x-if="formData.categorie !== &#39;Overig&#39;"></template><div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Kenteken</label>
+                                <input type="text" x-model="formData.kenteken" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Vaste bestuurder</label>
+                                <select x-model="formData.vaste_bestuurder_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                    <option value="">Geen vaste bestuurder</option>
+                                    <template x-for="person in $store.assets.personnel" :key="person.id"></template><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="4">Ceico Wijgerts</option><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="2">Edwin Veldhuizen</option><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="6">Japie Stam</option><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="3">Jordi Graafland</option><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="1">Marc Brants</option><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="5">Marcel Stulen</option><option :value="person.id" x-text="person.voornaam + &#39; &#39; + person.achternaam" value="10">test test2</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    <!-- Car seats field (only for vehicles) -->
+                    <template x-if="formData.categorie === &#39;Voertuig&#39;"></template><div>
+                            <label class="block text-sm font-medium text-gray-700">Aantal zitplaatsen</label>
+                            <input type="number" x-model="formData.car_seats" min="0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+
+                    <!-- Trailer-specific fields -->
+                    <template x-if="formData.categorie === &#39;Aanhanger&#39;"></template>
+
+                    <!-- Description field -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Omschrijving</label>
+                        <textarea x-model="formData.omschrijving" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                    </div>
+                </div>
+
+                <div class="mt-6 flex justify-end space-x-3">
+                    <button type="button" @click="$dispatch(&#39;close-asset-form&#39;)" class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Annuleren
+                    </button>
+                    <template x-if="formData.id"></template>
+                    <button type="submit" :disabled="loading" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700 disabled:opacity-50">
+                        <template x-if="loading"></template>
+                        <template x-if="!loading"></template><span>Opslaan</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Asset Qualifications Modal -->
+<div id="assetQualificationsModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+    <div class="relative top-10 mx-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Kwalificaties beheren</h3>
+            <button onclick="closeAssetQualificationsModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="mb-4">
+            <h4 class="text-md font-medium text-gray-700" id="assetQualificationsName"></h4>
+        </div>
+
+        <div class="space-y-4">
+            <div class="bg-white shadow overflow-hidden rounded-md">
+                <ul class="divide-y divide-gray-200" id="assetQualificationsList">
+                                            <li class="p-4 hover:bg-gray-50">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="qualification-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" data-qualification-id="1" onchange="trackAssetQualificationChange(this)">
+                                <span class="font-medium text-gray-900">Rijbewijs B</span>
+                            </label>
+                        </li>
+                                            <li class="p-4 hover:bg-gray-50">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="qualification-checkbox rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" data-qualification-id="2" onchange="trackAssetQualificationChange(this)">
+                                <span class="font-medium text-gray-900">Rijbewijs BE</span>
+                            </label>
+                        </li>
+                                    </ul>
+            </div>
+            
+            <div class="flex justify-end mt-4">
+                <button onclick="saveAssetQualifications()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                    Opslaan
+                </button>
+            </div>
+        </div>
+    </div>
+</div> <!-- Employee Qualifications Modal -->
+<div id="employeeQualificationsModal" x-data="{ 
+        showModal: false,
+        employeeName: &#39;&#39;,
+        employeeId: null,
+        
+        init() {
+            this.$watch(&#39;showModal&#39;, value =&gt; {
+                if (!value) {
+                    // Reset state when modal is closed
+                    this.employeeName = &#39;&#39;;
+                    this.employeeId = null;
+                    Alpine.store(&#39;employeeQualificationAssignments&#39;).currentEmployeeId = null;
+                }
+            });
+        },
+
+        async saveQualifications() {
+            const success = await Alpine.store(&#39;employeeQualificationAssignments&#39;).save();
+            if (success) {
+                this.showModal = false;
+            }
+        }
+    }" x-show="showModal" @open-employee-qualifications.window="
+        showModal = true;
+        employeeName = $event.detail.employeeName;
+        employeeId = $event.detail.employeeId;
+        Alpine.store(&#39;employeeQualificationAssignments&#39;).setCurrentEmployee($event.detail.employeeId);
+    " class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50" style="display: none;">
+    
+    <div class="relative top-10 mx-auto p-5 w-[600px] shadow-lg rounded-md bg-white">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold text-gray-900">Kwalificaties beheren</h3>
+            <button @click="showModal = false" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="mb-4">
+            <h4 class="text-md font-medium text-gray-700" x-text="employeeName"></h4>
+        </div>
+
+        <!-- Loading State -->
+        <div x-show="$store.employeeQualificationAssignments.loading" class="flex justify-center items-center py-4" style="display: none;">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        </div>
+
+        <div class="space-y-4" x-show="!$store.employeeQualificationAssignments.loading" style="">
+            <div class="bg-white shadow overflow-hidden rounded-md">
+                <ul class="divide-y divide-gray-200">
+                    <template x-for="qualification in $store.qualifications.items" :key="qualification.id"></template><li class="p-4">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" :checked="$store.employeeQualificationAssignments.isAssigned(employeeId, qualification.id)" @change="$store.employeeQualificationAssignments.toggleQualification(employeeId, qualification.id)">
+                                <span class="font-medium text-gray-900" x-text="qualification.name">Rijbewijs B</span>
+                            </label>
+                        </li><li class="p-4">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500" :checked="$store.employeeQualificationAssignments.isAssigned(employeeId, qualification.id)" @change="$store.employeeQualificationAssignments.toggleQualification(employeeId, qualification.id)">
+                                <span class="font-medium text-gray-900" x-text="qualification.name">Rijbewijs BE</span>
+                            </label>
+                        </li>
+                </ul>
+            </div>
+            
+            <div class="flex justify-end mt-4">
+                <button @click="saveQualifications()" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md hover:bg-blue-700">
+                    Opslaan
+                </button>
+            </div>
+        </div>
+    </div>
+</div>     </div>
+
+    <!-- Dynamic Modals -->
+    
+    <!-- Scripts -->
+    
+</body></html>

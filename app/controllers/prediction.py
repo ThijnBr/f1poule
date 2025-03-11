@@ -186,6 +186,11 @@ def predict_top3(track_id):
         if driver2_id in ['None', '0', '']: driver2_id = None
         if driver3_id in ['None', '0', '']: driver3_id = None
         
+        # Check for duplicate drivers
+        drivers = [d for d in [driver1_id, driver2_id, driver3_id] if d is not None]
+        if len(drivers) != len(set(drivers)):
+            return 'Duplicate drivers are not allowed', 400
+        
         # Save prediction
         QualifyingPrediction.save_prediction(
             user_id, track_id, poule_id, driver1_id, driver2_id, driver3_id
@@ -243,6 +248,11 @@ def predict_top5(track_id):
         if fastest_lap in ['None', '0', '']: fastest_lap = None
         if dnf in ['None', '0', '', 'No DNF']: dnf = None
         if dod in ['None', '0', '']: dod = None
+        
+        # Check for duplicate drivers in race prediction
+        race_drivers = [d for d in [driver1_id, driver2_id, driver3_id, driver4_id, driver5_id] if d is not None]
+        if len(race_drivers) != len(set(race_drivers)):
+            return 'Duplicate drivers are not allowed', 400
         
         # Save predictions
         RacePrediction.save_prediction(

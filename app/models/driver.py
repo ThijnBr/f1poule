@@ -17,16 +17,31 @@ class Driver:
             exclude_active: If True, only return inactive drivers. Ignored if active_only is True.
         """
         with get_db_cursor() as cursor:
+            # Create a CTE for team standings based on the provided order
             query = """
+                WITH team_standings AS (
+                    VALUES 
+                        ('McLaren', 1),
+                        ('Ferrari', 2),
+                        ('Red Bull', 3),
+                        ('Mercedes', 4),
+                        ('Aston Martin', 5),
+                        ('Alpine', 6),
+                        ('Haas', 7),
+                        ('Visa Cash App RB F1', 8),
+                        ('Williams', 9),
+                        ('Kick Sauber', 10)
+                )
                 SELECT d.driver_id, d.driver_name, t.team_name, d.active 
                 FROM driver d
                 JOIN team t ON d.team_id = t.team_id
+                LEFT JOIN team_standings ts ON t.team_name = ts.column1
             """
             if active_only:
                 query += " WHERE d.active = true"
             elif exclude_active:
                 query += " WHERE d.active = false"
-            query += " ORDER BY d.driver_name"  # Sort alphabetically by default
+            query += " ORDER BY ts.column2, d.driver_name"  # Sort by team standing first, then alphabetically by driver name
             cursor.execute(query)
             drivers = cursor.fetchall()
             return drivers

@@ -324,4 +324,35 @@ document.addEventListener('DOMContentLoaded', function() {
         allItems.forEach(item => item.classList.remove('selected'));
         selectedItem.classList.add('selected');
     }
+
+    function updateCountdown(element) {
+        const deadline = new Date(element.dataset.deadline).getTime();
+        const now = new Date().getTime();
+        const timeLeft = deadline - now;
+
+        if (timeLeft <= 0) {
+            element.innerHTML = '<div class="expired-text">Predictions closed</div>';
+            element.closest('.deadline-box').classList.add('expired');
+            return;
+        }
+
+        const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        element.querySelector('.days').textContent = String(days).padStart(2, '0');
+        element.querySelector('.hours').textContent = String(hours).padStart(2, '0');
+        element.querySelector('.minutes').textContent = String(minutes).padStart(2, '0');
+        element.querySelector('.seconds').textContent = String(seconds).padStart(2, '0');
+    }
+
+    // Initialize countdowns
+    const countdowns = document.querySelectorAll('.countdown');
+    countdowns.forEach(countdown => {
+        if (countdown.querySelector('.countdown-timer')) {
+            updateCountdown(countdown);
+            setInterval(() => updateCountdown(countdown), 1000);
+        }
+    });
 }); 

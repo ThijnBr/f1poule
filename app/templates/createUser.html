@@ -47,30 +47,6 @@
                 return false;
             }
 
-            // Check password length
-            if (password.length < 8) {
-                alert("Password must be at least 8 characters long.");
-                return false;
-            }
-
-            // Check for uppercase letter
-            if (!/[A-Z]/.test(password)) {
-                alert("Password must contain at least one uppercase letter.");
-                return false;
-            }
-
-            // Check for lowercase letter
-            if (!/[a-z]/.test(password)) {
-                alert("Password must contain at least one lowercase letter.");
-                return false;
-            }
-
-            // Check for number
-            if (!/[0-9]/.test(password)) {
-                alert("Password must contain at least one number.");
-                return false;
-            }
-
             return true;
         }
     </script>

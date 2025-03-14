@@ -50,44 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .filter(value => value !== '0' && value !== '' && value !== 'None' && value !== 'No DNF');
     }
 
-    // Function to check if a driver is already selected in a form
-    function isDriverSelected(form, driverId, currentInput) {
-        const inputs = form.querySelectorAll('input[type="hidden"]');
-        const bonusInputs = ['fastestlap', 'dnf', 'dod'];
-
-        // If this is a bonus prediction (fastest lap, DNF, or driver of the day), allow duplicates
-        if (bonusInputs.includes(currentInput.name)) {
-            return false;
-        }
-
-        // For race predictions (top 5), check only against other race predictions
-        return Array.from(inputs).some(input => 
-            input !== currentInput && 
-            input.value === driverId && 
-            driverId !== '0' && 
-            driverId !== '' && 
-            driverId !== 'None' && 
-            driverId !== 'No DNF' &&
-            !bonusInputs.includes(input.name)
-        );
-    }
-
-    // Function to update dropdown items based on selected drivers
-    function updateDropdownItems(dropdown) {
-        const form = dropdown.closest('form');
-        const items = dropdown.querySelectorAll('.dropdown-item');
-        const hiddenInput = dropdown.querySelector('input[type="hidden"]');
-
-        items.forEach(item => {
-            const driverId = item.dataset.value;
-            if (isDriverSelected(form, driverId, hiddenInput)) {
-                item.classList.add('disabled');
-            } else {
-                item.classList.remove('disabled');
-            }
-        });
-    }
-
     // Populate all dropdowns with driver items from template
     dropdowns.forEach(dropdown => {
         const driverItems = dropdown.querySelector('.driver-items');
@@ -109,6 +71,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Function to update visual indication of selected drivers
+    function updateSelectedDriversVisual(form) {
+        const allInputs = form.querySelectorAll('input[type="hidden"]');
+        const bonusInputs = ['fastestlap', 'dnf', 'dod'];
+        const selectedDrivers = new Map();
+
+        // Collect all selected drivers and their positions
+        allInputs.forEach(input => {
+            if (!bonusInputs.includes(input.name) && input.value !== '0' && input.value !== '' && input.value !== 'None') {
+                selectedDrivers.set(input.value, input);
+            }
+        });
+
+        // Update visual indication for all dropdowns in the form
+        form.querySelectorAll('.dropdown-item').forEach(item => {
+            const driverId = item.dataset.value;
+            const isSelectedElsewhere = selectedDrivers.has(driverId) && 
+                                      selectedDrivers.get(driverId) !== item.closest('.custom-dropdown').querySelector('input[type="hidden"]');
+            item.classList.toggle('selected-elsewhere', isSelectedElsewhere);
+        });
+    }
+
     dropdowns.forEach(function(dropdown) {
         const toggle = dropdown.querySelector('.dropdown-toggle');
         const menu = dropdown.querySelector('.dropdown-menu');
@@ -125,9 +109,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Update initial disabled state
-        updateDropdownItems(dropdown);
-
         // Toggle dropdown
         toggle.addEventListener('click', function(e) {
             e.stopPropagation();
@@ -140,7 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (!isOpen) {
                 openDropdown(dropdown);
-                updateDropdownItems(dropdown);
+                // Update visual indication when opening dropdown
+                const form = dropdown.closest('form');
+                if (form) {
+                    updateSelectedDriversVisual(form);
+                }
             } else {
                 closeDropdown(dropdown);
             }
@@ -152,40 +137,94 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 e.stopPropagation();
 
-                if (item.classList.contains('disabled')) {
-                    return;
+                // Find if this driver is already selected somewhere else in the form
+                const form = dropdown.closest('form');
+                const allInputs = form.querySelectorAll('input[type="hidden"]');
+                const selectedDriverId = item.dataset.value;
+                const bonusInputs = ['fastestlap', 'dnf', 'dod'];
+                const currentInput = hiddenInput;
+
+                // Don't handle duplicates for bonus predictions
+                if (!bonusInputs.includes(currentInput.name)) {
+                    let foundConflict = false;
+                    allInputs.forEach(input => {
+                        if (input !== currentInput && 
+                            input.value === selectedDriverId && 
+                            !bonusInputs.includes(input.name)) {
+                            foundConflict = true;
+                            // Only attempt to swap if both positions have valid drivers
+                            const currentDriverId = currentInput.value;
+                            const otherDropdown = input.closest('.custom-dropdown');
+                            const otherToggle = otherDropdown.querySelector('.dropdown-toggle');
+                            
+                            // Reset the other position to "Select Driver" by default
+                            input.value = '0';
+                            otherToggle.innerHTML = 'Select Driver';
+
+                            // Only attempt swap if current position has a valid driver
+                            if (currentDriverId && currentDriverId !== '0' && currentDriverId !== '') {
+                                // Find the dropdown item for the current driver in the other dropdown
+                                const otherItems = otherDropdown.querySelectorAll('.dropdown-item');
+                                const currentDriverItem = Array.from(otherItems).find(i => i.dataset.value === currentDriverId);
+                                
+                                if (currentDriverItem) {
+                                    // Update the other dropdown with current driver
+                                    updateDropdownSelection(otherToggle, currentDriverItem, input);
+                                }
+                            }
+                        }
+                    });
                 }
 
+                // Always update the current dropdown with the selected driver
                 updateDropdownSelection(toggle, item, hiddenInput);
                 closeDropdown(dropdown);
                 
                 // Submit the form using fetch with CSRF token
-                const form = dropdown.closest('form');
                 const container = dropdown.closest('.prediction-input');
                 if (form && container) {
-                    showStatus(container, 'loading');
-                    const formData = new FormData(form);
-                    fetch(form.action, {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Duplicate drivers are not allowed');
+                    // Small delay to ensure all DOM updates are complete
+                    setTimeout(() => {
+                        showStatus(container, 'loading');
+                        const formData = new FormData(form);
+                        
+                        // Verify no duplicates before submitting (excluding bonus predictions)
+                        const bonusInputs = ['fastestlap', 'dnf', 'dod'];
+                        const values = Array.from(formData.entries())
+                            .filter(([key]) => !bonusInputs.includes(key)) // Filter out bonus predictions
+                            .map(([_, value]) => value)
+                            .filter(v => v !== '0' && v !== '' && v !== 'None' && v !== 'No DNF');
+                        
+                        const duplicates = values.filter((v, i, a) => a.indexOf(v) !== i);
+                            
+                        if (duplicates.length > 0) {
+                            showStatus(container, 'error');
+                            console.error('Duplicate values found:', duplicates);
+                            return;
                         }
-                        showStatus(container, 'success');
-                        // Update disabled state for all dropdowns in the form
-                        form.querySelectorAll('.custom-dropdown').forEach(updateDropdownItems);
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showStatus(container, 'error');
-                        // Reset the selection
-                        hiddenInput.value = '0';
-                        toggle.innerHTML = 'Select Driver';
-                        // Update disabled state
-                        updateDropdownItems(dropdown);
-                    });
+
+                        fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to save prediction');
+                            }
+                            showStatus(container, 'success');
+                            // Update visual indication after successful save
+                            updateSelectedDriversVisual(form);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showStatus(container, 'error');
+                            // Reset the selection
+                            hiddenInput.value = '0';
+                            toggle.innerHTML = 'Select Driver';
+                            // Update visual indication after error
+                            updateSelectedDriversVisual(form);
+                        });
+                    }, 50); // Small delay to ensure DOM updates are complete
                 }
             });
         });

@@ -134,7 +134,7 @@ class PointsCalculator:
                     pos2 = driver_positions.get(driver2, 999)
                     
                     # Determine the winner (lower position is better)
-                    winner = driver1 if pos1 < pos2 else driver2
+                    winner = driver1 if pos1 > pos2 else driver2
                     
                     # Award 0 points if prediction was correct
                     # driver_selected is True for driver1, False for driver2

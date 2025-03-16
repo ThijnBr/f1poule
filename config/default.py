@@ -20,10 +20,10 @@ SESSION_KEY_PREFIX = 'f1poule_session_'
 
 # Database settings
 DB_CONFIG = {
-    'database': 'poulef1',
+    'database': 'f1poule',
     'user': 'postgres',
-    'password': 'Broekie2004', 
-    'host': 'localhost',
+    'password': 'Broekie.2004', 
+    'host': '192.168.1.98',
     'port': 5432,
     'connect_timeout': 10,
     'sslmode': 'disable'

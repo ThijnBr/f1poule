@@ -55,6 +55,7 @@
         }
 
         .head-to-head .driver.loser {
+            
             background: rgba(255, 77, 77, 0.1);
         }
     </style>
@@ -122,7 +123,7 @@
                 {% else %}
                     {% for index in range(hth|length) %}
                         <div class="result-item">
-                            <span class="driver {% if hth[index][3] is defined %}{% if hth[index][3] %}loser{% else %}winner{% endif %}{% endif %}">
+                            <span class="driver {% if hth[index][3] is defined %}{% if not hth[index][3] %}loser{% else %}winner{% endif %}{% endif %}">
                                 {{ hth[index][1] }}
                             </span>
                             <span class="vs-points">
@@ -134,7 +135,7 @@
                                     <span class="points zero">0</span>
                                 {% endif %}
                             </span>
-                            <span class="driver {% if hth[index][3] is defined %}{% if not hth[index][3] %}loser{% else %}winner{% endif %}{% endif %}">
+                            <span class="driver {% if hth[index][3] is defined %}{% if hth[index][3] %}loser{% else %}winner{% endif %}{% endif %}">
                                 {{ hth[index][2] }}
                             </span>
                         </div>

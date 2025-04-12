@@ -171,12 +171,42 @@
             </div>
 
             <div class="join-poule-container">
-                <h2>Join a New Poule</h2>
-                <form class="join-poule-form animate-slide-up" action="{{ url_for('poule.join_poule') }}" method="post">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <input type="text" name="poulename" placeholder="Enter Poule Name" required>
-                    <button type="submit" class="join-button animate-pulse">Join Poule</button>
-                </form>
+                <div class="poule-actions">
+                    <div class="action-section">
+                        <h2 class="action-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+                            Join a Poule
+                        </h2>
+                        <form class="join-poule-form animate-slide-up" action="{{ url_for('poule.join_poule') }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <div class="input-group">
+                                <input type="text" name="poulename" placeholder="Enter Poule Name" required>
+                                <button type="submit" class="join-button animate-pulse">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M13.8 12H3"/></svg>
+                                    Join Poule
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="action-section">
+                        <h2 class="action-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                            Create a Poule
+                        </h2>
+                        <form class="create-poule-form animate-slide-up" action="{{ url_for('poule.create_poule') }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <div class="input-group">
+                                <input type="text" name="poulename" placeholder="Enter New Poule Name" pattern="[A-Za-z0-9_]+" title="Only letters, numbers, and underscores allowed" required>
+                                <button type="submit" class="create-button animate-pulse">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3zM12 8v8M8 12h8"/></svg>
+                                    Create Poule
+                                </button>
+                            </div>
+                            <div class="input-help">Only letters, numbers, and underscores allowed</div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -207,6 +237,150 @@
             font-style: italic;
             opacity: 0.7;
             padding: 1rem;
+        }
+
+        .join-poule-container {
+            margin-top: 3rem;
+            width: 100%;
+            max-width: 1000px;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(225, 6, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(225, 6, 0, 0.3);
+        }
+
+        .poule-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .action-section {
+            flex: 1;
+        }
+
+        .action-title {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .action-title svg {
+            color: var(--primary-color);
+        }
+
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .join-poule-form input,
+        .create-poule-form input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(225, 6, 0, 0.3);
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .join-poule-form input:focus,
+        .create-poule-form input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 15px rgba(225, 6, 0, 0.3);
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .join-poule-form input::placeholder,
+        .create-poule-form input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .join-button,
+        .create-button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .join-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .create-button {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .join-button:hover,
+        .create-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 6, 0, 0.4);
+        }
+
+        .join-button svg,
+        .create-button svg {
+            transition: transform 0.3s ease;
+        }
+
+        .join-button:hover svg,
+        .create-button:hover svg {
+            transform: translateX(3px);
+        }
+
+        .input-help {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .input-help::before {
+            content: "ℹ️";
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .join-poule-container {
+                padding: 1.5rem;
+                margin-top: 2rem;
+            }
+
+            .poule-actions {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .join-button,
+            .create-button {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 

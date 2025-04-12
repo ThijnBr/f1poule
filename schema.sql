@@ -327,5 +327,27 @@ BEGIN
     ALTER COLUMN date SET DEFAULT CURRENT_TIMESTAMP AT TIME ZONE 'UTC';
 END $$;
 
+-- Add creator_id and management functionality to poules
+DO $$ 
+BEGIN
+    -- Add creator_id column to poules table if it doesn't exist
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'poules' AND column_name = 'creator_id'
+    ) THEN
+        -- Add the creator_id column
+        ALTER TABLE poules ADD COLUMN creator_id INTEGER REFERENCES users(user_id);
+        
+        -- Set default creator_id of 3 for existing poules
+        UPDATE poules SET creator_id = 3 WHERE creator_id IS NULL;
+        
+        -- Add unique constraint for poule name within the same year
+        ALTER TABLE poules ADD CONSTRAINT unique_poule_name_per_year UNIQUE (poule_name, year);
+        
+        -- Add not null constraint for creator_id after setting default
+        ALTER TABLE poules ALTER COLUMN creator_id SET NOT NULL;
+    END IF;
+END $$;
+
 
 

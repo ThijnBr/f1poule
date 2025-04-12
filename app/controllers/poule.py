@@ -99,8 +99,7 @@ def dashboard():
                 WHERE p.user_id = %s
                 ORDER BY event_date DESC
                 """,
-                (user_id, user_id, user_id, user_id, user_id, user_id)
-            )
+                (user_id, user_id, user_id, user_id, user_id, user_id))
             # Convert tuples to namedtuples
             recent_predictions = [Prediction(*row) for row in cursor.fetchall()]
     
@@ -129,8 +128,45 @@ def join_poule():
 def view_poule(poule_id):
     """View a specific poule."""
     session['poule'] = poule_id
-    poule = Poule.get_by_id(poule_id)
     user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.index'))
+    
+    # Check if user is a member of the poule
+    with get_db_cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT EXISTS(
+                SELECT 1 FROM user_poule 
+                WHERE user_id = %s AND poule_id = %s
+            )
+            """,
+            (user_id, poule_id)
+        )
+        is_member = cursor.fetchone()[0]
+        
+        if not is_member:
+            flash('You are not a member of this poule', 'error')
+            return redirect(url_for('poule.dashboard'))
+    
+    # Get poule and check if user is creator
+    with get_db_cursor() as cursor:
+        cursor.execute(
+            """
+            SELECT p.*, CASE WHEN p.creator_id = %s THEN TRUE ELSE FALSE END as is_creator
+            FROM poules p
+            WHERE p.poule_id = %s
+            """,
+            (user_id, poule_id)
+        )
+        poule_data = cursor.fetchone()
+        if not poule_data:
+            flash('Poule not found', 'error')
+            return redirect(url_for('poule.dashboard'))
+        
+        is_creator = poule_data[4]  # is_creator is the 5th column in the result
+        poule = Poule.get_by_id(poule_id)
+    
     track_id = request.args.get('track_id', type=int)
 
     # Get all tracks for this poule's year
@@ -171,6 +207,17 @@ def view_poule(poule_id):
                     WHERE up.poule_id = %s
                     GROUP BY u.user_id
                 ),
+                headtohead_points AS (
+                    -- Head-to-head points
+                    SELECT u.user_id,
+                           COALESCE(SUM(h.points), 0) as hth_points
+                    FROM users u
+                    JOIN user_poule up ON u.user_id = up.user_id
+                    LEFT JOIN headtoheadprediction h ON u.user_id = h.user_id 
+                        AND h.track = %s AND h.poule = %s
+                    WHERE up.poule_id = %s
+                    GROUP BY u.user_id
+                ),
                 bonus_points AS (
                     -- Bonus points
                     SELECT u.user_id,
@@ -183,13 +230,14 @@ def view_poule(poule_id):
                     GROUP BY u.user_id
                 )
                 SELECT up.username,
-                       (up.quali_points + COALESCE(rp.race_points, 0) + COALESCE(bp.bonus_points, 0)) as total_points,
+                       (up.quali_points + COALESCE(rp.race_points, 0) + COALESCE(hp.hth_points, 0) + COALESCE(bp.bonus_points, 0)) as total_points,
                        up.user_id
                 FROM user_points up
                 LEFT JOIN race_points rp ON up.user_id = rp.user_id
+                LEFT JOIN headtohead_points hp ON up.user_id = hp.user_id
                 LEFT JOIN bonus_points bp ON up.user_id = bp.user_id
                 ORDER BY total_points DESC
-            """, (track_id, poule_id, poule_id, track_id, poule_id, poule_id, track_id, poule_id, poule_id))
+            """, (track_id, poule_id, poule_id, track_id, poule_id, poule_id, track_id, poule_id, poule_id, track_id, poule_id, poule_id))
             users = cursor.fetchall()
     else:
         # Get total points for all tracks
@@ -201,8 +249,98 @@ def view_poule(poule_id):
         users=users, 
         user_id=user_id,
         tracks=tracks,
-        selected_track=track_id
+        selected_track=track_id,
+        is_creator=is_creator
     )
+
+@poule_bp.route('/<int:poule_id>/delete', methods=['POST'])
+def delete_poule(poule_id):
+    """Delete a poule. Only the creator can do this."""
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.index'))
+    
+    try:
+        with get_db_cursor(commit=True) as cursor:
+            # Check if user is the creator
+            cursor.execute(
+                """
+                SELECT creator_id FROM poules WHERE poule_id = %s
+                """,
+                (poule_id,)
+            )
+            creator_id = cursor.fetchone()
+            
+            if not creator_id or creator_id[0] != user_id:
+                flash('You do not have permission to delete this poule', 'error')
+                return redirect(url_for('poule.view_poule', poule_id=poule_id))
+            
+            # Delete all related records first
+            cursor.execute(
+                """
+                DELETE FROM top3_quali WHERE poule = %s;
+                DELETE FROM top5_race WHERE poule = %s;
+                DELETE FROM headtoheadprediction WHERE poule = %s;
+                DELETE FROM bonusprediction WHERE poule = %s;
+                DELETE FROM user_poule WHERE poule_id = %s;
+                DELETE FROM poules WHERE poule_id = %s;
+                """,
+                (poule_id, poule_id, poule_id, poule_id, poule_id, poule_id)
+            )
+            
+            flash('Poule successfully deleted', 'success')
+            return redirect(url_for('poule.dashboard'))
+            
+    except Exception as e:
+        flash('Error deleting poule', 'error')
+        return redirect(url_for('poule.view_poule', poule_id=poule_id))
+
+@poule_bp.route('/<int:poule_id>/kick', methods=['POST'])
+def kick_member(poule_id):
+    """Kick a member from the poule. Only the creator can do this."""
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.index'))
+    
+    member_id = request.form.get('user_id')
+    if not member_id:
+        flash('No user specified', 'error')
+        return redirect(url_for('poule.view_poule', poule_id=poule_id))
+    
+    try:
+        with get_db_cursor(commit=True) as cursor:
+            # Check if user is the creator
+            cursor.execute(
+                """
+                SELECT creator_id FROM poules WHERE poule_id = %s
+                """,
+                (poule_id,)
+            )
+            creator_id = cursor.fetchone()
+            
+            if not creator_id or creator_id[0] != user_id:
+                flash('You do not have permission to kick members from this poule', 'error')
+                return redirect(url_for('poule.view_poule', poule_id=poule_id))
+            
+            # Cannot kick the creator
+            if int(member_id) == creator_id[0]:
+                flash('Cannot remove the poule creator', 'error')
+                return redirect(url_for('poule.view_poule', poule_id=poule_id))
+            
+            # Only remove membership
+            cursor.execute(
+                """
+                DELETE FROM user_poule WHERE poule_id = %s AND user_id = %s;
+                """,
+                (poule_id, member_id)
+            )
+            
+            flash('Member successfully removed from the poule', 'success')
+            
+    except Exception as e:
+        flash('Error removing member from poule', 'error')
+        
+    return redirect(url_for('poule.view_poule', poule_id=poule_id))
 
 @poule_bp.route('/advanced/<int:poule_id>')
 def advanced_info(poule_id):
@@ -300,4 +438,49 @@ def advanced_info(poule_id):
         user_id=user_id,
         quali_stats=quali_stats,
         race_stats=race_stats
-    ) 
+    )
+
+@poule_bp.route('/create', methods=['POST'])
+def create_poule():
+    """Create a new poule."""
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.index'))
+    
+    poule_name = request.form.get('poulename', '').strip()
+    
+    # Validate poule name (only alphanumeric and underscores)
+    if not poule_name or not poule_name.replace('_', '').isalnum():
+        flash('Poule name must contain only letters, numbers, and underscores', 'error')
+        return redirect(url_for('poule.dashboard'))
+    
+    # Get current year
+    current_year = Poule.get_current_year()
+    
+    try:
+        with get_db_cursor(commit=True) as cursor:
+            # Insert new poule
+            cursor.execute(
+                """
+                INSERT INTO poules (poule_name, year, creator_id)
+                VALUES (%s, %s, %s)
+                RETURNING poule_id
+                """,
+                (poule_name, current_year, user_id)
+            )
+            poule_id = cursor.fetchone()[0]
+            
+            # Add creator as member
+            cursor.execute(
+                """
+                INSERT INTO user_poule (user_id, poule_id)
+                VALUES (%s, %s)
+                """,
+                (user_id, poule_id)
+            )
+            
+            flash(f'Successfully created poule: {poule_name}', 'success')
+    except Exception as e:
+        flash('Error creating poule. Name may already be taken for this year.', 'error')
+    
+    return redirect(url_for('poule.dashboard')) 

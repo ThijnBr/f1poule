@@ -3,28 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>F1 Poule - Login</title>
+    <meta name="description" content="Create your free F1 prediction pool and compete with friends! Make Formula 1 race predictions, create private leagues, and enjoy the thrill of F1 racing with your own prediction group. No costs, just pure racing excitement!">
+    <meta name="keywords" content="F1 Poule, Formula 1 predictions, F1 fantasy game, free F1 pool, F1 prediction league, create F1 pool, F1 friends competition, Formula 1 betting game free">
+    <meta name="author" content="F1 Poule">
+    <meta property="og:title" content="F1 Poule - Create Your Free Formula 1 Prediction League">
+    <meta property="og:description" content="Create your own free F1 prediction pool! Invite friends, make race predictions, and compete in your private Formula 1 fantasy league. Join thousands of F1 fans today!">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="F1 Poule">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="F1 Poule - Free Formula 1 Prediction Leagues">
+    <meta name="twitter:description" content="Create your free F1 prediction pool and compete with friends! No costs, just pure racing excitement.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="{{ request.url }}">
+    <title>F1 Poule - Create Your Free Formula 1 Prediction League | Join Now</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "F1 Poule",
+        "description": "Free Formula 1 prediction game platform where users can create their own private leagues and compete with friends",
+        "url": "{{ request.url_root }}",
+        "applicationCategory": "Sports Game",
+        "operatingSystem": "Web Browser",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "EUR"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "F1 Poule"
+        },
+        "potentialAction": {
+            "@type": "CreateAction",
+            "target": {
+                "@type": "EntryPoint",
+                "urlTemplate": "{{ url_for('auth.register', _external=True) }}",
+                "description": "Create your free F1 prediction pool"
+            },
+            "result": {
+                "@type": "Game",
+                "name": "F1 Prediction League"
+            }
+        }
+    }
+    </script>
 </head>
 <body>
     <div class="container">
-        <img src="{{ url_for('static', filename='f1_logo.png') }}" alt="F1 Logo" class="logo animate-fade-in">
+        <img src="{{ url_for('static', filename='f1_logo.png') }}" alt="Formula 1 Prediction Game Logo" class="logo animate-fade-in">
         <h1 class="animate-slide-down">F1 Poule</h1>
-        <p class="subtitle animate-slide-up">Log in</p>
+        <p class="subtitle animate-slide-up">Enter Your Prediction Dashboard</p>
         <form action="{{ url_for('auth.login') }}" method="post" class="login-form animate-fade-in">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" required placeholder="Enter your driver name">
+            <input type="text" id="username" name="username" required 
+                   placeholder="Enter your name" 
+                   autocomplete="username">
 
             <label for="password">Password</label>
-            <input type="password" id="password" name="password" required placeholder="Enter your pit lane password">
+            <input type="password" id="password" name="password" required 
+                   placeholder="Enter your password"
+                   autocomplete="current-password">
 
             <button type="submit" class="animate-pulse">Login</button>
         </form>
         <div class="register-link animate-fade-in">
-            <a href="{{ url_for('auth.register') }}">New to the grid? Register here.</a>
+            <a href="{{ url_for('auth.register') }}">New to Formula 1 predictions? Register here.</a>
         </div>
     </div>
-    <img src="{{ url_for('static', filename='ferrari_car.png') }}" alt="F1 Car" class="f1-car">
+    <img src="{{ url_for('static', filename='ferrari_car.png') }}" alt="Formula 1 Race Car" class="f1-car">
+    
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "F1 Poule Login",
+        "description": "Login page for F1 Poule - Formula 1 prediction game",
+        "publisher": {
+            "@type": "Organization",
+            "name": "F1 Poule"
+        }
+    }
+    </script>
 </body>
 </html>

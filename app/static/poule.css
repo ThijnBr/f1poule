@@ -173,3 +173,20 @@ body, html {
 .predictions-button {
     animation: pulse 2s infinite;
 }
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.advanced-button {
+    background-color: #1e4d8c;
+    font-weight: bold;
+    box-shadow: 0 0 10px rgba(30, 77, 140, 0.5);
+}
+
+.advanced-button:hover {
+    background-color: #2861b1;
+    transform: scale(1.05);
+}

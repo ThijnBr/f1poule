@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from app.models.user import User
 from app.models.poule import Poule
 from app.models.track import Track
@@ -130,6 +130,174 @@ def view_poule(poule_id):
     """View a specific poule."""
     session['poule'] = poule_id
     poule = Poule.get_by_id(poule_id)
-    users = poule.get_users()
     user_id = session.get('user_id')
-    return render_template('poule.html', poule=poule_id, users=users, user_id=user_id) 
+    track_id = request.args.get('track_id', type=int)
+
+    # Get all tracks for this poule's year
+    with get_db_cursor() as cursor:
+        cursor.execute("""
+            SELECT id, track_name 
+            FROM track 
+            WHERE EXTRACT(YEAR FROM track_race_date) = %s
+            ORDER BY track_race_date DESC
+        """, (poule.year,))
+        tracks = cursor.fetchall()
+
+    # Get users with their points
+    if track_id:
+        # Get points for specific track
+        with get_db_cursor() as cursor:
+            cursor.execute("""
+                WITH user_points AS (
+                    -- Qualifying points
+                    SELECT u.user_id, u.username,
+                           COALESCE(SUM(q.driver1points + q.driver2points + q.driver3points), 0) as quali_points
+                    FROM users u
+                    JOIN user_poule up ON u.user_id = up.user_id
+                    LEFT JOIN top3_quali q ON u.user_id = q.user_id 
+                        AND q.track = %s AND q.poule = %s
+                    WHERE up.poule_id = %s
+                    GROUP BY u.user_id, u.username
+                ),
+                race_points AS (
+                    -- Race points
+                    SELECT u.user_id,
+                           COALESCE(SUM(r.driver1points + r.driver2points + r.driver3points + 
+                                      r.driver4points + r.driver5points), 0) as race_points
+                    FROM users u
+                    JOIN user_poule up ON u.user_id = up.user_id
+                    LEFT JOIN top5_race r ON u.user_id = r.user_id 
+                        AND r.track = %s AND r.poule = %s
+                    WHERE up.poule_id = %s
+                    GROUP BY u.user_id
+                ),
+                bonus_points AS (
+                    -- Bonus points
+                    SELECT u.user_id,
+                           COALESCE(SUM(b.flpoints + b.dnfpoints + b.dodpoints), 0) as bonus_points
+                    FROM users u
+                    JOIN user_poule up ON u.user_id = up.user_id
+                    LEFT JOIN bonusprediction b ON u.user_id = b.user_id 
+                        AND b.track = %s AND b.poule = %s
+                    WHERE up.poule_id = %s
+                    GROUP BY u.user_id
+                )
+                SELECT up.username,
+                       (up.quali_points + COALESCE(rp.race_points, 0) + COALESCE(bp.bonus_points, 0)) as total_points,
+                       up.user_id
+                FROM user_points up
+                LEFT JOIN race_points rp ON up.user_id = rp.user_id
+                LEFT JOIN bonus_points bp ON up.user_id = bp.user_id
+                ORDER BY total_points DESC
+            """, (track_id, poule_id, poule_id, track_id, poule_id, poule_id, track_id, poule_id, poule_id))
+            users = cursor.fetchall()
+    else:
+        # Get total points for all tracks
+        users = poule.get_users()
+
+    return render_template(
+        'poule.html', 
+        poule=poule_id, 
+        users=users, 
+        user_id=user_id,
+        tracks=tracks,
+        selected_track=track_id
+    )
+
+@poule_bp.route('/advanced/<int:poule_id>')
+def advanced_info(poule_id):
+    """Show advanced information and statistics for a poule."""
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('auth.index'))
+    
+    poule = Poule.get_by_id(poule_id)
+    if not poule:
+        flash('Poule not found', 'error')
+        return redirect(url_for('poule.dashboard'))
+    
+    # Get all users in the poule with their points
+    users = poule.get_users()
+    
+    # Get driver points analysis
+    with get_db_cursor() as cursor:
+        # Analyze qualifying predictions
+        cursor.execute("""
+            WITH driver_quali_points AS (
+                SELECT 
+                    d.driver_id,
+                    d.driver_name,
+                    t.team_name,
+                    COUNT(*) * 25 as total_possible,
+                    SUM(
+                        CASE 
+                            WHEN p.driver1_id = d.driver_id THEN p.driver1points
+                            WHEN p.driver2_id = d.driver_id THEN p.driver2points
+                            WHEN p.driver3_id = d.driver_id THEN p.driver3points
+                        END
+                    ) as points_earned
+                FROM driver d
+                JOIN team t ON d.team_id = t.team_id
+                JOIN top3_quali p ON (
+                    d.driver_id IN (p.driver1_id, p.driver2_id, p.driver3_id)
+                )
+                WHERE p.user_id = %s AND p.poule = %s
+                GROUP BY d.driver_id, d.driver_name, t.team_name
+                HAVING COUNT(*) > 0
+            )
+            SELECT 
+                driver_name,
+                team_name,
+                points_earned,
+                total_possible,
+                ROUND((points_earned::numeric / total_possible::numeric) * 100, 1) as success_rate
+            FROM driver_quali_points
+            ORDER BY (points_earned::numeric / total_possible::numeric) DESC
+        """, (user_id, poule_id))
+        quali_stats = cursor.fetchall()
+
+        # Analyze race predictions
+        cursor.execute("""
+            WITH driver_race_points AS (
+                SELECT 
+                    d.driver_id,
+                    d.driver_name,
+                    t.team_name,
+                    COUNT(*) * 25 as total_possible,
+                    SUM(
+                        CASE 
+                            WHEN p.driver1_id = d.driver_id THEN p.driver1points
+                            WHEN p.driver2_id = d.driver_id THEN p.driver2points
+                            WHEN p.driver3_id = d.driver_id THEN p.driver3points
+                            WHEN p.driver4_id = d.driver_id THEN p.driver4points
+                            WHEN p.driver5_id = d.driver_id THEN p.driver5points
+                        END
+                    ) as points_earned
+                FROM driver d
+                JOIN team t ON d.team_id = t.team_id
+                JOIN top5_race p ON (
+                    d.driver_id IN (p.driver1_id, p.driver2_id, p.driver3_id, p.driver4_id, p.driver5_id)
+                )
+                WHERE p.user_id = %s AND p.poule = %s
+                GROUP BY d.driver_id, d.driver_name, t.team_name
+                HAVING COUNT(*) > 0
+            )
+            SELECT 
+                driver_name,
+                team_name,
+                points_earned,
+                total_possible,
+                ROUND((points_earned::numeric / total_possible::numeric) * 100, 1) as success_rate
+            FROM driver_race_points
+            ORDER BY (points_earned::numeric / total_possible::numeric) DESC
+        """, (user_id, poule_id))
+        race_stats = cursor.fetchall()
+    
+    return render_template(
+        'advanced_info.html',
+        poule=poule,
+        users=users,
+        user_id=user_id,
+        quali_stats=quali_stats,
+        race_stats=race_stats
+    ) 

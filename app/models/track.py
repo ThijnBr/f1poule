@@ -1,5 +1,6 @@
 from app.database.connection import get_db_cursor
 from datetime import datetime
+from datetime import timezone
 
 class Track:
     """Track model for F1 race tracks."""
@@ -171,11 +172,11 @@ class Track:
 
     def is_quali_open(self):
         """Check if qualifying predictions are still open."""
-        return self.quali_date > datetime.now() if self.quali_date else False
+        return self.quali_date > datetime.now(timezone.utc) if self.quali_date else False
 
     def is_race_open(self):
         """Check if race predictions are still open."""
-        return self.race_date > datetime.now() if self.race_date else False
+        return self.race_date > datetime.now(timezone.utc) if self.race_date else False
 
     @property
     def predictions_open(self):

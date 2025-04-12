@@ -365,13 +365,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateCountdown(element) {
-        const deadline = new Date(element.dataset.deadline).getTime();
-        const now = new Date().getTime();
-        const timeLeft = deadline - now;
+        const deadline = new Date(element.dataset.deadline);
+        const now = new Date();
+        
+        // Convert both to UTC timestamps for comparison
+        const timeLeft = deadline.getTime() - now.getTime();
 
         if (timeLeft <= 0) {
             element.innerHTML = '<div class="expired-text">Predictions closed</div>';
             element.closest('.deadline-box').classList.add('expired');
+            // Reload the page to update the form state if it just expired
+            if (timeLeft > -1000) { // Only reload if it just expired (within the last second)
+                location.reload();
+            }
             return;
         }
 

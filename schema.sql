@@ -283,3 +283,49 @@ BEGIN
     END IF;
 END $$;
 
+DO $$
+BEGIN
+    -- Update track table
+    ALTER TABLE track 
+    ALTER COLUMN track_quali_date TYPE TIMESTAMP WITH TIME ZONE,
+    ALTER COLUMN track_race_date TYPE TIMESTAMP WITH TIME ZONE;
+
+    -- Update top3_quali table
+    ALTER TABLE top3_quali 
+    ALTER COLUMN date TYPE TIMESTAMP WITH TIME ZONE;
+
+    -- Update top5_race table
+    ALTER TABLE top5_race 
+    ALTER COLUMN date TYPE TIMESTAMP WITH TIME ZONE;
+
+    -- Update raceresults table
+    ALTER TABLE raceresults 
+    ALTER COLUMN result_date TYPE TIMESTAMP WITH TIME ZONE;
+
+    -- Update qualiresults table
+    ALTER TABLE qualiresults 
+    ALTER COLUMN result_date TYPE TIMESTAMP WITH TIME ZONE;
+
+    -- Update headtoheadprediction table
+    ALTER TABLE headtoheadprediction 
+    ALTER COLUMN date TYPE TIMESTAMP WITH TIME ZONE;
+
+    -- Update default values to use timezone
+    ALTER TABLE top3_quali 
+    ALTER COLUMN date SET DEFAULT CURRENT_TIMESTAMP AT TIME ZONE 'UTC';
+
+    ALTER TABLE top5_race 
+    ALTER COLUMN date SET DEFAULT CURRENT_TIMESTAMP AT TIME ZONE 'UTC';
+
+    ALTER TABLE raceresults 
+    ALTER COLUMN result_date SET DEFAULT CURRENT_TIMESTAMP AT TIME ZONE 'UTC';
+
+    ALTER TABLE qualiresults 
+    ALTER COLUMN result_date SET DEFAULT CURRENT_TIMESTAMP AT TIME ZONE 'UTC';
+
+    ALTER TABLE headtoheadprediction 
+    ALTER COLUMN date SET DEFAULT CURRENT_TIMESTAMP AT TIME ZONE 'UTC';
+END $$;
+
+
+

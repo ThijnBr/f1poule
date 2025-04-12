@@ -516,6 +516,63 @@
     </div>
 
     <script>
+        // Utility functions for datetime conversion
+        function localToUTC(localDateTimeStr) {
+            if (!localDateTimeStr) return '';
+            const dt = new Date(localDateTimeStr);
+            return dt.toISOString().slice(0, 16); // Format: YYYY-MM-DDTHH:mm
+        }
+
+        function utcToLocal(utcDateTimeStr) {
+            if (!utcDateTimeStr) return '';
+            const dt = new Date(utcDateTimeStr);
+            return dt.toISOString().slice(0, 16); // This automatically converts to local time
+        }
+
+        // Convert displayed dates to local time when editing
+        function showEditTrackModal(trackId, trackName, qualiDate, raceDate) {
+            const modal = document.getElementById('editTrackModal');
+            const form = document.getElementById('editTrackForm');
+            form.action = `/admin/edit_track/${trackId}`;
+            document.getElementById('edit_track_name').value = trackName;
+            document.getElementById('edit_quali_date').value = utcToLocal(qualiDate);
+            document.getElementById('edit_race_date').value = utcToLocal(raceDate);
+            modal.style.display = 'block';
+        }
+
+        // Modify track form submission to convert to UTC
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle new track form
+            const trackForm = document.querySelector('form[action="/admin/add_track"]');
+            if (trackForm) {
+                trackForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const qualiDate = document.getElementById('quali_date').value;
+                    const raceDate = document.getElementById('race_date').value;
+                    
+                    document.getElementById('quali_date').value = localToUTC(qualiDate);
+                    document.getElementById('race_date').value = localToUTC(raceDate);
+                    
+                    this.submit();
+                });
+            }
+
+            // Handle edit track form
+            const editTrackForm = document.getElementById('editTrackForm');
+            if (editTrackForm) {
+                editTrackForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const qualiDate = document.getElementById('edit_quali_date').value;
+                    const raceDate = document.getElementById('edit_race_date').value;
+                    
+                    document.getElementById('edit_quali_date').value = localToUTC(qualiDate);
+                    document.getElementById('edit_race_date').value = localToUTC(raceDate);
+                    
+                    this.submit();
+                });
+            }
+        });
+
         function showEditTeamModal(teamId, teamName) {
             const modal = document.getElementById('editTeamModal');
             const form = document.getElementById('editTeamForm');
@@ -530,16 +587,6 @@
             form.action = `/admin/edit_driver/${driverId}`;
             document.getElementById('edit_driver_name').value = driverName;
             document.getElementById('edit_driver_team').value = teamName;
-            modal.style.display = 'block';
-        }
-
-        function showEditTrackModal(trackId, trackName, qualiDate, raceDate) {
-            const modal = document.getElementById('editTrackModal');
-            const form = document.getElementById('editTrackForm');
-            form.action = `/admin/edit_track/${trackId}`;
-            document.getElementById('edit_track_name').value = trackName;
-            document.getElementById('edit_quali_date').value = qualiDate.replace(' ', 'T');
-            document.getElementById('edit_race_date').value = raceDate.replace(' ', 'T');
             modal.style.display = 'block';
         }
 

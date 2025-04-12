@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Poule - Advanced Info</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='predictResults.css') }}">
+    <style>
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1200px;
+            margin: 4rem auto 0;
+        }
+
+        .stats-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--primary-color);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 0 20px rgba(225, 6, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .stats-box:hover {
+            box-shadow: 0 0 30px rgba(225, 6, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .stats-box h2 {
+            color: var(--primary-color);
+            margin: 0 0 1.5rem 0;
+            font-size: 1.5rem;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(225, 6, 0, 0.3);
+        }
+
+        .driver-row {
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(225, 6, 0, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .driver-row:hover {
+            background-color: rgba(225, 6, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .team-logo {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+        }
+
+        .driver-name {
+            font-weight: 500;
+        }
+
+        .points-info {
+            text-align: right;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .success-rate {
+            min-width: 70px;
+            text-align: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .success-high {
+            background: rgba(77, 255, 77, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .success-medium {
+            background: rgba(255, 165, 0, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        .success-low {
+            background: rgba(255, 77, 77, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        @media (max-width: 768px) {
+            .stats-section {
+                grid-template-columns: 1fr;
+                margin-top: 5rem;
+            }
+
+            .driver-row {
+                grid-template-columns: auto 1fr auto;
+            }
+
+            .success-rate {
+                grid-column: 1 / -1;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{{ url_for('poule.view_poule', poule_id=poule.id) }}" class="standings-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            Back to Standings
+        </a>
+
+        <main class="stats-section">
+            <section class="stats-box">
+                <h2>Quali Prediction Performance</h2>
+                {% if not quali_stats %}
+                    <div class="no-predictions">No qualifying predictions yet</div>
+                {% else %}
+                    {% for stat in quali_stats %}
+                        <div class="driver-row">
+                            <img src="{{ url_for('static', filename=stat[1] + '.png') }}" 
+                                 alt="{{ stat[1] }} logo" 
+                                 class="team-logo"
+                                 onerror="this.style.display='none'">
+                            <span class="driver-name">{{ stat[0] }}</span>
+                            <span class="points-info">{{ stat[2] }}/{{ stat[3] }}</span>
+                            <span class="success-rate 
+                                {% if stat[4] >= 70 %}success-high
+                                {% elif stat[4] >= 40 %}success-medium
+                                {% else %}success-low{% endif %}">
+                                {{ stat[4] }}%
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </section>
+
+            <section class="stats-box">
+                <h2>Top 5 Prediction Performance</h2>
+                {% if not race_stats %}
+                    <div class="no-predictions">No race predictions yet</div>
+                {% else %}
+                    {% for stat in race_stats %}
+                        <div class="driver-row">
+                            <img src="{{ url_for('static', filename=stat[1] + '.png') }}" 
+                                 alt="{{ stat[1] }} logo" 
+                                 class="team-logo"
+                                 onerror="this.style.display='none'">
+                            <span class="driver-name">{{ stat[0] }}</span>
+                            <span class="points-info">{{ stat[2] }}/{{ stat[3] }}</span>
+                            <span class="success-rate 
+                                {% if stat[4] >= 70 %}success-high
+                                {% elif stat[4] >= 40 %}success-medium
+                                {% else %}success-low{% endif %}">
+                                {{ stat[4] }}%
+                            </span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </section>
+        </main>
+    </div>
+</body>
+</html> 

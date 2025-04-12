@@ -4,7 +4,7 @@ from app.models.driver import Driver
 from app.models.prediction import Prediction, QualifyingPrediction, RacePrediction, BonusPrediction
 from app.models.poule import Poule
 from app.models.user import User
-from datetime import datetime
+from datetime import datetime, timezone
 
 prediction_bp = Blueprint('prediction', __name__, url_prefix='/prediction')
 
@@ -27,7 +27,7 @@ def prediction_list(poule_id, user_id):
     
     # Get tracks for the poule's year
     tracks = Track.get_all(year=poule.year)
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     
     # Split tracks into upcoming and past
     upcoming_tracks = [track for track in tracks if track[3] > now]  # track[3] is race_date
@@ -109,10 +109,10 @@ def predict(track_id):
     track_name = track.track_name
     poule_name = poule.name
     
-    # Format deadline times for JavaScript
-    quali_deadline = track.quali_date.strftime('%Y-%m-%dT%H:%M:%S')
-    race_deadline = track.race_date.strftime('%Y-%m-%dT%H:%M:%S')
-    now = datetime.now()
+    # Format deadline times for JavaScript with timezone info
+    quali_deadline = track.quali_date.strftime('%Y-%m-%dT%H:%M:%S%z')
+    race_deadline = track.race_date.strftime('%Y-%m-%dT%H:%M:%S%z')
+    now = datetime.now(timezone.utc)
     
     # Check if predictions are still allowed
     quali_active = track.quali_date > now
@@ -172,7 +172,7 @@ def predict_top3(track_id):
         return redirect(url_for('prediction.prediction_list', poule_id=poule_id, user_id=user_id))
     
     # Check if prediction is still allowed
-    if track.quali_date < datetime.now():
+    if track.quali_date < datetime.now(timezone.utc):
         flash('Your qualifying prediction is too late', 'message')
         flash(False, 'ontime')
     else:
@@ -221,7 +221,7 @@ def predict_top5(track_id):
         return redirect(url_for('prediction.prediction_list', poule_id=poule_id, user_id=user_id))
     
     # Check if prediction is still allowed
-    if track.race_date < datetime.now():
+    if track.race_date < datetime.now(timezone.utc):
         flash('Your race prediction is too late', 'message')
         flash(False, 'ontime')
     else:
@@ -287,7 +287,7 @@ def predict_headtohead(track_id):
         return redirect(url_for('prediction.prediction_list', poule_id=poule_id, user_id=user_id))
     
     # Check if prediction is still allowed
-    if track.race_date < datetime.now():
+    if track.race_date < datetime.now(timezone.utc):
         flash('Your head-to-head prediction is too late', 'message')
         flash(False, 'ontime')
     else:

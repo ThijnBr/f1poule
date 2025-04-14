@@ -5,36 +5,44 @@ import re
 from app.database.connection import get_db_cursor
 
 # Constants
-BASE_URL_2024 = "https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/season/season/season-2024-2043"
-BASE_URL_2025 = "https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/season/season/season-2025-2071"
+BASE_URL_2025 = "https://www.fia.com/events/fia-formula-one-world-championship/season-2025/2025-fia-formula-one-world-championship"
 
 def get_pdf_urls(year):
     """Get PDF URLs for the specified year."""
     return {
-        'race': f"https://fia.com/sites/default/files/decision-document/{year}%20{{}}%20-%20Final%20Race%20Classification.pdf",
-        'provisional': f"https://fia.com/sites/default/files/decision-document/{year}%20{{}}%20-%20Provisional%20Race%20Classification.pdf",
-        'quali': f"https://fia.com/sites/default/files/decision-document/{year}%20{{}}%20-%20Final%20Starting%20Grid.pdf"
+        'race': f"https://www.fia.com/system/files/decision-document/{year}_{{}}_grand_prix_-_final_race_classification.pdf",
+        'provisional': f"https://www.fia.com/system/files/decision-document/{year}_{{}}_grand_prix_-_provisional_race_classification.pdf",
+        'quali': f"https://www.fia.com/system/files/decision-document/{year}_{{}}_grand_prix_-_final_starting_grid.pdf"
     }
 
-def get_available_races(year=2024):
+def get_available_races(year=2025):
     """Fetch available race names from the FIA website for the specified year."""
     try:
-        # Select the correct base URL based on the year
-        base_url = BASE_URL_2024 if year == 2024 else BASE_URL_2025
+        base_url = f"https://www.fia.com/documents/championships/fia-formula-one-world-championship-14/season/season-{year}-2071"
         print(f"Fetching races for year {year} from URL: {base_url}")  # Debug log
         
         response = requests.get(base_url)
         response.raise_for_status()  # Raise an error for bad responses (4xx or 5xx)
 
         soup = BeautifulSoup(response.content, "html.parser")
-        select_element = soup.find('select', {'id': 'facetapi_select_facet_form_2'})
-
-        if select_element is None:
-            print(f"Select element not found for year {year}")
+        
+        # Find the select element with id 'facetapi_select_facet_form_2'
+        select = soup.find('select', {'id': 'facetapi_select_facet_form_2'})
+        
+        if not select:
+            print("Select element not found")  # Debug log
             return []
-
-        # Extract event names from the dropdown options
-        event_names = [option.text.strip() for option in select_element.find_all('option') if "Grand Prix" in option.text]
+            
+        # Get all option elements except the first one (which is the "Event" placeholder)
+        options = select.find_all('option')[1:]
+        
+        # Extract race names and filter out non-Grand Prix events
+        event_names = []
+        for option in options:
+            race_name = option.text.strip()
+            if "Grand Prix" in race_name and "Tests" not in race_name:
+                event_names.append(race_name)
+        
         print(f"Found {len(event_names)} races for year {year}")  # Debug log
         return event_names
 
@@ -42,7 +50,7 @@ def get_available_races(year=2024):
         print(f"An error occurred while fetching data for year {year}: {e}")
         return []
 
-def download_pdf(url, grand_prix_name=None, year=2024):
+def download_pdf(url, grand_prix_name=None, year=2025):
     """Download a PDF from a given URL and return the file path."""
     response = requests.get(url)
     if response.status_code == 200:
@@ -62,13 +70,16 @@ def extract_text_from_pdf(pdf_path):
     with pdfplumber.open(pdf_path) as pdf:
         return "\n".join(page.extract_text() for page in pdf.pages)
 
-def get_results(grand_prix_name, isRace, year=2024):
+def get_results(grand_prix_name, isRace, year=2025):
     """Fetch race results for a given Grand Prix."""
     urls = get_pdf_urls(year)
+    formatted_name = grand_prix_name.lower().replace(' grand prix', '').strip().replace(' ', '_')
+    
     if isRace:
-        pdf_url = urls['race'].format(grand_prix_name.replace(' ', '%20'))
+        pdf_url = urls['race'].format(formatted_name)
     else:
-        pdf_url = urls['quali'].format(grand_prix_name.replace(' ', '%20'))
+        pdf_url = urls['quali'].format(formatted_name)
+    
     pdf_path = download_pdf(pdf_url, grand_prix_name, year)
     
     if pdf_path:
@@ -83,16 +94,65 @@ def process_quali_results(quali_results):
     """Process qualifying results from PDF text."""
     lines = quali_results.splitlines()
     results = []
+    current_position = 1
     
+    print("Raw qualifying lines:")  # Debug log
     for line in lines:
-        # Look for lines that start with a position number (1-20) followed by a number (usually car number)
-        if re.match(r'^\s*\d{1,2}\s+\d', line.strip()):
-            # Keep the full line to preserve position information
-            results.append(line.strip())
-            print(f"Found qualifying result: {line.strip()}")  # Debug log
+        print(f"Line: {line}")  # Debug log
     
-    # Sort results by the position number at the start of each line
-    results.sort(key=lambda x: int(re.match(r'^\s*(\d+)', x).group(1)))
+    # Find the line that starts with "Final Starting Grid"
+    start_processing = False
+    for i, line in enumerate(lines):
+        if "Final Starting Grid" in line:
+            start_processing = True
+            continue
+        
+        if not start_processing:
+            continue
+            
+        line = line.strip()
+        # Look for lines containing position, number and driver name
+        # Format: "1 81 Oscar PIASTRI 1:29.841"
+        if re.search(rf"^{current_position}\s+\d{{1,2}}\s+[A-Za-z]+\s+[A-Z]+", line):
+            try:
+                # Split by the time at the end if present
+                parts = re.split(r'\s+\d:\d{2}\.\d{3}', line)[0]
+                # Split remaining parts
+                parts = parts.split()
+                if len(parts) >= 4:  # position, number, firstname, lastname
+                    # Get driver name (everything after position and number)
+                    driver_name = " ".join(parts[2:])
+                    # Remove any asterisk
+                    driver_name = driver_name.replace('*', '').strip()
+                    
+                    results.append(f"{current_position} {driver_name}")
+                    print(f"Found qualifying result: Position {current_position} - {driver_name}")  # Debug log
+                    current_position += 1
+            except Exception as e:
+                print(f"Error processing line: {line}, Error: {e}")  # Debug log
+        # Also check for driver names at the start of team lines
+        # Format: "McLaren Formula 1 Team 2 16 Charles LECLERC 1:30.175"
+        elif re.search(r'\d{1,2}\s+\d{1,2}\s+[A-Za-z]+\s+[A-Z]+', line):
+            try:
+                # Find the driver portion (after team name)
+                match = re.search(r'(\d{1,2})\s+\d{1,2}\s+([A-Za-z]+\s+[A-Z]+)', line)
+                if match:
+                    position = int(match.group(1))
+                    driver_name = match.group(2)
+                    # Remove any asterisk
+                    driver_name = driver_name.replace('*', '').strip()
+                    
+                    if position == current_position:
+                        results.append(f"{position} {driver_name}")
+                        print(f"Found qualifying result: Position {position} - {driver_name}")  # Debug log
+                        current_position += 1
+            except Exception as e:
+                print(f"Error processing line: {line}, Error: {e}")  # Debug log
+    
+    # Sort results by the position number
+    results.sort(key=lambda x: int(x.split()[0]))
+    # Remove the position numbers after sorting
+    results = [" ".join(r.split()[1:]) for r in results]
     print(f"Sorted qualifying results: {results}")  # Debug log
     return results, None, None
 
@@ -140,40 +200,36 @@ def fetch_driver_names():
 def match_driver_names(results, driver_names):
     """Match results with driver names and return a final list."""
     final_results = []
-    position_map = {}  # Store position-to-driver mapping
     
     print(f"Input results for matching: {results}")  # Debug log
     print(f"Available driver names: {driver_names}")  # Debug log
     
-    # First pass: extract positions and create position map
     for result in results:
-        # Extract position number from the start of the line
-        position_match = re.match(r'^\s*(\d+)', result)
-        if position_match:
-            position = int(position_match.group(1))
-            # Find matching driver name
-            matched_driver = None
-            result_lower = result.lower()
-            for driver in driver_names:
-                if driver.lower() in result_lower:
-                    matched_driver = driver
-                    break
+        result = result.strip()
+        # Try to find the best matching driver name
+        best_match = None
+        for driver in driver_names:
+            # Convert both to lowercase and remove spaces for comparison
+            driver_clean = driver.lower().replace(" ", "")
+            result_clean = result.lower().replace(" ", "")
             
-            if matched_driver:
-                position_map[position] = matched_driver
-                print(f"Matched position {position} to driver {matched_driver}")  # Debug log
-            else:
-                position_map[position] = result
-                print(f"No match found for position {position}, using original: {result}")  # Debug log
-    
-    # Second pass: create ordered list based on positions
-    for pos in sorted(position_map.keys()):
-        final_results.append(position_map[pos])
+            # Check if driver name is in the result
+            if driver_clean in result_clean:
+                if best_match is None or len(driver) > len(best_match):
+                    best_match = driver
+        
+        if best_match:
+            final_results.append(best_match)
+            print(f"Matched {result} to driver {best_match}")  # Debug log
+        else:
+            # If no match found, use the result as is
+            final_results.append(result)
+            print(f"No match found for {result}, using as is")  # Debug log
     
     print(f"Final ordered results: {final_results}")  # Debug log
     return final_results
 
-def get_final_race_results(track_name, year=2024):
+def get_final_race_results(track_name, year=2025):
     results = get_results(track_name, True, year)
     if results:
         driver_names = fetch_driver_names()
@@ -183,7 +239,7 @@ def get_final_race_results(track_name, year=2024):
         return final_results, dnfs, fastest_lap
     return [], [], None
 
-def get_final_quali_results(track_name, year=2024):
+def get_final_quali_results(track_name, year=2025):
     results = get_results(track_name, False, year)
     if results:
         driver_names = fetch_driver_names()

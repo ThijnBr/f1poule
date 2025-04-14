@@ -260,7 +260,7 @@ def add_poule():
 def results():
     """Render the results page."""
     # Get race names from FIA website for the classification dropdown
-    selected_year = request.args.get('year', type=int) or request.form.get('year', type=int) or 2024
+    selected_year = request.args.get('year', type=int) or request.form.get('year', type=int) or 2025
     classified_tracks = get_available_races(selected_year)
     
     # Get active and inactive drivers separately
@@ -281,17 +281,19 @@ def results():
     if request.method == 'POST':
         load_track = request.form.get('classified_tracks')
         data_type = request.form.get('type')  # Get the type of data (race or qualifying)
-        year = request.form.get('year', type=int) or 2024
+        year = request.form.get('year', type=int) or 2025
         
         # Load data based on the type
         if data_type == 'qualifying':
             # Fetch qualifying data from PDF
             results = get_final_quali_results(load_track, year)
-            track_link = f"https://www.formula1.com/en/results.html/{year}/races/{load_track.replace(' ', '-')}/qualifying.html"
+            formatted_name = load_track.lower().replace(' grand prix', '').strip().replace(' ', '_')
+            track_link = f"https://www.fia.com/system/files/decision-document/{year}_{formatted_name}_grand_prix_-_final_starting_grid.pdf"
         else:
             # Fetch race data from PDF
             results = get_final_race_results(load_track, year)
-            track_link = f"https://www.formula1.com/en/results.html/{year}/races/{load_track.replace(' ', '-')}/race-result.html"
+            formatted_name = load_track.lower().replace(' grand prix', '').strip().replace(' ', '_')
+            track_link = f"https://www.fia.com/system/files/decision-document/{year}_{formatted_name}_grand_prix_-_final_race_classification.pdf"
         
         # Extract individual components from the results
         final_results = results[0]  # List of final results (driver positions)

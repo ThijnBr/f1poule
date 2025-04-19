@@ -250,7 +250,8 @@ def view_poule(poule_id):
         user_id=user_id,
         tracks=tracks,
         selected_track=track_id,
-        is_creator=is_creator
+        is_creator=is_creator,
+        poule_name=poule.name
     )
 
 @poule_bp.route('/<int:poule_id>/delete', methods=['POST'])

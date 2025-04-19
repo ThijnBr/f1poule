@@ -18,7 +18,7 @@ body, html {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #0f0f0f;
+    background-color: #000000;
     color: #ffffff;
 }
 
@@ -36,7 +36,7 @@ body, html {
     background-color: rgba(0, 0, 0, 0.8);
     padding: 20px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -56,7 +56,7 @@ body, html {
     transform: perspective(500px) rotateX(0deg) scale(1.05);
 }
 
-.standings-button, .logout-button {
+.standings-button {
     background-color: #333333;
     color: white;
     border: none;
@@ -71,13 +71,39 @@ body, html {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.standings-button:hover, .logout-button:hover {
+.standings-button:hover {
     background-color: #4a4a4a;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.standings-button .icon, .logout-button .icon {
+.standings-button svg {
+    margin-right: 8px;
+    filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+.logout-button {
+    background-color: #333333;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.logout-button:hover {
+    background-color: #4a4a4a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.logout-button .icon {
     margin-right: 8px;
     filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
 }
@@ -412,14 +438,10 @@ body, html {
 
 @media (max-width: 768px) {
     .main-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
         padding: 15px;
     }
 
     .main-header h1 {
-        order: -1;
         text-align: center;
         font-size: 28px;
     }
@@ -690,4 +712,51 @@ body, html {
     right: -15px;
     top: 50%;
     transform: translateY(-50%);
+}
+
+/* Back button overlay */
+.back-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #e10600;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.back-button svg {
+    transform: rotate(180deg);
+}
+
+.back-button:hover {
+    background-color: #ff1a1a;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(225, 6, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+    .back-button {
+        bottom: 15px;
+        right: 15px;
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+}
+
+@media (hover: none) {
+    .back-button:hover {
+        transform: none;
+    }
 }

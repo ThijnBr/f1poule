@@ -1,0 +1,195 @@
+/* General styling for results components */
+:root {
+    --primary-color: #e10600;
+    --secondary-color: #1e1e1e;
+    --gold-color: #ffd700;
+    --silver-color: #c0c0c0;
+    --bronze-color: #cd7f32;
+    --text-color: #ffffff;
+    --box-bg: rgba(30, 30, 30, 0.8);
+    --item-bg: rgba(0, 0, 0, 0.2);
+}
+
+/* Header Styling */
+.results-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.user-info-banner {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.2em;
+    color: #fff;
+    border-left: 4px solid var(--primary-color);
+}
+
+.user-info-banner .username {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.standings-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    align-self: flex-start;
+}
+
+.standings-button svg {
+    transition: transform 0.2s;
+}
+
+.standings-button:hover svg {
+    transform: translateX(-3px);
+}
+
+/* Results Box Styling */
+.results-box {
+    margin-bottom: 25px;
+}
+
+.results-box h2 {
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.results-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.no-predictions {
+    background: var(--item-bg);
+    padding: 12px;
+    text-align: center;
+    border-radius: 4px;
+    color: #ccc;
+    font-style: italic;
+}
+
+/* Result Item Styling */
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--item-bg);
+    border-radius: 4px;
+}
+
+.result-item .driver {
+    display: flex;
+    align-items: center;
+}
+
+.team-image {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.points {
+    font-weight: bold;
+    min-width: 30px;
+    text-align: center;
+}
+
+.points.gold {
+    color: var(--gold-color);
+}
+
+.points.silver {
+    color: var(--silver-color);
+}
+
+.points.bronze {
+    color: var(--bronze-color);
+}
+
+.points.zero {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Head-to-Head specific styling */
+.head-to-head-item {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+}
+
+.head-to-head-item .driver {
+    font-size: 0.95em;
+    padding: 4px 8px;
+    border-radius: 3px;
+    transition: background-color 0.2s;
+}
+
+.head-to-head-item .vs-points {
+    font-weight: bold;
+    font-size: 1.1em;
+    text-align: center;
+    min-width: 30px;
+}
+
+.head-to-head-item .driver.winner {
+    background: rgba(77, 255, 77, 0.1);
+}
+
+.head-to-head-item .driver.loser {
+    background: rgba(255, 77, 77, 0.1);
+}
+
+.pending {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+/* Bonus specific styling */
+.bonus-item .bonus-label {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+/* Footer Styling */
+.results-footer {
+    margin-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .head-to-head-item {
+        font-size: 0.9em;
+    }
+    
+    .result-item {
+        padding: 8px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .head-to-head-item {
+        grid-template-columns: 1fr auto 1fr;
+        gap: 6px;
+        font-size: 0.85em;
+    }
+    
+    .bonus-item .driver {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .bonus-item .team-image {
+        margin-bottom: 4px;
+    }
+} 

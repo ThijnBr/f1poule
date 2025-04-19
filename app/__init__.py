@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, request
 from flask_session import Session
 from flask_wtf.csrf import CSRFProtect
 from config.default import *
 import os
+import hmac
 
 def create_app(config=None):
     app = Flask(__name__, 
@@ -21,6 +22,21 @@ def create_app(config=None):
     
     # Initialize CSRF protection
     csrf = CSRFProtect()
+    
+    # Secure check for authorized webview requests
+    def is_authorized_webview():
+        token = request.headers.get('X-F1Poule-Token')
+        if not token:
+            return False
+        # Use constant-time comparison to prevent timing attacks
+        return hmac.compare_digest(token, app.config['WEBVIEW_SECRET_KEY'])
+    
+    # Disable CSRF for authorized WebView requests
+    @app.before_request
+    def handle_csrf():
+        if is_authorized_webview():
+            app.config['WTF_CSRF_ENABLED'] = False
+    
     csrf.init_app(app)
     
     # Ensure instance and session directories exist

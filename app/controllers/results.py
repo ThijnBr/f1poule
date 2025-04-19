@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, session, redirect, url_for, request, flash
 from app.models.prediction import Prediction, QualifyingPrediction, RacePrediction, BonusPrediction
 from app.database.connection import get_db_cursor
+from app.models.user import User
 
 results_bp = Blueprint('results', __name__, url_prefix='/results')
 
@@ -47,6 +48,10 @@ def view_results(track_id, user_id):
     # Get bonus results
     bonus_data = BonusPrediction.get_results_with_points(user_id, track_id, poule_id)
     
+    # Get username of the viewed user
+    viewed_user = User.get_by_id(user_id)
+    viewed_username = viewed_user.username if viewed_user else "Unknown User"
+    
     return render_template(
         'predictResults.html', 
         top3=top3, 
@@ -54,7 +59,9 @@ def view_results(track_id, user_id):
         poule=poule_id, 
         hth=hth_list,
         hthPoints=hth_points,
-        bonusData=bonus_data
+        bonusData=bonus_data,
+        userid=user_id,
+        viewed_username=viewed_username
     )
 
 def _get_head_to_head_points(user_id, track_id, poule_id):

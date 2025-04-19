@@ -1,0 +1,12 @@
+<div class="result-item">
+    <span class="driver">
+        <img src="{{ url_for('static', filename=x[2] + '.png') }}" 
+             alt="{{ x[2] }} logo" 
+             class="team-image"
+             onerror="this.style.display='none'">
+        {{ x[0] }}
+    </span>
+    <span class="points {% if x[1] == 25 %}gold{% elif x[1] == 18 %}silver{% elif x[1] == 15 %}bronze{% endif %}">
+        {% if x[1] is none %}--{% else %}{{ x[1] }}{% endif %}
+    </span>
+</div> 

@@ -37,12 +37,17 @@ def prediction_list(poule_id, user_id):
     upcoming_tracks.sort(key=lambda x: x[3])  # Sort by race_date ascending
     past_tracks.sort(key=lambda x: x[3], reverse=True)  # Sort by race_date descending
     
+    # Get username of the viewed user
+    viewed_user = User.get_by_id(user_id)
+    viewed_username = viewed_user.username if viewed_user else "Unknown User"
+    
     return render_template(
         'predictList.html', 
         avaTracks=upcoming_tracks, 
         disTracks=past_tracks, 
         poule=poule_id, 
-        userid=user_id
+        userid=user_id,
+        viewed_username=viewed_username
     )
 
 @prediction_bp.route('/<int:track_id>', methods=['GET', 'POST'])

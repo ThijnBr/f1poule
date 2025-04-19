@@ -34,7 +34,14 @@
                 {% endif %}
             </div>
 
-            {% if active_poules %}
+            {% set has_next_race = false %}
+            {% for poule in active_poules %}
+                {% if poule[5] %}
+                    {% set has_next_race = true %}
+                {% endif %}
+            {% endfor %}
+
+            {% if has_next_race %}
             <div class="next-race-section animate-fade-in">
                 <h2 class="section-title">Next Race</h2>
                 {% for poule in active_poules %}
